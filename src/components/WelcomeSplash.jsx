@@ -12,7 +12,7 @@ function MicrosoftLogo() {
 }
 
 const FEATURE_PILLS = [
-  '🌐 5 languages + Hausa interpretation',
+  '🌐 5 languages + local language interpretation',
   '⚡ AI risk flagging · CTDC standards',
   '📄 Referral letters in one click'
 ];
@@ -20,68 +20,34 @@ const FEATURE_PILLS = [
 export default function WelcomeSplash({ onStartDemo, onExplore, onSignIn }) {
   return (
     <div className="fixed inset-0 z-[300] bg-trace-950/95 backdrop-blur-sm flex items-center justify-center px-4 overflow-y-auto">
-      <div className="w-full max-w-lg bg-trace-900 border border-trace-700 rounded-2xl shadow-2xl p-8 my-4">
-        {/* Welcome message */}
+      <div className="w-full max-w-lg bg-trace-900 border border-trace-700 rounded-2xl shadow-2xl pt-10 px-8 pb-8 my-4">
+        {/* Logo + title */}
         <div className="flex flex-col items-center text-center">
-          <div className="bg-white rounded-lg p-1 mb-2">
-            <img src={traceLogo} alt="TRACE" className="w-8 h-8 object-contain block" />
+          <div className="bg-white rounded-2xl p-3 flex-shrink-0">
+            <img src={traceLogo} alt="TRACE" className="w-32 h-32 object-contain block" />
           </div>
-          <p className="text-lg font-semibold text-white">Welcome to TRACE</p>
-          <p className="text-sm text-slate-400 italic mt-1 leading-relaxed">
-            For this demo, you&apos;ll step into the role of a frontline caseworker in N&apos;Djamena, Chad. The AI
-            structuring, risk flags, and document generation are live. The case data is simulated.
+          <h1 className="text-4xl font-bold text-white mt-4">TRACE</h1>
+          <p className="text-base text-slate-300 mt-1">AI Caseworker Assistant</p>
+          <p className="text-sm text-slate-400 mt-4 leading-relaxed max-w-sm">
+            For this demo, you&apos;ll step into the role of a frontline caseworker in N&apos;Djamena, Chad.
           </p>
         </div>
 
-        <div className="border-t border-trace-700 my-5" />
-
-        {/* TOP — context card */}
-        <p className="text-xs uppercase tracking-widest text-trace-accent text-center">
-          FIELD SCENARIO · N&apos;DJAMENA, CHAD
-        </p>
-        <p className="text-sm text-slate-300 italic text-center mt-2 leading-relaxed">
-          "Amina, 28, just arrived at a partner shelter. She speaks Hausa. Her caseworker speaks French.
-          No shared language. No tool built for this moment."
-        </p>
-
-        <div className="border-t border-trace-700 my-5" />
-
-        {/* MIDDLE — app store style */}
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="bg-white rounded-lg p-1 flex-shrink-0">
-              <img src={traceLogo} alt="TRACE" className="w-8 h-8 object-contain block" />
-            </div>
-            <div className="min-w-0">
-              <div className="text-xl font-bold text-white leading-tight">TRACE</div>
-              <div className="text-xs text-slate-400 truncate">AI Caseworker Assistant</div>
-            </div>
-          </div>
-          <span className="text-[10px] text-slate-500 border border-trace-700 rounded px-1.5 py-0.5 flex-shrink-0 whitespace-nowrap">
-            PWA · iOS &amp; Android
-          </span>
-        </div>
-
-        <div className="flex flex-wrap gap-2 justify-center mt-3">
+        <div className="flex flex-wrap gap-2 justify-center mt-6">
           {FEATURE_PILLS.map((f) => (
             <span key={f} className="text-[11px] text-slate-300 bg-trace-800 border border-trace-700 rounded-full px-3 py-1">
               {f}
             </span>
           ))}
+          <span className="text-[11px] text-slate-500 border border-trace-700 rounded-full px-3 py-1 whitespace-nowrap">
+            PWA · iOS &amp; Android
+          </span>
         </div>
 
-        {/* BOTTOM — CTAs */}
-        <div className="flex flex-col gap-3 mt-6">
-          <button
-            onClick={onSignIn}
-            className="w-full flex items-center justify-center gap-3 bg-white text-gray-800 font-medium py-2.5 px-4 rounded-lg hover:bg-gray-100 transition-colors"
-          >
-            <MicrosoftLogo />
-            Sign in with Microsoft
-          </button>
+        <div className="border-t border-trace-700 my-6" />
 
-          <p className="text-center text-xs text-slate-600">— or continue as guest —</p>
-
+        {/* Action buttons */}
+        <div className="flex flex-col gap-3">
           <button
             onClick={onStartDemo}
             className="w-full bg-trace-accent text-white font-semibold py-2.5 rounded-lg hover:bg-sky-500 transition-colors"
@@ -95,6 +61,16 @@ export default function WelcomeSplash({ onStartDemo, onExplore, onSignIn }) {
             Explore on your own →
           </button>
         </div>
+
+        <div className="border-t border-trace-700 my-5" />
+
+        <button
+          onClick={onSignIn}
+          className="w-full flex items-center justify-center gap-3 bg-white text-gray-800 font-medium py-2.5 px-4 rounded-lg hover:bg-gray-100 transition-colors"
+        >
+          <MicrosoftLogo />
+          Sign in with Microsoft
+        </button>
 
         <p className="text-[10px] text-slate-600 text-center mt-4">
           Survivors never interact with TRACE directly. All outputs are reviewed by a trained caseworker.

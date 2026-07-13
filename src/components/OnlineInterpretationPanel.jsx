@@ -118,6 +118,7 @@ export default function OnlineInterpretationPanel({ onlineMode }) {
               {listening ? `● ${t('Recording…')}` : `🎙 ${t('Speak')}`}
             </button>
             <button
+              data-tutorial="interpret-button"
               onClick={handleTranslate}
               disabled={busy}
               className="px-3 py-1.5 rounded-md text-sm font-medium bg-trace-accent text-white hover:bg-sky-500 disabled:opacity-50"

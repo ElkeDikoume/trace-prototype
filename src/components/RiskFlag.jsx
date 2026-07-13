@@ -63,6 +63,7 @@ export default function RiskFlag({ riskResult, onAskWhy, caseId }) {
         </div>
         <div className="flex items-center gap-2">
           <button
+            data-tutorial="ask-ai-why"
             onClick={onAskWhy}
             className="text-xs px-2 py-1 rounded bg-trace-800 border border-trace-700 hover:bg-trace-700 text-slate-200"
           >

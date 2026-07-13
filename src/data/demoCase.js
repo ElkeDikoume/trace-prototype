@@ -4,7 +4,7 @@
 export const DEMO_CASE_FORM_ID = 'htcds_intake';
 
 export const DEMO_CASE_DATA = {
-  fullName: 'Amina K. (pseudonym)',
+  fullName: 'AK-001',
   age: '28',
   gender: 'Female',
   nationality: 'Chadian',

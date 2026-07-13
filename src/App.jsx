@@ -209,7 +209,7 @@ export default function App() {
 
   function handleStartDemo({ suppressHighRiskPrompt = false } = {}) {
     // Fixed ID so replaying the demo always replaces the single demo
-    // record instead of stacking up duplicate "Amina K." entries.
+    // record instead of stacking up duplicate "AK-001" entries.
     deleteCase(DEMO_CASE_ID);
     const record = {
       id: DEMO_CASE_ID,
@@ -310,6 +310,19 @@ export default function App() {
         textarea.dispatchEvent(new Event('input', { bubbles: true }));
       }
     };
+    // Mirrors __traceLoadSampleNotes above but clears both representations of
+    // the notes field, so the tour can undo its own sample-notes load if the
+    // judge navigates back to the intake-notes step (see tour.js's
+    // clearNotesIfSeededByTour beforeShowPromise).
+    window.__traceClearSampleNotes = () => {
+      handleFieldChange('caseworkerNotes', '');
+      const textarea = document.querySelector('[data-tutorial="voice-intake"] textarea');
+      if (textarea) {
+        const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value').set;
+        nativeSetter.call(textarea, '');
+        textarea.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    };
     window.__traceStructureNow = async () => {
       if (!activeCase) return;
       const notes = activeCase.data?.caseworkerNotes || '';
@@ -323,6 +336,7 @@ export default function App() {
     };
     return () => {
       delete window.__traceLoadSampleNotes;
+      delete window.__traceClearSampleNotes;
       delete window.__traceStructureNow;
     };
   }, [activeCase, activeForm]);
@@ -343,8 +357,19 @@ export default function App() {
   // overlay rather than an always-visible bottom panel.
   useEffect(() => {
     window.__traceOpenChatbot = () => setChatOpen(true);
+    window.__traceCloseChatbot = () => setChatOpen(false);
     return () => {
       delete window.__traceOpenChatbot;
+      delete window.__traceCloseChatbot;
+    };
+  }, []);
+
+  // Lets the guided tour switch to the Insights tab programmatically (rather
+  // than clicking the nav button) before a step's spotlight renders.
+  useEffect(() => {
+    window.__traceSwitchToInsights = () => setView('documents');
+    return () => {
+      delete window.__traceSwitchToInsights;
     };
   }, []);
 
@@ -486,7 +511,7 @@ export default function App() {
               {t('Sign in')}
             </button>
           )}
-          <LanguageSelector lang={lang} onChange={setLang} />
+          <LanguageSelector lang={lang} />
           <OnlineStatusToggle onlineMode={onlineMode} onToggle={() => setOnlineMode((v) => !v)} />
           {installPrompt && (
             <button

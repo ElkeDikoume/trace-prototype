@@ -20,11 +20,32 @@ function ensureFormCardsVisible() {
   });
 }
 
+// Undoes window.__traceLoadSampleNotes's edit to the intake notes field if
+// the judge loaded the sample notes and then navigated Previous back to
+// this step — so re-entering the step always shows a clean field, matching
+// the step's own "click below to load the raw notes" framing.
+function clearNotesIfSeededByTour() {
+  return new Promise((resolve) => {
+    if (window.__traceNotesSeededByTour) {
+      window.__traceClearSampleNotes?.();
+      window.__traceNotesSeededByTour = false;
+    }
+    resolve();
+  });
+}
+
 // Small paint/reflow buffer after the structuring promise has already
 // resolved (see the 'structure-cta' step's customButtons), so the
 // now-populated fields have settled before Shepherd measures them.
 function waitForStructuring() {
   return new Promise((resolve) => setTimeout(resolve, 300));
+}
+
+function ensureRiskBannerVisible() {
+  return new Promise((resolve) => {
+    document.querySelector('[data-tutorial="risk-flag"]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(resolve, 300);
+  });
 }
 
 const REFERRAL_DEMO_QUESTION = "Write a referral letter for Amina to Maison de la Femme in N'Djamena.";
@@ -43,12 +64,16 @@ function openChatbotWithPrefill() {
   });
 }
 
-// Clicks the Insights tab (the previous step only spotlights it) and
-// waits for DocumentsPanel to mount before the next step measures it.
-function openDocumentsPanel() {
+// Closes the chat bubble and switches to the Insights tab programmatically
+// (rather than clicking the nav button) before the next step's spotlight
+// renders.
+function closeChatbotThenSwitchToInsights() {
   return new Promise((resolve) => {
-    document.querySelector('[data-tutorial="documents-tab"]')?.click();
-    setTimeout(resolve, 300);
+    window.__traceCloseChatbot?.();
+    setTimeout(() => {
+      window.__traceSwitchToInsights?.();
+      resolve();
+    }, 300);
   });
 }
 
@@ -57,13 +82,13 @@ const STEP_DEFS = [
     id: 'language-selector',
     attachTo: { element: '[data-tutorial="language-selector"]', on: 'bottom' },
     title: 'Choose your language',
-    text: 'TRACE works in the caseworker\'s language. The interface and AI responses switch immediately. For this walkthrough, stay in English — but try switching and switching back.'
+    text: 'TRACE supports 5 interface languages: French, English, Arabic, Spanish, and Portuguese. Click the language selector now to see the full list. In production, this switches the entire interface. Real-time local language interpretation (Hausa, Fulfulde, Zarma) is available when connected.'
   },
   {
     id: 'offline-indicator',
     attachTo: { element: '[data-tutorial="offline-indicator"]', on: 'bottom' },
     title: 'Works offline — no connectivity required',
-    text: 'TRACE stores cases locally on the device. Caseworkers in Diffa, Bangui, or the Lake Chad Basin can capture intake, flag risk, and generate referrals with zero connectivity. Data syncs automatically when a connection is restored.',
+    text: 'Works offline — no connectivity required. In the field — Diffa, Bangui, Lake Chad Basin — caseworkers can capture intake, flag risk, run AI structuring, generate referral letters, access the TRACE Assistant, and view the Insights tab. Zero connectivity required. Syncs automatically when connection returns.',
     customButtons: (tour) => [
       { text: 'Next →', action: () => tour.next(), classes: 'trace-shepherd-btn-primary' }
     ]
@@ -72,40 +97,56 @@ const STEP_DEFS = [
     id: 'form-select',
     attachTo: { element: '[data-tutorial="form-cards-primary"]', on: 'bottom' },
     title: 'Select a form type',
-    text: 'Choose the type of case record to open. HTCDS Intake is already selected for this demo — the IOM Human Trafficking Case Data Standards. Eight form types total, each with its own field schema.',
+    text: "Choose the type of case record to open. HTCDS Intake is already selected for this demo — the IOM Human Trafficking Case Data Standards. Eight form types total, each with its own field schema. Caseworkers select from 8 IOM-standard protection form types. In production, existing forms — including paper forms photographed or ODK exports — can be uploaded and mapped automatically. Select 'HTCDS Trafficking Intake' for this demo.",
     beforeShowPromise: ensureFormCardsVisible
   },
   {
     id: 'intake-notes',
     attachTo: { element: '[data-tutorial="voice-intake"]', on: 'top' },
     title: 'Enter intake notes',
-    text: "In the field, caseworkers often begin with notes in the survivor's own language. This example arrived in Hausa — a language spoken by 50+ million people across the Sahel, with almost no humanitarian tool support. Click below to load the raw notes.",
+    text: "Caseworkers can TYPE their notes or SPEAK them — tap the microphone icon to use voice input in the caseworker's own language. For this demo, we have Amina's notes in Hausa ready. Click 'Load sample intake notes →' to load them. The notes will appear in the text area below.",
+    beforeShowPromise: clearNotesIfSeededByTour,
     customButtons: (tour) => [
       { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
       { text: 'End Tour', action: () => tour.cancel(), classes: 'trace-shepherd-btn-ghost' },
       {
         text: 'Load sample intake notes →',
-        action: () => { window.__traceLoadSampleNotes?.(); tour.next(); },
+        action: () => {
+          window.__traceLoadSampleNotes?.();
+          window.__traceNotesSeededByTour = true;
+          tour.next();
+        },
         classes: 'trace-shepherd-btn-primary'
       }
+    ]
+  },
+  {
+    id: 'interpret-prompt',
+    attachTo: { element: '[data-tutorial="interpret-button"]', on: 'right' },
+    title: 'Verify meaning before structuring',
+    text: "Amina's notes are now in the field — written in Hausa. Before structuring, TRACE interprets them to English so the caseworker can verify meaning. Click 'Interpret →' to see the interpretation. This preserves the survivor's voice.",
+    customButtons: (tour) => [
+      { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
+      { text: 'End Tour', action: () => tour.cancel(), classes: 'trace-shepherd-btn-ghost' },
+      { text: "I've clicked Interpret →", action: () => tour.next(), classes: 'trace-shepherd-btn-primary' }
     ]
   },
   {
     id: 'interpretation',
     attachTo: { element: '[data-tutorial="online-interpretation"]', on: 'top' },
     title: 'Hausa → English interpretation',
-    text: 'These notes arrived in Hausa. Before structuring, TRACE interprets them to English so the caseworker preserves the survivor\'s meaning. Hausa has 50+ million speakers — almost no humanitarian tools serve them.'
+    text: "TRACE interpreted Hausa into English in real time. Hausa has 50+ million speakers across the Sahel — almost no humanitarian tools serve them. In production: Meta SeamlessM4T handles Hausa, Fulfulde, and Zarma.<br /><br />Now click the 'Structure notes with AI →' button to map these notes into the IOM case form fields. Give it about 30 seconds."
   },
   {
     id: 'structure-cta',
     attachTo: { element: '[data-tutorial="structure-button"]', on: 'bottom' },
     title: 'Structure with AI',
-    text: 'TRACE converts the freeform notes into the correct IOM fields. The AI does not replace judgment — it reduces documentation burden. Click below to structure the notes with AI.',
+    text: "Click the 'Structure notes with AI →' button now to continue. TRACE will map the interpreted notes into the correct IOM HTCDS form fields. This takes about 30 seconds — you'll see the fields populate as TRACE works.",
     customButtons: (tour) => [
       { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
       { text: 'End Tour', action: () => tour.cancel(), classes: 'trace-shepherd-btn-ghost' },
       {
-        text: 'Structure with AI →',
+        text: 'Structure notes with AI →',
         action: async () => {
           await window.__traceStructureNow?.();
           tour.next();
@@ -128,21 +169,47 @@ const STEP_DEFS = [
     text: 'HIGH risk — not a black box. TRACE shows which exact fields triggered each of the four CTDC indicators: recruitment fraud, document confiscation, movement restriction, and debt bondage. And it tells the caseworker what information is still missing.'
   },
   {
+    id: 'ask-ai-why',
+    attachTo: { element: '[data-tutorial="ask-ai-why"]', on: 'bottom' },
+    title: 'Not a black box',
+    text: "This case triggered four CTDC indicators — not a guess, not a black box. Every flag is traceable to specific words and field values. Click 'Ask AI why →' to open the TRACE Assistant with a plain-language explanation of every risk flag.",
+    beforeShowPromise: ensureRiskBannerVisible,
+    customButtons: (tour) => [
+      { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
+      { text: 'End Tour', action: () => tour.cancel(), classes: 'trace-shepherd-btn-ghost' },
+      {
+        text: 'Next →',
+        action: () => {
+          window.__traceOpenChatbot?.();
+          setTimeout(() => tour.next(), 300);
+        },
+        classes: 'trace-shepherd-btn-primary'
+      }
+    ]
+  },
+  {
     id: 'services',
     attachTo: { element: '[data-tutorial="services"]', on: 'bottom' },
     title: 'Suggested referral services',
-    text: 'Based on case details and location, TRACE surfaces possible services for human review. In full deployment this pulls from live IOM DTM and UNHCR directories.'
+    text: 'Based on case details and location, TRACE surfaces possible services for human review. These referral options come from a cached IOM and UNHCR provider directory, available offline. In production, organizations with administrative access configure which service directories populate this list — including UNHCR PING, IOM DTM partner networks, or their own verified provider list.'
   },
   {
     id: 'chatbot',
     attachTo: { element: '[data-tutorial="chatbot-input"]', on: 'top' },
     title: 'Ask TRACE anything',
-    text: 'Type a question to TRACE — or press Send to use the one pre-filled below. Watch it respond live.',
+    text: "The TRACE Assistant is open and grounded in Amina's case. The question above is pre-filled. Press Send to watch TRACE draft a complete referral letter — or type your own question.<br /><br />When you're done, you can return to this chat at any time by clicking the chat bubble in the bottom-right corner.",
     beforeShowPromise: openChatbotWithPrefill,
     customButtons: (tour) => [
       { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
       { text: 'End Tour', action: () => tour.cancel(), classes: 'trace-shepherd-btn-ghost' },
-      { text: 'Skip →', action: () => tour.next(), classes: 'trace-shepherd-btn-secondary' },
+      {
+        text: 'Skip →',
+        action: () => {
+          window.__traceCloseChatbot?.();
+          tour.next();
+        },
+        classes: 'trace-shepherd-btn-secondary'
+      },
       {
         text: 'Send & Continue →',
         action: () => {
@@ -157,14 +224,14 @@ const STEP_DEFS = [
     id: 'supervisor-tab',
     attachTo: { element: '[data-tutorial="documents-tab"]', on: 'bottom' },
     title: 'Insights tab — where TRACE works for you.',
-    text: 'Generate any case document in one click, review caseload patterns across your organization, and access IOM protocol guidance — all from one place.'
+    text: 'The referral letter TRACE just drafted is waiting here. The Insights tab holds every AI-generated document for this case: referral letter, case summary, IOM monthly return entry, missing information report, and follow-up plan. Each is editable and downloadable before any action is taken.',
+    beforeShowPromise: closeChatbotThenSwitchToInsights
   },
   {
     id: 'supervisor-view',
     attachTo: { element: '[data-tutorial="documents-panel"]', on: 'top' },
     title: 'AI-generated, caseworker-owned',
-    text: 'Each document is a draft. The caseworker reads it, edits it, and downloads it. The AI writes; the caseworker decides what goes out.',
-    beforeShowPromise: openDocumentsPanel
+    text: 'Each document is a draft. The caseworker reads it, edits it, and downloads it. The AI writes; the caseworker decides what goes out.'
   },
   {
     id: 'closing',

@@ -39,7 +39,7 @@ textarea, input, select {
   background: #0f172a !important;
   border: 1px solid #334155;
   border-radius: 0.75rem;
-  max-width: 320px;
+  max-width: 380px;
   font-family: inherit;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
@@ -49,18 +49,20 @@ textarea, input, select {
 }
 .trace-shepherd .shepherd-header {
   background: transparent !important;
-  padding: 1rem 1rem 0;
+  padding: 1.1rem 1.25rem 0;
 }
 .trace-shepherd .shepherd-title {
   color: #f8fafc;
   font-size: 0.95rem;
   font-weight: 700;
+  text-align: center;
+  width: 100%;
 }
 .trace-shepherd .shepherd-text {
   color: #cbd5e1;
   font-size: 0.85rem;
   line-height: 1.5;
-  padding: 0.5rem 1rem 1rem;
+  padding: 0.6rem 1.25rem 1.1rem;
 }
 .trace-shepherd .shepherd-footer {
   padding: 0 1rem 1rem;

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Document, Packer, Paragraph, TextRun, Header, Footer, AlignmentType } from 'docx';
 import { useI18n } from '../lib/i18n.jsx';
 import PatternAlertsBanner from './PatternAlertsBanner.jsx';
 import {
@@ -88,23 +89,38 @@ const PROTOCOL_QUESTIONS = [
 
 const PATTERN_REPORT_PROMPT = "Generate a pattern intelligence briefing report for my supervisor. Base it on these caseload alerts: (1) 'Alhaji Moussa Transport & Logistics' named as recruiter in 3 cases in Diffa/Niamey since June 2026; (2) 5 cases recruited through the same WhatsApp broker group in the Zinder–Agadez corridor; (3) Debt bondage indicators among Niamey domestic-worker cases up 40% quarter-over-quarter. Format as a structured supervisor briefing document with an executive summary, pattern details, recommended actions, and a note that all data is de-identified.";
 
-// Wrapped around every downloaded file's content — a client-side watermark
-// on top of the one Claude is instructed to write into the text itself
-// (see DOCUMENT_WATERMARK_INSTRUCTION in claudeClient.js), so the warning
-// survives even if a caseworker edits the AI's own header/footer lines out.
-const WATERMARK_HEADER = '⚠️  DEMO PROTOTYPE — NOT REAL CASE DATA — Austin AI Hub Hackathon 2026  ⚠️\n=====================================\n\n';
-const WATERMARK_FOOTER = '\n\n=====================================\nEND OF DEMO DOCUMENT — TRACE Hackathon Prototype\ntrace-prototype-ten.vercel.app | Not for operational use';
+// Printed in the header and footer of every downloaded .docx, on top of the
+// watermark Claude is instructed to write into the text itself (see
+// DOCUMENT_WATERMARK_INSTRUCTION in claudeClient.js), so the warning survives
+// even if a caseworker edits the AI's own header/footer lines out.
+const WATERMARK_TEXT = '⚠️ DEMO PROTOTYPE — NOT REAL CASE DATA — Austin AI Hub Hackathon 2026';
 
 function caseLabelText(caseRecord) {
   return caseRecord?.data?.fullName || caseRecord?.data?.clientIdentifier || caseRecord?.data?.survivorIdentifier || caseRecord?.data?.caseId || 'Untitled case';
 }
 
-function slugifyTitle(title) {
-  return title.trim().replace(/[^a-zA-Z0-9]+/g, '_');
+function slugifyDocType(title) {
+  return title.trim().replace(/[^a-zA-Z0-9]+/g, '');
 }
 
-function downloadTextFile(filename, content) {
-  const blob = new Blob([WATERMARK_HEADER + content + WATERMARK_FOOTER], { type: 'text/plain' });
+function watermarkParagraph() {
+  return new Paragraph({
+    alignment: AlignmentType.CENTER,
+    children: [new TextRun({ text: WATERMARK_TEXT, italics: true, color: '999999', size: 18 })]
+  });
+}
+
+async function downloadDocxFile(filename, content) {
+  const doc = new Document({
+    sections: [
+      {
+        headers: { default: new Header({ children: [watermarkParagraph()] }) },
+        footers: { default: new Footer({ children: [watermarkParagraph()] }) },
+        children: content.split('\n').map((line) => new Paragraph({ children: [new TextRun(line)] }))
+      }
+    ]
+  });
+  const blob = await Packer.toBlob(doc);
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
@@ -170,11 +186,11 @@ export default function DocumentsPanel({ caseRecord, form, riskResult, services,
     const body = form.fields
       .map((f) => `${f.label}: ${caseRecord.data?.[f.key] || '—'}`)
       .join('\n');
-    downloadTextFile('TRACE_Case_Record_DEMO.txt', header + body);
+    downloadDocxFile('TRACE_CaseRecord_DEMO.docx', header + body);
   }
 
   function handleDownloadDoc(docDef, content) {
-    downloadTextFile(`TRACE_${slugifyTitle(docDef.title)}_DEMO.txt`, content);
+    downloadDocxFile(`TRACE_${slugifyDocType(docDef.title)}_DEMO.docx`, content);
   }
 
   return (
