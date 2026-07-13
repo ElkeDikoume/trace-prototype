@@ -191,7 +191,7 @@ const STEP_DEFS = [
     id: 'interpretation',
     attachTo: { element: '[data-tutorial="online-interpretation"]', on: 'top' },
     title: 'Hausa → English interpretation',
-    text: "TRACE interpreted Hausa into English in real time. Hausa has 50+ million speakers across the Sahel, yet almost no humanitarian tools serve them. In production: Meta SeamlessM4T handles Hausa, Fulfulde, and Zarma. For this pilot, Sub-Saharan African languages were prioritized: Hausa, Fulfulde, and Zarma. Additional language packs can be added in production.<br /><br />Now click the 'Structure notes with AI →' button to map these notes into the IOM case form fields. Give it about 30 seconds."
+    text: "TRACE interpreted Hausa into English in real time. Hausa has 50+ million speakers across the Sahel, yet almost no humanitarian tools serve them. In production: Meta SeamlessM4T handles Hausa, Fulfulde, and Zarma. For this pilot, Sub-Saharan African languages were prioritized: Hausa, Fulfulde, and Zarma. Additional language packs can be added in production."
   },
   {
     id: 'structure-cta',

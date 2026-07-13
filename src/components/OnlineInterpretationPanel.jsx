@@ -7,20 +7,42 @@ import { useI18n } from '../lib/i18n.jsx';
 // tour's Step 3 loads that exact text into the intake form, and Step 4
 // spotlights this panel, so both must show identical testimony.
 const HAUSA_DEMO_TEXT = "Ta ce mai daukar ma'aikata ya karɓi takardar shaidar ta, ba za ta iya tafiya ba. An kawo ta daga Kano, ana cewa za a ba ta aiki a gidan yara, amma an tilasta ta yin aiki ba tare da kuɗi ba. Ta ce an gaya mata cewa tana bin bashin daukar ma'aikata, kuma ana cire kuɗi daga albashinta kafin ta karɓi kome. Tana da shekaru 28, kuma a yanzu ana tsare da ita a N'Djamena.";
-const ENGLISH_DEMO_TRANSLATION = 'She says the recruiter took her identification document, she cannot leave. She was brought from Kano, told she would be given work caring for children, but was forced to work without pay. She says she was told she owes a recruitment debt, and money is being deducted from her wages before she receives anything. She is 28 years old, and is currently being held in N\'Djamena.';
 
 export default function OnlineInterpretationPanel({ onlineMode }) {
   const { t } = useI18n();
   const [text, setText] = useState(HAUSA_DEMO_TEXT);
-  const [translation, setTranslation] = useState(ENGLISH_DEMO_TRANSLATION);
+  // Starts empty (rather than a canned translation) so the interpreted
+  // output only appears once the caseworker actually runs an interpretation,
+  // matching the tour's "verify meaning before structuring" step.
+  const [translation, setTranslation] = useState('');
   const [listening, setListening] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [speaking, setSpeaking] = useState(false);
   const recognizerRef = useRef(null);
   const speechSupported = isSpeechRecognitionSupported();
   const [open, setOpen] = useState(true);
 
-  useEffect(() => () => recognizerRef.current?.abort?.(), []);
+  useEffect(() => () => {
+    recognizerRef.current?.abort?.();
+    window.speechSynthesis?.cancel();
+  }, []);
+
+  function toggleHearSample() {
+    if (!window.speechSynthesis) return;
+    if (speaking) {
+      window.speechSynthesis.cancel();
+      setSpeaking(false);
+      return;
+    }
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'ha-NG';
+    utterance.onend = () => setSpeaking(false);
+    utterance.onerror = () => setSpeaking(false);
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utterance);
+    setSpeaking(true);
+  }
 
   async function handleInterpret() {
     if (!text.trim()) return;
@@ -106,8 +128,16 @@ export default function OnlineInterpretationPanel({ onlineMode }) {
 
       {open && (
         <>
-          <div className="inline-flex items-center gap-1.5 mb-2 text-[11px] font-semibold px-2 py-1 rounded-full bg-trace-800 border border-trace-700 text-trace-accent">
-            Hausa <span aria-hidden="true">⇄</span> English
+          <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
+            <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-1 rounded-full bg-trace-800 border border-trace-700 text-trace-accent">
+              Hausa <span aria-hidden="true">⇄</span> English
+            </div>
+            <button
+              onClick={toggleHearSample}
+              className="text-xs text-slate-500 hover:text-slate-300 underline whitespace-nowrap"
+            >
+              {speaking ? `■ ${t('Stop')}` : `▶ ${t('Hear Hausa intake')}`}
+            </button>
           </div>
 
           <textarea
@@ -139,11 +169,13 @@ export default function OnlineInterpretationPanel({ onlineMode }) {
           </div>
           {error && <p className="text-xs text-red-400 mb-2">{error}</p>}
 
-          <div className="bg-trace-800 border border-trace-700 rounded-md p-2">
-            <div className="text-[10px] uppercase tracking-wide text-slate-500 mb-1">{t('Interpreted output (English)')}</div>
-            <p className="text-sm text-slate-200 whitespace-pre-wrap">{translation}</p>
-            <p className="text-[11px] text-slate-500 mt-1">{t('Powered by Claude API in this prototype · Meta SeamlessM4T in full deployment.')}</p>
-          </div>
+          {translation && (
+            <div className="bg-trace-800 border border-trace-700 rounded-md p-2">
+              <div className="text-[10px] uppercase tracking-wide text-slate-500 mb-1">{t('Interpreted output (English)')}</div>
+              <p className="text-sm text-slate-200 whitespace-pre-wrap">{translation}</p>
+              <p className="text-[11px] text-slate-500 mt-1">{t('Powered by Claude API in this prototype · Meta SeamlessM4T in full deployment.')}</p>
+            </div>
+          )}
         </>
       )}
     </div>
