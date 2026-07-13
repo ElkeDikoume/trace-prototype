@@ -329,6 +329,17 @@ export default function App() {
     };
   }, [activeCase, activeForm]);
 
+  // Lets the guided tour's chatbot step fire a live, grounded question
+  // through the same path as the real "Ask TRACE" input. Re-created whenever
+  // the data handleSendChat closes over changes, so the tour always asks
+  // against the current case/risk/context rather than a stale snapshot.
+  useEffect(() => {
+    window.__traceAskDemo = () => handleSendChat('Why was this case flagged as high risk? Reference the specific indicators that triggered each flag.');
+    return () => {
+      delete window.__traceAskDemo;
+    };
+  }, [activeCase, activeForm, riskResult, services, ctdcMatches, dtmContext, acledEvents, patternAlerts, lang]);
+
   function handleReplayGuidedTour() {
     tourLaunchedRef.current = false;
     startGuidedTourCase();
@@ -483,9 +494,13 @@ export default function App() {
             ?
           </button>
           <button
-            onClick={handleReplayGuidedTour}
+            onClick={() => {
+              localStorage.removeItem(WELCOME_SEEN_KEY);
+              localStorage.removeItem(TUTORIAL_SEEN_KEY);
+              handleReplayGuidedTour();
+            }}
             title="Replay Demo Tour"
-            className="text-xs px-2 py-1 rounded-full bg-trace-800 border border-trace-700 text-slate-300 hover:bg-trace-700 whitespace-nowrap"
+            className="text-xs px-2 py-1 rounded-full bg-trace-accent text-white hover:bg-sky-500 font-medium whitespace-nowrap"
           >
             ▶ Replay Demo Tour
           </button>
@@ -517,7 +532,7 @@ export default function App() {
         ].map((tab) => (
           <button
             key={tab.id}
-            data-tutorial={tab.id === 'supervisor' ? 'supervisor-tab' : undefined}
+            data-tutorial={tab.id === 'supervisor' ? 'supervisor-tab' : 'case-view-tab'}
             onClick={() => setView(tab.id)}
             className={`flex-1 text-xs font-medium py-2 border-b-2 ${
               view === tab.id ? 'border-trace-accent text-trace-accent' : 'border-transparent text-slate-500 hover:text-slate-300'
@@ -543,6 +558,7 @@ export default function App() {
               activeCaseId={activeCase?.id}
               onNewCase={handleNewCase}
               onOpenCase={handleOpenCase}
+              onReplayGuidedTour={handleReplayGuidedTour}
             />
 
             <ActiveForm

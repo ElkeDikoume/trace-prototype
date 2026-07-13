@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useI18n } from '../lib/i18n.jsx';
 
-export default function FormSelector({ forms, cases, activeCaseId, onNewCase, onOpenCase }) {
+export default function FormSelector({ forms, cases, activeCaseId, onNewCase, onOpenCase, onReplayGuidedTour }) {
   const { t } = useI18n();
   const [expanded, setExpanded] = useState(!activeCaseId);
 
@@ -90,6 +90,18 @@ export default function FormSelector({ forms, cases, activeCaseId, onNewCase, on
               );
             })}
           </div>
+        </div>
+      )}
+
+      {!activeCaseId && (
+        <div className="mt-4 pt-3 border-t border-trace-700 text-center">
+          <button
+            onClick={onReplayGuidedTour}
+            className="text-slate-400 border border-trace-700 hover:text-slate-200 text-xs px-3 py-1.5 rounded-md"
+          >
+            ↩ {t('Restart Guided Demo')}
+          </button>
+          <p className="text-[10px] text-slate-500 mt-1">{t('Lost? This resets the walkthrough from the beginning.')}</p>
         </div>
       )}
     </section>

@@ -27,6 +27,24 @@ function waitForStructuring() {
   return new Promise((resolve) => setTimeout(resolve, 300));
 }
 
+// Returns to the Case View tab before the chatbot step spotlights the
+// chat input, in case the judge wandered to the Supervisor tab first.
+function ensureCaseView() {
+  return new Promise((resolve) => {
+    document.querySelector('[data-tutorial="case-view-tab"]')?.click();
+    setTimeout(resolve, 250);
+  });
+}
+
+// Clicks the Supervisor tab (the previous step only spotlights it) and
+// waits for SupervisorView to mount before the next step measures it.
+function openSupervisorView() {
+  return new Promise((resolve) => {
+    document.querySelector('[data-tutorial="supervisor-tab"]')?.click();
+    setTimeout(resolve, 350);
+  });
+}
+
 const STEP_DEFS = [
   {
     id: 'language-selector',
@@ -84,7 +102,7 @@ const STEP_DEFS = [
     id: 'form-fields',
     attachTo: { element: '[data-tutorial="form-fields"]', on: 'top' },
     title: 'Notes in. Fields out.',
-    text: 'Every field was populated from the spoken notes in about 5 seconds. The caseworker reviews and corrects — nothing is locked.',
+    text: 'Every field was populated from the spoken notes in about 5 seconds. Key fields like Age and Current Location were extracted directly from the spoken notes — the caseworker can edit any field before saving.',
     beforeShowPromise: waitForStructuring
   },
   {
@@ -103,13 +121,34 @@ const STEP_DEFS = [
     id: 'chatbot',
     attachTo: { element: '[data-tutorial="chatbot-input"]', on: 'top' },
     title: 'Ask TRACE anything',
-    text: "Grounded in this case and IOM HTCDS protocol. Try: 'Why was this flagged high risk?' or 'Draft a referral letter for this case.' The chatbot is live."
+    text: "Grounded in this case and IOM HTCDS protocol. The chatbot is live — watch it answer a real question about this case.",
+    beforeShowPromise: ensureCaseView,
+    customButtons: (tour) => [
+      { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
+      { text: 'End Tour', action: () => tour.cancel(), classes: 'trace-shepherd-btn-ghost' },
+      { text: 'Skip →', action: () => tour.next(), classes: 'trace-shepherd-btn-secondary' },
+      {
+        text: 'Ask TRACE: why was this flagged? →',
+        action: () => {
+          window.__traceAskDemo?.();
+          setTimeout(() => tour.next(), 600);
+        },
+        classes: 'trace-shepherd-btn-primary'
+      }
+    ]
   },
   {
-    id: 'supervisor',
+    id: 'supervisor-tab',
     attachTo: { element: '[data-tutorial="supervisor-tab"]', on: 'bottom' },
     title: 'Supervisor dashboard',
-    text: 'De-identified pattern alerts help supervisors see emerging service needs or recurring risks across the caseload. Alerts require human review before any action.'
+    text: 'Everything so far is what one caseworker sees. The supervisor tab reveals what no individual can — patterns across the entire caseload. Click Next to open it.'
+  },
+  {
+    id: 'supervisor-view',
+    attachTo: { element: '[data-tutorial="supervisor-stats"]', on: 'top' },
+    title: 'Cross-caseload intelligence',
+    text: 'Risk distribution across your full caseload, a geographic heat map of flagged cases, and recurring broker names appearing across unconnected files — like the same employer in three separate cases this week. All de-identified. All requiring supervisor review before any action. None of this is visible to individual caseworkers.',
+    beforeShowPromise: openSupervisorView
   },
   {
     id: 'closing',

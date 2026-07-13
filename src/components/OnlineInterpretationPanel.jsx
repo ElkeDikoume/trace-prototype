@@ -6,8 +6,8 @@ import { useI18n } from '../lib/i18n.jsx';
 // Kept in sync with DEMO_INTAKE_NOTES in data/demoCase.js — the guided
 // tour's Step 3 loads that exact text into the intake form, and Step 4
 // spotlights this panel, so both must show identical testimony.
-const HAUSA_DEMO_TEXT = "Ta ce mai daukar ma'aikata ya karɓi takardar shaidar ta, ba za ta iya tafiya ba. An kawo ta daga Kano, ana cewa za a ba ta aiki a gidan yara, amma an tilasta ta yin aiki ba tare da kuɗi ba. Ta ce an gaya mata cewa tana bin bashin daukar ma'aikata, kuma ana cire kuɗi daga albashinta kafin ta karɓi kome.";
-const ENGLISH_DEMO_TRANSLATION = 'She says the recruiter took her identification document, she cannot leave. She was brought from Kano, told she would be given work caring for children, but was forced to work without pay. She says she was told she owes a recruitment debt, and money is being deducted from her wages before she receives anything.';
+const HAUSA_DEMO_TEXT = "Ta ce mai daukar ma'aikata ya karɓi takardar shaidar ta, ba za ta iya tafiya ba. An kawo ta daga Kano, ana cewa za a ba ta aiki a gidan yara, amma an tilasta ta yin aiki ba tare da kuɗi ba. Ta ce an gaya mata cewa tana bin bashin daukar ma'aikata, kuma ana cire kuɗi daga albashinta kafin ta karɓi kome. Tana da shekaru 28, kuma a yanzu ana tsare da ita a N'Djamena.";
+const ENGLISH_DEMO_TRANSLATION = 'She says the recruiter took her identification document, she cannot leave. She was brought from Kano, told she would be given work caring for children, but was forced to work without pay. She says she was told she owes a recruitment debt, and money is being deducted from her wages before she receives anything. She is 28 years old, and is currently being held in N\'Djamena.';
 
 export default function OnlineInterpretationPanel({ onlineMode }) {
   const { t } = useI18n();

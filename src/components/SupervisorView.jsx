@@ -9,7 +9,7 @@ const HARDCODED_ALERTS = [
 export default function SupervisorView({ stats }) {
   const { t } = useI18n();
   return (
-    <section className="flex-1 min-h-0 overflow-y-auto scrollbar-thin px-4 py-4">
+    <section data-tutorial="supervisor-stats" className="flex-1 min-h-0 overflow-y-auto scrollbar-thin px-4 py-4">
       <div className="mb-3">
         <h2 className="text-lg font-semibold text-slate-100">{t('Supervisor dashboard')}</h2>
         <p className="text-xs text-slate-500">{t('Live in full deployment — demo data shown.')}</p>
