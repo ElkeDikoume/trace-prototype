@@ -93,7 +93,7 @@ const PATTERN_REPORT_PROMPT = "Generate a pattern intelligence briefing report f
 // watermark Claude is instructed to write into the text itself (see
 // DOCUMENT_WATERMARK_INSTRUCTION in claudeClient.js), so the warning survives
 // even if a caseworker edits the AI's own header/footer lines out.
-const WATERMARK_TEXT = '⚠️ DEMO PROTOTYPE — NOT REAL CASE DATA — Austin AI Hub Hackathon 2026';
+const WATERMARK_TEXT = '⚠️ DEMO PROTOTYPE, NOT REAL CASE DATA, Austin AI Hub Hackathon 2026';
 
 function caseLabelText(caseRecord) {
   return caseRecord?.data?.fullName || caseRecord?.data?.clientIdentifier || caseRecord?.data?.survivorIdentifier || caseRecord?.data?.caseId || 'Untitled case';
@@ -177,14 +177,14 @@ export default function DocumentsPanel({ caseRecord, form, riskResult, services,
       setCopied((c) => ({ ...c, [key]: true }));
       setTimeout(() => setCopied((c) => ({ ...c, [key]: false })), 1500);
     } catch {
-      // Clipboard blocked (e.g. insecure context) — button simply won't flash.
+      // Clipboard blocked (e.g. insecure context), button simply won't flash.
     }
   }
 
   function handleDownloadCaseRecord() {
-    const header = `${form.name} — ${caseLabelText(caseRecord)}\n\n`;
+    const header = `${form.name}, ${caseLabelText(caseRecord)}\n\n`;
     const body = form.fields
-      .map((f) => `${f.label}: ${caseRecord.data?.[f.key] || '—'}`)
+      .map((f) => `${f.label}: ${caseRecord.data?.[f.key] || '-'}`)
       .join('\n');
     downloadDocxFile('TRACE_CaseRecord_DEMO.docx', header + body);
   }
@@ -195,10 +195,10 @@ export default function DocumentsPanel({ caseRecord, form, riskResult, services,
 
   return (
     <section data-tutorial="documents-panel" className="flex-1 min-h-0 overflow-y-auto scrollbar-thin">
-      {/* SECTION 1 — Case Outputs */}
+      {/* SECTION 1, Case Outputs */}
       <div className="px-4 py-4 border-b border-trace-700">
         <h2 className="text-sm font-semibold text-slate-200">{t('Case Outputs')}</h2>
-        <p className="text-xs text-slate-500 mb-3">{t('TRACE-generated from this case — review before sending.')}</p>
+        <p className="text-xs text-slate-500 mb-3">{t('TRACE-generated from this case, review before sending.')}</p>
 
         {!caseRecord ? (
           <p className="text-sm text-slate-500 text-center py-6">{t('Open a case to generate documents.')}</p>
@@ -245,7 +245,7 @@ export default function DocumentsPanel({ caseRecord, form, riskResult, services,
                         <div className="mt-2">
                           {docDef.editable ? (
                             <>
-                              <div className="text-[10px] uppercase tracking-wide text-slate-500 mb-1">{t('AI draft — edit before sending.')}</div>
+                              <div className="text-[10px] uppercase tracking-wide text-slate-500 mb-1">{t('AI draft, edit before sending.')}</div>
                               <textarea
                                 dir="auto"
                                 value={content}
@@ -298,10 +298,10 @@ export default function DocumentsPanel({ caseRecord, form, riskResult, services,
         )}
       </div>
 
-      {/* SECTION 2 — Caseload Patterns */}
+      {/* SECTION 2, Caseload Patterns */}
       <div className="px-4 py-4 border-b border-trace-700">
         <h2 className="text-sm font-semibold text-slate-200">{t('Caseload Patterns')}</h2>
-        <p className="text-xs text-slate-500 mb-3">{t("Detected across your organization's cases — for supervisor review only.")}</p>
+        <p className="text-xs text-slate-500 mb-3">{t("Detected across your organization's cases, for supervisor review only.")}</p>
 
         <PatternAlertsBanner alerts={patternAlerts} />
 
@@ -313,7 +313,7 @@ export default function DocumentsPanel({ caseRecord, form, riskResult, services,
         </button>
       </div>
 
-      {/* SECTION 3 — Protocol Reference */}
+      {/* SECTION 3, Protocol Reference */}
       <div className="px-4 py-4">
         <h2 className="text-sm font-semibold text-slate-200">{t('Protocol Reference')}</h2>
         <p className="text-xs text-slate-500 mb-3">{t('Ask TRACE about IOM guidelines, indicators, and procedures.')}</p>

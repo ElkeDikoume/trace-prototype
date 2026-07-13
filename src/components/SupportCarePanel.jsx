@@ -16,7 +16,7 @@ const RESOURCES = [
   {
     label: 'UNHCR Peer Support Network',
     href: 'https://www.unhcr.org',
-    note: 'Staff welfare and peer support — ask your focal point for the current referral path.'
+    note: 'Staff welfare and peer support, ask your focal point for the current referral path.'
   }
 ];
 
@@ -49,7 +49,7 @@ export default function SupportCarePanel({ open, onClose, highRiskPrompt }) {
         <div className="p-4">
           {highRiskPrompt && (
             <div className="bg-trace-risk-high/15 border border-trace-risk-high rounded-lg p-3 mb-4 text-xs text-slate-200">
-              {t('This case was just flagged')} <span className="font-semibold text-trace-risk-high">{t('HIGH risk')}</span>. {t('Vicarious trauma is real — take a moment for yourself before continuing.')}
+              {t('This case was just flagged')} <span className="font-semibold text-trace-risk-high">{t('HIGH risk')}</span>. {t('Vicarious trauma is real, take a moment for yourself before continuing.')}
             </div>
           )}
 

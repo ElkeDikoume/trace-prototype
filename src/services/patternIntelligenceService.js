@@ -1,6 +1,6 @@
-// SIMULATED DATA SOURCE — Pattern Intelligence (cross-caseload analysis)
+// SIMULATED DATA SOURCE, Pattern Intelligence (cross-caseload analysis)
 //
-// Stands in for a live query across the organization's full caseload —
+// Stands in for a live query across the organization's full caseload,
 // something no single caseworker sees on their own. To wire up the real
 // thing: replace the body of fetchPatternAlerts() with a query against the
 // org's case database (e.g. shared employer/recruiter names, geographic
@@ -14,7 +14,7 @@ export const PATTERN_ALERTS = [
   {
     id: 'pattern-001',
     title: 'Recurring employer name across cases',
-    description: '"Alhaji Moussa Transport & Logistics" is named as employer or recruiter in 3 separate case files logged in Diffa and Niamey since June 2026 — may indicate a recurring recruitment pattern — flagged for caseworker review.',
+    description: '"Alhaji Moussa Transport & Logistics" is named as employer or recruiter in 3 separate case files logged in Diffa and Niamey since June 2026, may indicate a recurring recruitment pattern, flagged for caseworker review.',
     severity: 'high',
     casesCited: 3,
     region: 'Diffa / Niamey',
@@ -32,7 +32,7 @@ export const PATTERN_ALERTS = [
   {
     id: 'pattern-003',
     title: 'Rising debt bondage indicators',
-    description: 'Debt bondage indicators among domestic-worker cases in Niamey are up 40% quarter-over-quarter, coinciding with new arrivals from recent border-area displacement — brokers may be targeting recently displaced households (flagged for caseworker review).',
+    description: 'Debt bondage indicators among domestic-worker cases in Niamey are up 40% quarter-over-quarter, coinciding with new arrivals from recent border-area displacement, brokers may be targeting recently displaced households (flagged for caseworker review).',
     severity: 'watch',
     casesCited: 11,
     region: 'Niamey',

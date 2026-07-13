@@ -20,7 +20,7 @@ export default function CtdcPanel({ records }) {
           <div key={r.id} className="text-xs border-l-2 border-trace-700 pl-2">
             <div className="text-slate-100 font-medium">{t(r.indicator)} · <span className="text-slate-400 font-normal">{r.sector}</span></div>
             <div className="text-slate-400">{r.pattern}</div>
-            <div className="text-slate-500 mt-0.5">{r.region} — {r.prevalence}</div>
+            <div className="text-slate-500 mt-0.5">{r.region}, {r.prevalence}</div>
           </div>
         ))}
       </div>

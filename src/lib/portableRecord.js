@@ -5,7 +5,7 @@
 //
 // Layer 2 (survivor access phrase): three words the survivor memorizes and
 // repeats at any TRACE-connected agency. Only a one-way SHA-256 hash of the
-// phrase is ever stored — the original words never touch localStorage.
+// phrase is ever stored, the original words never touch localStorage.
 
 const LOCATOR_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no 0/O/1/I ambiguity
 

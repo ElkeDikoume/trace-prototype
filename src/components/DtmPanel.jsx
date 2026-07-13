@@ -11,7 +11,7 @@ export default function DtmPanel({ context }) {
   return (
     <div className="bg-trace-800 border border-trace-700 rounded-lg p-3 mb-3">
       <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
-        <h3 className="text-sm font-semibold text-slate-200">{t('Displacement context')} — {context.location}</h3>
+        <h3 className="text-sm font-semibold text-slate-200">{t('Displacement context')}, {context.location}</h3>
         <div className="flex items-center gap-1.5">
           <SourceBadge label="IOM DTM" />
           <DemoDataBadge />

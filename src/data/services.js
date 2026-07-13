@@ -4,43 +4,43 @@
 export const SERVICES = [
   {
     id: 'iom_agadez_mrc',
-    name: 'IOM Migrant Resource & Response Centre — Agadez',
+    name: 'IOM Migrant Resource & Response Centre, Agadez',
     org: 'International Organization for Migration (IOM)',
     country: 'Niger',
     regions: ['agadez', 'niger', 'sahel', 'transit route'],
     tags: ['labor_trafficking', 'shelter', 'transit_assistance', 'voluntary_return', 'medical'],
     description: 'Shelter, humanitarian assistance, and voluntary return support for migrants and trafficking survivors along the Agadez transit corridor.',
-    contact: 'IOM Niger — Agadez sub-office'
+    contact: 'IOM Niger, Agadez sub-office'
   },
   {
     id: 'iom_niamey_ctu',
-    name: 'IOM Counter-Trafficking Unit — Niamey',
+    name: 'IOM Counter-Trafficking Unit, Niamey',
     org: 'International Organization for Migration (IOM)',
     country: 'Niger',
     regions: ['niamey', 'niger', 'national'],
     tags: ['labor_trafficking', 'sexual_exploitation', 'case_management', 'legal', 'referral'],
     description: 'Specialized case management, identification, and referral pathway coordination for trafficking survivors nationwide.',
-    contact: 'IOM Niger — Niamey country office'
+    contact: 'IOM Niger, Niamey country office'
   },
   {
     id: 'unhcr_diffa_protection',
-    name: 'UNHCR Protection Unit — Diffa',
+    name: 'UNHCR Protection Unit, Diffa',
     org: 'UNHCR',
     country: 'Niger',
     regions: ['diffa', 'lake chad basin', 'niger'],
     tags: ['displacement', 'legal', 'protection_monitoring', 'refugee_status', 'gbv'],
     description: 'Legal assistance, registration, and protection monitoring for refugees, IDPs, and returnees in the Lake Chad Basin.',
-    contact: 'UNHCR Niger — Diffa field office'
+    contact: 'UNHCR Niger, Diffa field office'
   },
   {
     id: 'unhcr_niamey_protection',
-    name: 'UNHCR Protection & RSD Unit — Niamey',
+    name: 'UNHCR Protection & RSD Unit, Niamey',
     org: 'UNHCR',
     country: 'Niger',
     regions: ['niamey', 'niger', 'national'],
     tags: ['legal', 'refugee_status', 'protection_monitoring', 'family_tracing'],
     description: 'Refugee status determination, legal aid, and protection case referral for the national caseload.',
-    contact: 'UNHCR Niger — Niamey country office'
+    contact: 'UNHCR Niger, Niamey country office'
   },
   {
     id: 'maison_femme_enfant',
@@ -50,21 +50,21 @@ export const SERVICES = [
     regions: ['niamey', 'niger'],
     tags: ['gbv', 'sexual_exploitation', 'shelter', 'psychosocial', 'child_protection'],
     description: 'Shelter, psychosocial support, and medical referral for women and children survivors of GBV and exploitation.',
-    contact: 'Niamey — Maison de la Femme et de l’Enfant'
+    contact: 'Niamey, Maison de la Femme et de l’Enfant'
   },
   {
     id: 'anltp_tip',
-    name: 'ANLTP/TIP — National Anti-Trafficking Agency',
+    name: 'ANLTP/TIP, National Anti-Trafficking Agency',
     org: 'Agence Nationale de Lutte contre la Traite des Personnes et le Trafic Illicite de Migrants',
     country: 'Niger',
     regions: ['national', 'niger', 'agadez', 'niamey', 'diffa'],
     tags: ['labor_trafficking', 'sexual_exploitation', 'legal', 'debt_bondage', 'document_confiscation', 'referral'],
     description: 'National government coordination body for trafficking case referral, legal follow-up, and prosecution support.',
-    contact: 'ANLTP/TIP — national office, Niamey'
+    contact: 'ANLTP/TIP, national office, Niamey'
   },
   {
     id: 'tdh_child_protection',
-    name: 'Terre des Hommes — Child Protection Programme',
+    name: 'Terre des Hommes, Child Protection Programme',
     org: 'Terre des Hommes',
     country: 'Niger',
     regions: ['niamey', 'diffa', 'niger', 'sahel'],
@@ -80,7 +80,17 @@ export const SERVICES = [
     regions: ['national', 'niger', 'lake chad basin', 'regional', 'cross-border'],
     tags: ['family_tracing', 'movement_restriction', 'detention', 'cross_border'],
     description: 'Cross-border family tracing and reconnection services for people separated during displacement, transit, or exploitation.',
-    contact: 'ICRC delegation — Niamey'
+    contact: 'ICRC delegation, Niamey'
+  },
+  {
+    id: 'iom_chad_ndjamena',
+    name: 'IOM Chad Country Office',
+    org: 'International Organization for Migration (IOM)',
+    country: 'Chad',
+    regions: ["n'djamena", 'chad', 'lake chad basin', 'national'],
+    tags: ['labor_trafficking', 'sexual_exploitation', 'case_management', 'shelter', 'gbv', 'referral', 'protection_monitoring'],
+    description: 'Case management, shelter referral, and protection support for trafficking and GBV survivors across Chad, including the Lake Chad Basin.',
+    contact: 'IOM Chad, N’Djamena country office'
   }
 ];
 

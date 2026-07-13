@@ -34,17 +34,23 @@ textarea, input, select {
 
 /* ---- Guided tour (Shepherd.js) ----
    Always dark-themed regardless of the app's light/dark toggle, matching
-   the brand palette (trace-900/800/700 + trace-accent). */
+   the brand palette, but visibly lighter than the trace-950 app background
+   so the popup reads as its own layer. */
+@keyframes shepherd-pulse {
+  0%, 100% { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 0 2px rgba(239, 68, 68, 0.6); }
+  50% { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 0 4px rgba(239, 68, 68, 0.2); }
+}
 .shepherd-element.trace-shepherd {
-  background: #0f172a !important;
+  background: #1c3a52 !important;
   border: 1px solid #334155;
   border-radius: 0.75rem;
   max-width: 380px;
   font-family: inherit;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  animation: shepherd-pulse 2s ease-in-out infinite;
+  transition: opacity 0.2s ease;
 }
 .trace-shepherd .shepherd-arrow:before {
-  background: #0f172a !important;
+  background: #1c3a52 !important;
   border: 1px solid #334155;
 }
 .trace-shepherd .shepherd-header {
@@ -57,6 +63,8 @@ textarea, input, select {
   font-weight: 700;
   text-align: center;
   width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 .trace-shepherd .shepherd-text {
   color: #cbd5e1;

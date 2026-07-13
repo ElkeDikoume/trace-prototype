@@ -19,7 +19,7 @@ export default function AcledPanel({ events }) {
         {events.map((e) => (
           <div key={e.id} className="text-xs border-l-2 border-trace-700 pl-2">
             <div className="text-slate-100 font-medium">{e.eventType} · <span className="text-slate-400 font-normal">{e.date}</span></div>
-            <div className="text-slate-500">{e.location}, {e.country} — {e.actor} {e.fatalities > 0 && `· ${e.fatalities} ${t('fatalities')}`}</div>
+            <div className="text-slate-500">{e.location}, {e.country}, {e.actor} {e.fatalities > 0 && `· ${e.fatalities} ${t('fatalities')}`}</div>
             <div className="text-slate-400 mt-0.5">{e.note}</div>
           </div>
         ))}

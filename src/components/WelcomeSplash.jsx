@@ -1,4 +1,5 @@
 import traceLogo from '../assets/trace-logo.png';
+import LanguageSelector from './LanguageSelector.jsx';
 
 function MicrosoftLogo() {
   return (
@@ -14,20 +15,23 @@ function MicrosoftLogo() {
 const FEATURE_PILLS = [
   '🌐 5 languages + local language interpretation',
   '⚡ AI risk flagging · CTDC standards',
-  '📄 Referral letters in one click'
+  '📄 AI-generated case insights'
 ];
 
 export default function WelcomeSplash({ onStartDemo, onExplore, onSignIn }) {
   return (
-    <div className="fixed inset-0 z-[300] bg-trace-950/95 backdrop-blur-sm flex items-center justify-center px-4 overflow-y-auto">
-      <div className="w-full max-w-lg bg-trace-900 border border-trace-700 rounded-2xl shadow-2xl pt-10 px-8 pb-8 my-4">
-        {/* Logo + title */}
+    <div className="fixed inset-0 z-[300] bg-trace-950/95 backdrop-blur-sm flex items-start justify-center px-4 py-8 overflow-y-auto">
+      <div className="w-full max-w-lg relative bg-trace-900 border border-trace-700 rounded-2xl shadow-2xl pt-10 px-8 pb-8">
+        <div className="absolute top-4 right-4">
+          <LanguageSelector lang="en" />
+        </div>
+
+        {/* Logo + subtitle */}
         <div className="flex flex-col items-center text-center">
           <div className="bg-white rounded-2xl p-3 flex-shrink-0">
             <img src={traceLogo} alt="TRACE" className="w-32 h-32 object-contain block" />
           </div>
-          <h1 className="text-4xl font-bold text-white mt-4">TRACE</h1>
-          <p className="text-base text-slate-300 mt-1">AI Caseworker Assistant</p>
+          <p className="text-base text-slate-300 mt-4">AI Caseworker Assistant</p>
           <p className="text-sm text-slate-400 mt-4 leading-relaxed max-w-sm">
             For this demo, you&apos;ll step into the role of a frontline caseworker in N&apos;Djamena, Chad.
           </p>

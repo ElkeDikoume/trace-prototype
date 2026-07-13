@@ -16,7 +16,7 @@ function formatEvidence(e, t) {
 }
 
 // Cross-case overlap, computed locally from whatever cases happen to be
-// stored in this browser — a stand-in for real org-wide pattern
+// stored in this browser, a stand-in for real org-wide pattern
 // intelligence, not a substitute for it (see the disclaimer rendered below).
 function computePatternContext(riskResult, caseId) {
   if (!riskResult || riskResult.matched.length === 0) return null;
@@ -77,7 +77,7 @@ export default function RiskFlag({ riskResult, onAskWhy, caseId }) {
 
       {open && (
         <>
-          <p className="text-[10px] text-slate-500 mt-1">Decision support only — caseworker review required before any action.</p>
+          <p className="text-[10px] text-slate-500 mt-1">Decision support only, caseworker review required before any action.</p>
 
           <div className="mt-2">
             {riskResult.matched.length === 0 ? (
@@ -87,7 +87,7 @@ export default function RiskFlag({ riskResult, onAskWhy, caseId }) {
                 {riskResult.matched.map((m) => (
                   <li key={m.id} className="text-xs text-slate-200">
                     <span className="font-medium">{t(m.label)}</span>
-                    <span className="text-slate-400"> — {m.evidence.map((e) => formatEvidence(e, t)).join('; ')}</span>
+                    <span className="text-slate-400">, {m.evidence.map((e) => formatEvidence(e, t)).join('; ')}</span>
                   </li>
                 ))}
               </ul>
@@ -116,7 +116,7 @@ export default function RiskFlag({ riskResult, onAskWhy, caseId }) {
                     ))
                   )}
                   <p className="text-[10px] text-slate-600 mt-1">
-                    {t('Computed locally from cases stored on this device — not organization-wide pattern analysis.')}
+                    {t('Computed locally from cases stored on this device, not organization-wide pattern analysis.')}
                   </p>
                 </div>
               )}

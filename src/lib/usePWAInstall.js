@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 // Captures the browser's deferred PWA install prompt so the header can offer
 // an explicit "Install App" button instead of relying on the browser's own
-// (often hidden) install affordance — useful for caseworkers installing
+// (often hidden) install affordance, useful for caseworkers installing
 // TRACE for offline field use.
 export function usePWAInstall() {
   const [installPrompt, setInstallPrompt] = useState(null);
@@ -26,7 +26,7 @@ export function usePWAInstall() {
   async function promptInstall() {
     if (!installPrompt) return;
     installPrompt.prompt();
-    // The captured event can only be used once — clear it regardless of the
+    // The captured event can only be used once, clear it regardless of the
     // user's choice so a stale prompt() call never fires again.
     await installPrompt.userChoice;
     setInstallPrompt(null);

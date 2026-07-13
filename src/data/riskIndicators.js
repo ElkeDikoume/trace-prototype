@@ -65,7 +65,7 @@ function textFrom(caseData, keys) {
 }
 
 // Plain-English rendering of an evidence item, used for the Claude grounding
-// context (internal, not shown to the caseworker) — the UI renders and
+// context (internal, not shown to the caseworker), the UI renders and
 // translates evidence itself via RiskFlag.jsx.
 export function formatEvidenceEn(e) {
   return e.type === 'field' ? `Field "${e.field}" = "${e.value}"` : `Keyword match: "${e.keyword}"`;
@@ -128,13 +128,13 @@ export function analyzeRisk(caseData) {
 // Fields that directly feed the indicator matching above. If they're empty,
 // the risk read may be missing evidence rather than genuinely showing "no risk."
 const INDICATOR_FIELD_HINTS = {
-  recruitmentMethod: 'No information collected on how the survivor was recruited — this is a key indicator field for labor recruitment fraud.',
-  documentsConfiscated: 'No information collected on document status — this is a key indicator field for document confiscation.',
-  debtOwed: 'No information collected on debt or financial obligations — this is a key indicator field for debt bondage.',
-  movementRestricted: 'No information collected on movement restriction — this is a key indicator field for assessing control over the survivor.',
-  physicalAbuse: 'No information collected on physical abuse — this is a key indicator field.',
-  sexualAbuse: 'No information collected on sexual abuse — this is a key indicator field for sexual exploitation.',
-  exploitationType: 'Exploitation type has not been specified — this narrows which indicators can be matched at all.'
+  recruitmentMethod: 'No information collected on how the survivor was recruited, this is a key indicator field for labor recruitment fraud.',
+  documentsConfiscated: 'No information collected on document status, this is a key indicator field for document confiscation.',
+  debtOwed: 'No information collected on debt or financial obligations, this is a key indicator field for debt bondage.',
+  movementRestricted: 'No information collected on movement restriction, this is a key indicator field for assessing control over the survivor.',
+  physicalAbuse: 'No information collected on physical abuse, this is a key indicator field.',
+  sexualAbuse: 'No information collected on sexual abuse, this is a key indicator field for sexual exploitation.',
+  exploitationType: 'Exploitation type has not been specified, this narrows which indicators can be matched at all.'
 };
 
 export function getMissingIndicatorFields(caseData, form) {

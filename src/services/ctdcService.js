@@ -1,4 +1,4 @@
-// SIMULATED DATA SOURCE — Counter-Trafficking Data Collaborative (CTDC)
+// SIMULATED DATA SOURCE, Counter-Trafficking Data Collaborative (CTDC)
 //
 // Stands in for a live query against the CTDC global trafficking dataset
 // (ctdatacollaborative.org). To wire up the real thing: replace the body of

@@ -1,10 +1,10 @@
 // UI translation dictionary. English source strings (as used verbatim in
-// component JSX) are the keys, so English needs no table of its own — any
+// component JSX) are the keys, so English needs no table of its own, any
 // string not present here (or when lang === 'en') falls back to the
 // original English text automatically. See src/lib/i18n.jsx.
 //
 // AI-generated content (chatbot replies) is translated at generation time via
-// the Claude system prompt instead of this dictionary — see claudeClient.js.
+// the Claude system prompt instead of this dictionary, see claudeClient.js.
 
 const fr = {
   // Header / nav / global
@@ -52,7 +52,7 @@ const fr = {
   'Open existing case': 'Ouvrir un dossier existant',
 
   // ActiveForm
-  '— select —': '— sélectionner —',
+  'Select...': 'Sélectionner...',
   'Select a form above to start a new case, or open an existing one.': 'Sélectionnez un formulaire ci-dessus pour démarrer un nouveau dossier, ou ouvrez un dossier existant.',
   'Try Demo Mode': 'Essayer le mode démo',
   'Loads a prefilled sample case so you can try the full flow without entering real data.': "Charge un dossier d'exemple prérempli pour essayer le parcours complet sans saisir de vraies données.",
@@ -65,7 +65,7 @@ const fr = {
   'Failed to structure notes with AI.': "Échec de la structuration des notes par l'IA.",
   'Voice or text intake': 'Accueil vocal ou écrit',
   'Local language interpretation requires connectivity.': "L'interprétation en langue locale nécessite une connexion internet.",
-  'Online mode — real-time interpretation active (powered by SeamlessM4T)': 'Mode en ligne — interprétation en temps réel active (propulsé par SeamlessM4T)',
+  'Online mode, real-time interpretation active (powered by SeamlessM4T)': 'Mode en ligne, interprétation en temps réel active (propulsé par SeamlessM4T)',
   'Speak using the mic button, or type freeform case notes in any supported language...': 'Parlez en utilisant le bouton micro, ou tapez librement des notes de dossier dans une langue prise en charge...',
   'Interpreting from': 'Interprétation depuis',
   'Interpreted (French)': 'Interprété (français)',
@@ -74,12 +74,12 @@ const fr = {
   'Online Interpretation (Live Mode)': 'Interprétation en ligne (mode direct)',
   'Interpreted output (English)': 'Résultat interprété (anglais)',
   'Powered by Claude API in this prototype · Meta SeamlessM4T in full deployment.': "Propulsé par l'API Claude dans ce prototype · Meta SeamlessM4T en déploiement complet.",
-  'Translate': 'Traduire',
+  'Interpret': 'Interpréter',
   'Interpreting…': 'Interprétation…',
   'Structuring…': 'Structuration…',
   'Interpret & structure': 'Interpréter et structurer',
   'Structure with AI': "Structurer avec l'IA",
-  'Voice input unsupported here — typing still works.': "Saisie vocale non prise en charge ici — la saisie au clavier fonctionne toujours.",
+  'Voice input unsupported here, typing still works.': "Saisie vocale non prise en charge ici, la saisie au clavier fonctionne toujours.",
 
   // RiskFlag
   'LOW': 'FAIBLE',
@@ -100,13 +100,13 @@ const fr = {
 
   // MissingInfoPrompts
   'Missing information that could sharpen this risk read': "Informations manquantes qui pourraient affiner cette évaluation du risque",
-  'No information collected on how the survivor was recruited — this is a key indicator field for labor recruitment fraud.': "Aucune information recueillie sur la manière dont la survivante/le survivant a été recruté(e) — c'est un champ indicateur clé pour la fraude au recrutement.",
-  'No information collected on document status — this is a key indicator field for document confiscation.': "Aucune information recueillie sur le statut des documents — c'est un champ indicateur clé pour la confiscation de documents.",
-  'No information collected on debt or financial obligations — this is a key indicator field for debt bondage.': "Aucune information recueillie sur les dettes ou obligations financières — c'est un champ indicateur clé pour la servitude pour dettes.",
-  'No information collected on movement restriction — this is a key indicator field for assessing control over the survivor.': "Aucune information recueillie sur la restriction de mouvement — c'est un champ indicateur clé pour évaluer le contrôle exercé sur la personne.",
-  'No information collected on physical abuse — this is a key indicator field.': "Aucune information recueillie sur la maltraitance physique — c'est un champ indicateur clé.",
-  'No information collected on sexual abuse — this is a key indicator field for sexual exploitation.': "Aucune information recueillie sur les violences sexuelles — c'est un champ indicateur clé pour l'exploitation sexuelle.",
-  'Exploitation type has not been specified — this narrows which indicators can be matched at all.': "Le type d'exploitation n'a pas été précisé — cela limite les indicateurs pouvant être détectés.",
+  'No information collected on how the survivor was recruited, this is a key indicator field for labor recruitment fraud.': "Aucune information recueillie sur la manière dont la survivante/le survivant a été recruté(e), c'est un champ indicateur clé pour la fraude au recrutement.",
+  'No information collected on document status, this is a key indicator field for document confiscation.': "Aucune information recueillie sur le statut des documents, c'est un champ indicateur clé pour la confiscation de documents.",
+  'No information collected on debt or financial obligations, this is a key indicator field for debt bondage.': "Aucune information recueillie sur les dettes ou obligations financières, c'est un champ indicateur clé pour la servitude pour dettes.",
+  'No information collected on movement restriction, this is a key indicator field for assessing control over the survivor.': "Aucune information recueillie sur la restriction de mouvement, c'est un champ indicateur clé pour évaluer le contrôle exercé sur la personne.",
+  'No information collected on physical abuse, this is a key indicator field.': "Aucune information recueillie sur la maltraitance physique, c'est un champ indicateur clé.",
+  'No information collected on sexual abuse, this is a key indicator field for sexual exploitation.': "Aucune information recueillie sur les violences sexuelles, c'est un champ indicateur clé pour l'exploitation sexuelle.",
+  'Exploitation type has not been specified, this narrows which indicators can be matched at all.': "Le type d'exploitation n'a pas été précisé, cela limite les indicateurs pouvant être détectés.",
 
   // ServiceSuggestions + services.js descriptions
   'Suggested services': 'Services suggérés',
@@ -132,7 +132,7 @@ const fr = {
   'Nearby conflict events': 'Événements conflictuels à proximité',
   'fatalities': 'décès',
   'Pattern intelligence': 'Renseignement de tendances',
-  'From survivor intake to safer referral — even offline.': "De l'accueil du survivant à un référencement plus sûr — même hors ligne.",
+  'From survivor intake to safer referral, even offline.': "De l'accueil du survivant à un référencement plus sûr, même hors ligne.",
   'cases': 'dossiers',
   'simulated': 'simulé',
   'Cross-case': 'Inter-dossiers',
@@ -158,11 +158,11 @@ const fr = {
   'Support & Care': 'Soutien et bien-être',
   'This case was just flagged': 'Ce dossier vient d\'être signalé',
   'HIGH risk': 'risque ÉLEVÉ',
-  'Vicarious trauma is real — take a moment for yourself before continuing.': 'Le traumatisme vicariant est réel — prenez un moment pour vous avant de continuer.',
+  'Vicarious trauma is real, take a moment for yourself before continuing.': 'Le traumatisme vicariant est réel, prenez un moment pour vous avant de continuer.',
   'Resources': 'Ressources',
   'Confidential staff counselling and wellbeing support.': 'Conseil confidentiel et soutien au bien-être du personnel.',
   'Inter-Agency Standing Committee mental health & psychosocial support guidance.': 'Orientation du Comité permanent inter-organisations sur la santé mentale et le soutien psychosocial.',
-  'Staff welfare and peer support — ask your focal point for the current referral path.': "Bien-être du personnel et soutien entre pairs — demandez à votre point focal la filière de référencement actuelle.",
+  'Staff welfare and peer support, ask your focal point for the current referral path.': "Bien-être du personnel et soutien entre pairs, demandez à votre point focal la filière de référencement actuelle.",
   'Would you like to do a quick breathing exercise?': 'Souhaitez-vous faire un court exercice de respiration ?',
   'Skip for now': 'Ignorer pour l\'instant',
 
@@ -174,9 +174,9 @@ const fr = {
   'Demo data': 'Données de démonstration',
 
   // Portable Record
-  'Ask the survivor for three things they will always remember — a name, a place, and a year.': 'Demandez à la survivante/au survivant trois choses qu\'elle/il se rappellera toujours — un nom, un lieu et une année.',
+  'Ask the survivor for three things they will always remember, a name, a place, and a year.': 'Demandez à la survivante/au survivant trois choses qu\'elle/il se rappellera toujours, un nom, un lieu et une année.',
   'Enter them here.': 'Saisissez-les ici.',
-  'TRACE generates a secure code — the words are never saved.': 'TRACE génère un code sécurisé — les mots ne sont jamais enregistrés.',
+  'TRACE generates a secure code, the words are never saved.': 'TRACE génère un code sécurisé, les mots ne sont jamais enregistrés.',
   'Coach the survivor: "If you ever need to access your record at another organization, give them these three things."': 'Conseillez à la survivante/au survivant : « Si vous avez besoin d\'accéder à votre dossier dans une autre organisation, donnez-leur ces trois éléments. »',
   'Portable case record': 'Dossier portable',
   'Case locator QR code': 'Code QR du localisateur de dossier',
@@ -207,11 +207,11 @@ const fr = {
   'Cancel': 'Annuler',
 
   // Survivor Lookup
-  'Simulates a survivor arriving at a new agency. Ask them for the three things they memorized, enter them exactly, and TRACE checks for a matching record — without ever seeing the original words stored anywhere.': "Simule une survivante/un survivant arrivant dans une nouvelle agence. Demandez-lui les trois éléments mémorisés, saisissez-les exactement, et TRACE vérifie s'il existe un dossier correspondant — sans jamais que les mots originaux ne soient stockés où que ce soit.",
+  'Simulates a survivor arriving at a new agency. Ask them for the three things they memorized, enter them exactly, and TRACE checks for a matching record, without ever seeing the original words stored anywhere.': "Simule une survivante/un survivant arrivant dans une nouvelle agence. Demandez-lui les trois éléments mémorisés, saisissez-les exactement, et TRACE vérifie s'il existe un dossier correspondant, sans jamais que les mots originaux ne soient stockés où que ce soit.",
   'Checking…': 'Vérification…',
   'Verify & look up': 'Vérifier et rechercher',
   'No matching portable record found for these three words.': "Aucun dossier portable correspondant trouvé pour ces trois mots.",
-  'Access phrase verified — portable summary below': "Phrase d'accès vérifiée — résumé portable ci-dessous",
+  'Access phrase verified, portable summary below': "Phrase d'accès vérifiée, résumé portable ci-dessous",
   'Full case notes are not shared here. A new consent conversation is required for full access.': "Les notes complètes du dossier ne sont pas partagées ici. Une nouvelle conversation de consentement est nécessaire pour un accès complet.",
   "Delete this record (survivor's request)": "Supprimer ce dossier (demande de la survivante/du survivant)",
 
@@ -232,10 +232,10 @@ const fr = {
   "This is your caseworker AI assistant. Let's take a 60-second tour.": "Voici votre assistant IA pour travailleurs sociaux. Faisons une visite de 60 secondes.",
   'Interface language': "Langue de l'interface",
   'Switch the interface and AI responses between English, French, Arabic, Spanish, and Portuguese at any time.': "Basculez l'interface et les réponses de l'IA entre anglais, français, arabe, espagnol et portugais à tout moment.",
-  "Cross-case alerts from your organization's caseload — simulated for this prototype.": "Alertes inter-dossiers issues de la charge de travail de votre organisation — simulées pour ce prototype.",
+  "Cross-case alerts from your organization's caseload, simulated for this prototype.": "Alertes inter-dossiers issues de la charge de travail de votre organisation, simulées pour ce prototype.",
   'Choose a form type to begin a new case, or reopen an existing one.': 'Choisissez un type de formulaire pour démarrer un nouveau dossier, ou rouvrez un dossier existant.',
   'Speak or type case notes in 8 languages. AI structures them into the form and flags risk automatically.': "Parlez ou tapez les notes de dossier dans 8 langues. L'IA les structure dans le formulaire et signale le risque automatiquement.",
-  'Ask questions about the case, request a referral letter, or ask why a case was flagged — grounded in the case data.': "Posez des questions sur le dossier, demandez une lettre de référencement, ou demandez pourquoi un dossier a été signalé — en s'appuyant sur les données du dossier.",
+  'Ask questions about the case, request a referral letter, or ask why a case was flagged, grounded in the case data.': "Posez des questions sur le dossier, demandez une lettre de référencement, ou demandez pourquoi un dossier a été signalé, en s'appuyant sur les données du dossier.",
   'Take care of yourself too. Tap the heart any time for a breathing exercise and wellbeing resources.': "Prenez soin de vous aussi. Appuyez sur le cœur à tout moment pour un exercice de respiration et des ressources de bien-être.",
   'Skip': 'Passer',
   'Back': 'Retour',
@@ -244,7 +244,7 @@ const fr = {
 
   // Supervisor
   'Supervisor dashboard': 'Tableau de bord superviseur',
-  'Live in full deployment — demo data shown.': 'Actif en déploiement complet — données de démonstration affichées.',
+  'Live in full deployment, demo data shown.': 'Actif en déploiement complet, données de démonstration affichées.',
   'Pattern alerts are de-identified and require supervisor review before any action.': "Les alertes de tendances sont anonymisées et nécessitent l'examen d'un superviseur avant toute action.",
   'Caseload stats': 'Statistiques de la charge de travail',
   'Total': 'Total',
@@ -394,8 +394,8 @@ const fr = {
   'N/A': 'S.O.',
   'Continue active': 'Poursuivre le dossier actif',
   'Step down': 'Réduire le suivi',
-  'Close — resolved': 'Clore — résolu',
-  'Close — lost contact': 'Clore — contact perdu',
+  'Close, resolved': 'Clore, résolu',
+  'Close, lost contact': 'Clore, contact perdu',
   'Escalate': 'Escalader'
 };
 
@@ -441,7 +441,7 @@ const ar = {
   'Collapse ▲': 'طي ▲',
   'Open existing case': 'فتح ملف موجود',
 
-  '— select —': '— اختر —',
+  'Select...': 'اختر...',
   'Select a form above to start a new case, or open an existing one.': 'اختر استمارة أعلاه لبدء ملف جديد، أو افتح ملفًا موجودًا.',
   'Try Demo Mode': 'تجربة الوضع التجريبي',
   'Loads a prefilled sample case so you can try the full flow without entering real data.': 'يحمّل ملفًا نموذجيًا معبأً مسبقًا لتجربة سير العمل الكامل دون إدخال بيانات حقيقية.',
@@ -453,7 +453,7 @@ const ar = {
   'Failed to structure notes with AI.': 'فشل في هيكلة الملاحظات باستخدام الذكاء الاصطناعي.',
   'Voice or text intake': 'استقبال صوتي أو نصي',
   'Local language interpretation requires connectivity.': 'تتطلب الترجمة باللغة المحلية اتصالاً بالإنترنت.',
-  'Online mode — real-time interpretation active (powered by SeamlessM4T)': 'الوضع المتصل — الترجمة الفورية نشطة (مدعومة بواسطة SeamlessM4T)',
+  'Online mode, real-time interpretation active (powered by SeamlessM4T)': 'الوضع المتصل, الترجمة الفورية نشطة (مدعومة بواسطة SeamlessM4T)',
   'Speak using the mic button, or type freeform case notes in any supported language...': 'تحدث باستخدام زر الميكروفون، أو اكتب ملاحظات حرة عن الملف بأي لغة مدعومة...',
   'Interpreting from': 'جارٍ الترجمة من',
   'Interpreted (French)': 'مترجم (فرنسي)',
@@ -462,12 +462,12 @@ const ar = {
   'Online Interpretation (Live Mode)': 'الترجمة الفورية عبر الإنترنت (الوضع المباشر)',
   'Interpreted output (English)': 'الناتج المترجم (الإنجليزية)',
   'Powered by Claude API in this prototype · Meta SeamlessM4T in full deployment.': 'مدعوم بواسطة Claude API في هذا النموذج الأولي · Meta SeamlessM4T في النشر الكامل.',
-  'Translate': 'ترجمة',
+  'Interpret': 'ترجمة',
   'Interpreting…': 'جارٍ الترجمة…',
   'Structuring…': 'جارٍ الهيكلة…',
   'Interpret & structure': 'ترجمة وهيكلة',
   'Structure with AI': 'هيكلة باستخدام الذكاء الاصطناعي',
-  'Voice input unsupported here — typing still works.': 'الإدخال الصوتي غير مدعوم هنا — لا تزال الكتابة تعمل.',
+  'Voice input unsupported here, typing still works.': 'الإدخال الصوتي غير مدعوم هنا, لا تزال الكتابة تعمل.',
 
   'LOW': 'منخفض',
   'MEDIUM': 'متوسط',
@@ -486,13 +486,13 @@ const ar = {
   'Sexual exploitation': 'استغلال جنسي',
 
   'Missing information that could sharpen this risk read': 'معلومات ناقصة قد تُحسّن دقة تقييم هذا الخطر',
-  'No information collected on how the survivor was recruited — this is a key indicator field for labor recruitment fraud.': 'لم يتم جمع معلومات حول كيفية تجنيد الناجي/الناجية — هذا حقل مؤشر رئيسي لاحتيال التوظيف.',
-  'No information collected on document status — this is a key indicator field for document confiscation.': 'لم يتم جمع معلومات حول حالة الوثائق — هذا حقل مؤشر رئيسي لمصادرة الوثائق.',
-  'No information collected on debt or financial obligations — this is a key indicator field for debt bondage.': 'لم يتم جمع معلومات حول الديون أو الالتزامات المالية — هذا حقل مؤشر رئيسي لاستعباد الدين.',
-  'No information collected on movement restriction — this is a key indicator field for assessing control over the survivor.': 'لم يتم جمع معلومات حول تقييد الحركة — هذا حقل مؤشر رئيسي لتقييم السيطرة على الناجي/الناجية.',
-  'No information collected on physical abuse — this is a key indicator field.': 'لم يتم جمع معلومات حول الإساءة الجسدية — هذا حقل مؤشر رئيسي.',
-  'No information collected on sexual abuse — this is a key indicator field for sexual exploitation.': 'لم يتم جمع معلومات حول الاعتداء الجنسي — هذا حقل مؤشر رئيسي للاستغلال الجنسي.',
-  'Exploitation type has not been specified — this narrows which indicators can be matched at all.': 'لم يتم تحديد نوع الاستغلال — هذا يحد من المؤشرات التي يمكن مطابقتها.',
+  'No information collected on how the survivor was recruited, this is a key indicator field for labor recruitment fraud.': 'لم يتم جمع معلومات حول كيفية تجنيد الناجي/الناجية, هذا حقل مؤشر رئيسي لاحتيال التوظيف.',
+  'No information collected on document status, this is a key indicator field for document confiscation.': 'لم يتم جمع معلومات حول حالة الوثائق, هذا حقل مؤشر رئيسي لمصادرة الوثائق.',
+  'No information collected on debt or financial obligations, this is a key indicator field for debt bondage.': 'لم يتم جمع معلومات حول الديون أو الالتزامات المالية, هذا حقل مؤشر رئيسي لاستعباد الدين.',
+  'No information collected on movement restriction, this is a key indicator field for assessing control over the survivor.': 'لم يتم جمع معلومات حول تقييد الحركة, هذا حقل مؤشر رئيسي لتقييم السيطرة على الناجي/الناجية.',
+  'No information collected on physical abuse, this is a key indicator field.': 'لم يتم جمع معلومات حول الإساءة الجسدية, هذا حقل مؤشر رئيسي.',
+  'No information collected on sexual abuse, this is a key indicator field for sexual exploitation.': 'لم يتم جمع معلومات حول الاعتداء الجنسي, هذا حقل مؤشر رئيسي للاستغلال الجنسي.',
+  'Exploitation type has not been specified, this narrows which indicators can be matched at all.': 'لم يتم تحديد نوع الاستغلال, هذا يحد من المؤشرات التي يمكن مطابقتها.',
 
   'Suggested services': 'الخدمات المقترحة',
   'Shelter, humanitarian assistance, and voluntary return support for migrants and trafficking survivors along the Agadez transit corridor.': 'مأوى ومساعدة إنسانية ودعم العودة الطوعية للمهاجرين وناجي الاتجار على طول ممر عبور أغاديز.',
@@ -516,7 +516,7 @@ const ar = {
   'Nearby conflict events': 'أحداث نزاع قريبة',
   'fatalities': 'وفيات',
   'Pattern intelligence': 'استخبارات الأنماط',
-  'From survivor intake to safer referral — even offline.': 'من استقبال الناجية إلى إحالة أكثر أمانًا — حتى دون اتصال بالإنترنت.',
+  'From survivor intake to safer referral, even offline.': 'من استقبال الناجية إلى إحالة أكثر أمانًا, حتى دون اتصال بالإنترنت.',
   'cases': 'ملفات',
   'simulated': 'محاكاة',
   'Cross-case': 'عبر الملفات',
@@ -540,11 +540,11 @@ const ar = {
   'Support & Care': 'الدعم والرعاية',
   'This case was just flagged': 'تم للتو تصنيف هذا الملف على أنه',
   'HIGH risk': 'خطر مرتفع',
-  'Vicarious trauma is real — take a moment for yourself before continuing.': 'الصدمة بالوكالة حقيقية — خذ لحظة لنفسك قبل المتابعة.',
+  'Vicarious trauma is real, take a moment for yourself before continuing.': 'الصدمة بالوكالة حقيقية, خذ لحظة لنفسك قبل المتابعة.',
   'Resources': 'الموارد',
   'Confidential staff counselling and wellbeing support.': 'استشارة سرية للموظفين ودعم للرفاهية.',
   'Inter-Agency Standing Committee mental health & psychosocial support guidance.': 'إرشادات اللجنة الدائمة المشتركة بين الوكالات بشأن الصحة النفسية والدعم النفسي الاجتماعي.',
-  'Staff welfare and peer support — ask your focal point for the current referral path.': 'رفاهية الموظفين والدعم من الأقران — اسأل نقطة الاتصال لديك عن مسار الإحالة الحالي.',
+  'Staff welfare and peer support, ask your focal point for the current referral path.': 'رفاهية الموظفين والدعم من الأقران, اسأل نقطة الاتصال لديك عن مسار الإحالة الحالي.',
   'Would you like to do a quick breathing exercise?': 'هل ترغب في القيام بتمرين تنفس سريع؟',
   'Skip for now': 'تخطَّ الآن',
 
@@ -554,9 +554,9 @@ const ar = {
   'Quick breathing exercise · 7 seconds, inhale then exhale': 'تمرين تنفس سريع · 7 ثوانٍ، استنشق ثم ازفر',
   'Demo data': 'بيانات تجريبية',
 
-  'Ask the survivor for three things they will always remember — a name, a place, and a year.': 'اطلب من الناجي/الناجية ثلاثة أشياء سيتذكرها دائمًا — اسم ومكان وسنة.',
+  'Ask the survivor for three things they will always remember, a name, a place, and a year.': 'اطلب من الناجي/الناجية ثلاثة أشياء سيتذكرها دائمًا, اسم ومكان وسنة.',
   'Enter them here.': 'أدخلها هنا.',
-  'TRACE generates a secure code — the words are never saved.': 'يُنشئ TRACE رمزًا آمنًا — لا يتم حفظ الكلمات أبدًا.',
+  'TRACE generates a secure code, the words are never saved.': 'يُنشئ TRACE رمزًا آمنًا, لا يتم حفظ الكلمات أبدًا.',
   'Coach the survivor: "If you ever need to access your record at another organization, give them these three things."': 'أرشد الناجي/الناجية: "إذا احتجت يومًا للوصول إلى سجلك في منظمة أخرى، أعطهم هذه العناصر الثلاثة."',
   'Portable case record': 'سجل ملف قابل للنقل',
   'Case locator QR code': 'رمز QR لمحدد موقع الملف',
@@ -586,11 +586,11 @@ const ar = {
   'Generate secure record': 'إنشاء سجل آمن',
   'Cancel': 'إلغاء',
 
-  'Simulates a survivor arriving at a new agency. Ask them for the three things they memorized, enter them exactly, and TRACE checks for a matching record — without ever seeing the original words stored anywhere.': 'يحاكي وصول ناجٍ إلى وكالة جديدة. اطلب منه العناصر الثلاثة التي حفظها، أدخلها بدقة، ويتحقق TRACE من وجود سجل مطابق — دون أن يتم تخزين الكلمات الأصلية في أي مكان مطلقًا.',
+  'Simulates a survivor arriving at a new agency. Ask them for the three things they memorized, enter them exactly, and TRACE checks for a matching record, without ever seeing the original words stored anywhere.': 'يحاكي وصول ناجٍ إلى وكالة جديدة. اطلب منه العناصر الثلاثة التي حفظها، أدخلها بدقة، ويتحقق TRACE من وجود سجل مطابق, دون أن يتم تخزين الكلمات الأصلية في أي مكان مطلقًا.',
   'Checking…': 'جارٍ التحقق…',
   'Verify & look up': 'تحقق وابحث',
   'No matching portable record found for these three words.': 'لم يتم العثور على سجل قابل للنقل مطابق لهذه الكلمات الثلاث.',
-  'Access phrase verified — portable summary below': 'تم التحقق من عبارة الوصول — الملخص القابل للنقل أدناه',
+  'Access phrase verified, portable summary below': 'تم التحقق من عبارة الوصول, الملخص القابل للنقل أدناه',
   'Full case notes are not shared here. A new consent conversation is required for full access.': 'لا تتم مشاركة ملاحظات الملف الكاملة هنا. يلزم إجراء محادثة موافقة جديدة للوصول الكامل.',
   "Delete this record (survivor's request)": 'حذف هذا السجل (بطلب من الناجي/الناجية)',
 
@@ -609,10 +609,10 @@ const ar = {
   "This is your caseworker AI assistant. Let's take a 60-second tour.": 'هذا هو مساعدك الذكي كأخصائي اجتماعي. لنقم بجولة مدتها 60 ثانية.',
   'Interface language': 'لغة الواجهة',
   'Switch the interface and AI responses between English, French, Arabic, Spanish, and Portuguese at any time.': 'بدّل الواجهة واستجابات الذكاء الاصطناعي بين الإنجليزية والفرنسية والعربية والإسبانية والبرتغالية في أي وقت.',
-  "Cross-case alerts from your organization's caseload — simulated for this prototype.": 'تنبيهات عبر الملفات من عبء عمل منظمتك — محاكاة لهذا النموذج الأولي.',
+  "Cross-case alerts from your organization's caseload, simulated for this prototype.": 'تنبيهات عبر الملفات من عبء عمل منظمتك, محاكاة لهذا النموذج الأولي.',
   'Choose a form type to begin a new case, or reopen an existing one.': 'اختر نوع استمارة لبدء ملف جديد، أو أعد فتح ملف موجود.',
   'Speak or type case notes in 8 languages. AI structures them into the form and flags risk automatically.': 'تحدث أو اكتب ملاحظات الملف بـ 8 لغات. يقوم الذكاء الاصطناعي بهيكلتها في الاستمارة ووسم الخطر تلقائيًا.',
-  'Ask questions about the case, request a referral letter, or ask why a case was flagged — grounded in the case data.': 'اطرح أسئلة حول الملف، اطلب خطاب إحالة، أو اسأل عن سبب تصنيف الملف — استنادًا إلى بيانات الملف.',
+  'Ask questions about the case, request a referral letter, or ask why a case was flagged, grounded in the case data.': 'اطرح أسئلة حول الملف، اطلب خطاب إحالة، أو اسأل عن سبب تصنيف الملف, استنادًا إلى بيانات الملف.',
   'Take care of yourself too. Tap the heart any time for a breathing exercise and wellbeing resources.': 'اعتنِ بنفسك أيضًا. اضغط على القلب في أي وقت للحصول على تمرين تنفس وموارد للرفاهية.',
   'Skip': 'تخطي',
   'Back': 'رجوع',
@@ -620,7 +620,7 @@ const ar = {
   'Next': 'التالي',
 
   'Supervisor dashboard': 'لوحة معلومات المشرف',
-  'Live in full deployment — demo data shown.': 'مباشر في النشر الكامل — تُعرض بيانات تجريبية.',
+  'Live in full deployment, demo data shown.': 'مباشر في النشر الكامل, تُعرض بيانات تجريبية.',
   'Pattern alerts are de-identified and require supervisor review before any action.': 'تنبيهات الأنماط مجهولة الهوية وتتطلب مراجعة المشرف قبل اتخاذ أي إجراء.',
   'Caseload stats': 'إحصائيات عبء العمل',
   'Total': 'الإجمالي',
@@ -768,8 +768,8 @@ const ar = {
   'N/A': 'لا ينطبق',
   'Continue active': 'الاستمرار النشط',
   'Step down': 'خفض المستوى',
-  'Close — resolved': 'إغلاق — تم الحل',
-  'Close — lost contact': 'إغلاق — فقدان الاتصال',
+  'Close, resolved': 'إغلاق, تم الحل',
+  'Close, lost contact': 'إغلاق, فقدان الاتصال',
   'Escalate': 'تصعيد'
 };
 
@@ -815,7 +815,7 @@ const es = {
   'Collapse ▲': 'Contraer ▲',
   'Open existing case': 'Abrir caso existente',
 
-  '— select —': '— seleccionar —',
+  'Select...': 'Seleccionar...',
   'Select a form above to start a new case, or open an existing one.': 'Seleccione un formulario arriba para iniciar un nuevo caso, o abra uno existente.',
   'Try Demo Mode': 'Probar el modo demo',
   'Loads a prefilled sample case so you can try the full flow without entering real data.': 'Carga un caso de muestra prellenado para probar el flujo completo sin ingresar datos reales.',
@@ -827,7 +827,7 @@ const es = {
   'Failed to structure notes with AI.': 'Error al estructurar las notas con IA.',
   'Voice or text intake': 'Admisión por voz o texto',
   'Local language interpretation requires connectivity.': 'La interpretación en idioma local requiere conexión a internet.',
-  'Online mode — real-time interpretation active (powered by SeamlessM4T)': 'Modo en línea — interpretación en tiempo real activa (impulsado por SeamlessM4T)',
+  'Online mode, real-time interpretation active (powered by SeamlessM4T)': 'Modo en línea, interpretación en tiempo real activa (impulsado por SeamlessM4T)',
   'Speak using the mic button, or type freeform case notes in any supported language...': 'Hable usando el botón del micrófono, o escriba notas de caso libremente en cualquier idioma compatible...',
   'Interpreting from': 'Interpretando desde',
   'Interpreted (French)': 'Interpretado (francés)',
@@ -836,12 +836,12 @@ const es = {
   'Online Interpretation (Live Mode)': 'Interpretación en línea (modo en vivo)',
   'Interpreted output (English)': 'Resultado interpretado (inglés)',
   'Powered by Claude API in this prototype · Meta SeamlessM4T in full deployment.': 'Impulsado por la API de Claude en este prototipo · Meta SeamlessM4T en implementación completa.',
-  'Translate': 'Traducir',
+  'Interpret': 'Interpretar',
   'Interpreting…': 'Interpretando…',
   'Structuring…': 'Estructurando…',
   'Interpret & structure': 'Interpretar y estructurar',
   'Structure with AI': 'Estructurar con IA',
-  'Voice input unsupported here — typing still works.': 'La entrada de voz no es compatible aquí — escribir sigue funcionando.',
+  'Voice input unsupported here, typing still works.': 'La entrada de voz no es compatible aquí, escribir sigue funcionando.',
 
   'LOW': 'BAJO',
   'MEDIUM': 'MEDIO',
@@ -860,13 +860,13 @@ const es = {
   'Sexual exploitation': 'Explotación sexual',
 
   'Missing information that could sharpen this risk read': 'Información faltante que podría precisar esta lectura de riesgo',
-  'No information collected on how the survivor was recruited — this is a key indicator field for labor recruitment fraud.': 'No se recopiló información sobre cómo fue reclutada la persona sobreviviente — este es un campo indicador clave para el fraude de reclutamiento.',
-  'No information collected on document status — this is a key indicator field for document confiscation.': 'No se recopiló información sobre el estado de los documentos — este es un campo indicador clave para la confiscación de documentos.',
-  'No information collected on debt or financial obligations — this is a key indicator field for debt bondage.': 'No se recopiló información sobre deudas u obligaciones financieras — este es un campo indicador clave para la servidumbre por deudas.',
-  'No information collected on movement restriction — this is a key indicator field for assessing control over the survivor.': 'No se recopiló información sobre la restricción de movimiento — este es un campo indicador clave para evaluar el control sobre la persona sobreviviente.',
-  'No information collected on physical abuse — this is a key indicator field.': 'No se recopiló información sobre abuso físico — este es un campo indicador clave.',
-  'No information collected on sexual abuse — this is a key indicator field for sexual exploitation.': 'No se recopiló información sobre abuso sexual — este es un campo indicador clave para la explotación sexual.',
-  'Exploitation type has not been specified — this narrows which indicators can be matched at all.': 'No se ha especificado el tipo de explotación — esto limita qué indicadores pueden coincidir.',
+  'No information collected on how the survivor was recruited, this is a key indicator field for labor recruitment fraud.': 'No se recopiló información sobre cómo fue reclutada la persona sobreviviente, este es un campo indicador clave para el fraude de reclutamiento.',
+  'No information collected on document status, this is a key indicator field for document confiscation.': 'No se recopiló información sobre el estado de los documentos, este es un campo indicador clave para la confiscación de documentos.',
+  'No information collected on debt or financial obligations, this is a key indicator field for debt bondage.': 'No se recopiló información sobre deudas u obligaciones financieras, este es un campo indicador clave para la servidumbre por deudas.',
+  'No information collected on movement restriction, this is a key indicator field for assessing control over the survivor.': 'No se recopiló información sobre la restricción de movimiento, este es un campo indicador clave para evaluar el control sobre la persona sobreviviente.',
+  'No information collected on physical abuse, this is a key indicator field.': 'No se recopiló información sobre abuso físico, este es un campo indicador clave.',
+  'No information collected on sexual abuse, this is a key indicator field for sexual exploitation.': 'No se recopiló información sobre abuso sexual, este es un campo indicador clave para la explotación sexual.',
+  'Exploitation type has not been specified, this narrows which indicators can be matched at all.': 'No se ha especificado el tipo de explotación, esto limita qué indicadores pueden coincidir.',
 
   'Suggested services': 'Servicios sugeridos',
   'Shelter, humanitarian assistance, and voluntary return support for migrants and trafficking survivors along the Agadez transit corridor.': 'Albergue, asistencia humanitaria y apoyo al retorno voluntario para migrantes y sobrevivientes de trata a lo largo del corredor de tránsito de Agadez.',
@@ -890,7 +890,7 @@ const es = {
   'Nearby conflict events': 'Eventos de conflicto cercanos',
   'fatalities': 'muertes',
   'Pattern intelligence': 'Inteligencia de patrones',
-  'From survivor intake to safer referral — even offline.': 'Desde la recepción de la sobreviviente hasta una referencia más segura — incluso sin conexión.',
+  'From survivor intake to safer referral, even offline.': 'Desde la recepción de la sobreviviente hasta una referencia más segura, incluso sin conexión.',
   'cases': 'casos',
   'simulated': 'simulado',
   'Cross-case': 'Entre casos',
@@ -914,11 +914,11 @@ const es = {
   'Support & Care': 'Apoyo y cuidado',
   'This case was just flagged': 'Este caso acaba de ser marcado como',
   'HIGH risk': 'riesgo ALTO',
-  'Vicarious trauma is real — take a moment for yourself before continuing.': 'El trauma vicario es real — tómese un momento para usted antes de continuar.',
+  'Vicarious trauma is real, take a moment for yourself before continuing.': 'El trauma vicario es real, tómese un momento para usted antes de continuar.',
   'Resources': 'Recursos',
   'Confidential staff counselling and wellbeing support.': 'Asesoramiento confidencial y apoyo de bienestar para el personal.',
   'Inter-Agency Standing Committee mental health & psychosocial support guidance.': 'Orientación del Comité Permanente entre Organismos sobre salud mental y apoyo psicosocial.',
-  'Staff welfare and peer support — ask your focal point for the current referral path.': 'Bienestar del personal y apoyo entre pares — consulte a su punto focal sobre la vía de referencia actual.',
+  'Staff welfare and peer support, ask your focal point for the current referral path.': 'Bienestar del personal y apoyo entre pares, consulte a su punto focal sobre la vía de referencia actual.',
   'Would you like to do a quick breathing exercise?': '¿Le gustaría hacer un breve ejercicio de respiración?',
   'Skip for now': 'Omitir por ahora',
 
@@ -928,9 +928,9 @@ const es = {
   'Quick breathing exercise · 7 seconds, inhale then exhale': 'Ejercicio de respiración rápido · 7 segundos, inhale y luego exhale',
   'Demo data': 'Datos de demostración',
 
-  'Ask the survivor for three things they will always remember — a name, a place, and a year.': 'Pida a la persona sobreviviente tres cosas que siempre recordará — un nombre, un lugar y un año.',
+  'Ask the survivor for three things they will always remember, a name, a place, and a year.': 'Pida a la persona sobreviviente tres cosas que siempre recordará, un nombre, un lugar y un año.',
   'Enter them here.': 'Introdúzcalas aquí.',
-  'TRACE generates a secure code — the words are never saved.': 'TRACE genera un código seguro — las palabras nunca se guardan.',
+  'TRACE generates a secure code, the words are never saved.': 'TRACE genera un código seguro, las palabras nunca se guardan.',
   'Coach the survivor: "If you ever need to access your record at another organization, give them these three things."': 'Oriente a la persona sobreviviente: "Si alguna vez necesita acceder a su expediente en otra organización, deles estos tres datos."',
   'Portable case record': 'Expediente de caso portátil',
   'Case locator QR code': 'Código QR del localizador de caso',
@@ -960,11 +960,11 @@ const es = {
   'Generate secure record': 'Generar expediente seguro',
   'Cancel': 'Cancelar',
 
-  'Simulates a survivor arriving at a new agency. Ask them for the three things they memorized, enter them exactly, and TRACE checks for a matching record — without ever seeing the original words stored anywhere.': 'Simula a una persona sobreviviente llegando a una nueva agencia. Pídale las tres cosas que memorizó, introdúzcalas exactamente, y TRACE verifica si existe un expediente coincidente — sin que las palabras originales se almacenen nunca en ningún lugar.',
+  'Simulates a survivor arriving at a new agency. Ask them for the three things they memorized, enter them exactly, and TRACE checks for a matching record, without ever seeing the original words stored anywhere.': 'Simula a una persona sobreviviente llegando a una nueva agencia. Pídale las tres cosas que memorizó, introdúzcalas exactamente, y TRACE verifica si existe un expediente coincidente, sin que las palabras originales se almacenen nunca en ningún lugar.',
   'Checking…': 'Verificando…',
   'Verify & look up': 'Verificar y buscar',
   'No matching portable record found for these three words.': 'No se encontró ningún expediente portátil que coincida con estas tres palabras.',
-  'Access phrase verified — portable summary below': 'Frase de acceso verificada — resumen portátil a continuación',
+  'Access phrase verified, portable summary below': 'Frase de acceso verificada, resumen portátil a continuación',
   'Full case notes are not shared here. A new consent conversation is required for full access.': 'Las notas completas del caso no se comparten aquí. Se requiere una nueva conversación de consentimiento para el acceso completo.',
   "Delete this record (survivor's request)": 'Eliminar este expediente (solicitud de la persona sobreviviente)',
 
@@ -983,10 +983,10 @@ const es = {
   "This is your caseworker AI assistant. Let's take a 60-second tour.": 'Este es su asistente de IA como trabajador social. Hagamos un recorrido de 60 segundos.',
   'Interface language': 'Idioma de la interfaz',
   'Switch the interface and AI responses between English, French, Arabic, Spanish, and Portuguese at any time.': 'Cambie la interfaz y las respuestas de la IA entre inglés, francés, árabe, español y portugués en cualquier momento.',
-  "Cross-case alerts from your organization's caseload — simulated for this prototype.": 'Alertas entre casos de la carga de trabajo de su organización — simuladas para este prototipo.',
+  "Cross-case alerts from your organization's caseload, simulated for this prototype.": 'Alertas entre casos de la carga de trabajo de su organización, simuladas para este prototipo.',
   'Choose a form type to begin a new case, or reopen an existing one.': 'Elija un tipo de formulario para iniciar un nuevo caso, o reabra uno existente.',
   'Speak or type case notes in 8 languages. AI structures them into the form and flags risk automatically.': 'Hable o escriba notas de caso en 8 idiomas. La IA las estructura en el formulario y marca el riesgo automáticamente.',
-  'Ask questions about the case, request a referral letter, or ask why a case was flagged — grounded in the case data.': 'Haga preguntas sobre el caso, solicite una carta de referencia, o pregunte por qué se marcó un caso — basado en los datos del caso.',
+  'Ask questions about the case, request a referral letter, or ask why a case was flagged, grounded in the case data.': 'Haga preguntas sobre el caso, solicite una carta de referencia, o pregunte por qué se marcó un caso, basado en los datos del caso.',
   'Take care of yourself too. Tap the heart any time for a breathing exercise and wellbeing resources.': 'Cuídese también. Toque el corazón en cualquier momento para un ejercicio de respiración y recursos de bienestar.',
   'Skip': 'Omitir',
   'Back': 'Atrás',
@@ -994,7 +994,7 @@ const es = {
   'Next': 'Siguiente',
 
   'Supervisor dashboard': 'Panel del supervisor',
-  'Live in full deployment — demo data shown.': 'En vivo en implementación completa — se muestran datos de demostración.',
+  'Live in full deployment, demo data shown.': 'En vivo en implementación completa, se muestran datos de demostración.',
   'Pattern alerts are de-identified and require supervisor review before any action.': 'Las alertas de patrones están anonimizadas y requieren la revisión del supervisor antes de cualquier acción.',
   'Caseload stats': 'Estadísticas de la carga de casos',
   'Total': 'Total',
@@ -1142,8 +1142,8 @@ const es = {
   'N/A': 'N/D',
   'Continue active': 'Continuar activo',
   'Step down': 'Reducir intensidad',
-  'Close — resolved': 'Cerrar — resuelto',
-  'Close — lost contact': 'Cerrar — contacto perdido',
+  'Close, resolved': 'Cerrar, resuelto',
+  'Close, lost contact': 'Cerrar, contacto perdido',
   'Escalate': 'Escalar'
 };
 
@@ -1189,7 +1189,7 @@ const pt = {
   'Collapse ▲': 'Recolher ▲',
   'Open existing case': 'Abrir caso existente',
 
-  '— select —': '— selecionar —',
+  'Select...': 'Selecionar...',
   'Select a form above to start a new case, or open an existing one.': 'Selecione um formulário acima para iniciar um novo caso, ou abra um existente.',
   'Try Demo Mode': 'Experimentar o modo demo',
   'Loads a prefilled sample case so you can try the full flow without entering real data.': 'Carrega um caso de exemplo pré-preenchido para experimentar o fluxo completo sem inserir dados reais.',
@@ -1201,7 +1201,7 @@ const pt = {
   'Failed to structure notes with AI.': 'Falha ao estruturar as notas com IA.',
   'Voice or text intake': 'Admissão por voz ou texto',
   'Local language interpretation requires connectivity.': 'A interpretação em idioma local requer conexão à internet.',
-  'Online mode — real-time interpretation active (powered by SeamlessM4T)': 'Modo online — interpretação em tempo real ativa (desenvolvido com SeamlessM4T)',
+  'Online mode, real-time interpretation active (powered by SeamlessM4T)': 'Modo online, interpretação em tempo real ativa (desenvolvido com SeamlessM4T)',
   'Speak using the mic button, or type freeform case notes in any supported language...': 'Fale usando o botão do microfone, ou digite notas de caso livremente em qualquer idioma compatível...',
   'Interpreting from': 'Interpretando de',
   'Interpreted (French)': 'Interpretado (francês)',
@@ -1210,12 +1210,12 @@ const pt = {
   'Online Interpretation (Live Mode)': 'Interpretação online (modo ao vivo)',
   'Interpreted output (English)': 'Resultado interpretado (inglês)',
   'Powered by Claude API in this prototype · Meta SeamlessM4T in full deployment.': 'Desenvolvido com a API Claude neste protótipo · Meta SeamlessM4T em implantação completa.',
-  'Translate': 'Traduzir',
+  'Interpret': 'Interpretar',
   'Interpreting…': 'Interpretando…',
   'Structuring…': 'Estruturando…',
   'Interpret & structure': 'Interpretar e estruturar',
   'Structure with AI': 'Estruturar com IA',
-  'Voice input unsupported here — typing still works.': 'Entrada de voz não suportada aqui — digitar ainda funciona.',
+  'Voice input unsupported here, typing still works.': 'Entrada de voz não suportada aqui, digitar ainda funciona.',
 
   'LOW': 'BAIXO',
   'MEDIUM': 'MÉDIO',
@@ -1234,13 +1234,13 @@ const pt = {
   'Sexual exploitation': 'Exploração sexual',
 
   'Missing information that could sharpen this risk read': 'Informações ausentes que poderiam refinar esta avaliação de risco',
-  'No information collected on how the survivor was recruited — this is a key indicator field for labor recruitment fraud.': 'Nenhuma informação coletada sobre como a pessoa sobrevivente foi recrutada — este é um campo indicador chave para fraude de recrutamento.',
-  'No information collected on document status — this is a key indicator field for document confiscation.': 'Nenhuma informação coletada sobre o status dos documentos — este é um campo indicador chave para confisco de documentos.',
-  'No information collected on debt or financial obligations — this is a key indicator field for debt bondage.': 'Nenhuma informação coletada sobre dívidas ou obrigações financeiras — este é um campo indicador chave para servidão por dívida.',
-  'No information collected on movement restriction — this is a key indicator field for assessing control over the survivor.': 'Nenhuma informação coletada sobre restrição de movimento — este é um campo indicador chave para avaliar o controle sobre a pessoa sobrevivente.',
-  'No information collected on physical abuse — this is a key indicator field.': 'Nenhuma informação coletada sobre abuso físico — este é um campo indicador chave.',
-  'No information collected on sexual abuse — this is a key indicator field for sexual exploitation.': 'Nenhuma informação coletada sobre abuso sexual — este é um campo indicador chave para exploração sexual.',
-  'Exploitation type has not been specified — this narrows which indicators can be matched at all.': 'O tipo de exploração não foi especificado — isso limita quais indicadores podem ser correspondidos.',
+  'No information collected on how the survivor was recruited, this is a key indicator field for labor recruitment fraud.': 'Nenhuma informação coletada sobre como a pessoa sobrevivente foi recrutada, este é um campo indicador chave para fraude de recrutamento.',
+  'No information collected on document status, this is a key indicator field for document confiscation.': 'Nenhuma informação coletada sobre o status dos documentos, este é um campo indicador chave para confisco de documentos.',
+  'No information collected on debt or financial obligations, this is a key indicator field for debt bondage.': 'Nenhuma informação coletada sobre dívidas ou obrigações financeiras, este é um campo indicador chave para servidão por dívida.',
+  'No information collected on movement restriction, this is a key indicator field for assessing control over the survivor.': 'Nenhuma informação coletada sobre restrição de movimento, este é um campo indicador chave para avaliar o controle sobre a pessoa sobrevivente.',
+  'No information collected on physical abuse, this is a key indicator field.': 'Nenhuma informação coletada sobre abuso físico, este é um campo indicador chave.',
+  'No information collected on sexual abuse, this is a key indicator field for sexual exploitation.': 'Nenhuma informação coletada sobre abuso sexual, este é um campo indicador chave para exploração sexual.',
+  'Exploitation type has not been specified, this narrows which indicators can be matched at all.': 'O tipo de exploração não foi especificado, isso limita quais indicadores podem ser correspondidos.',
 
   'Suggested services': 'Serviços sugeridos',
   'Shelter, humanitarian assistance, and voluntary return support for migrants and trafficking survivors along the Agadez transit corridor.': 'Abrigo, assistência humanitária e apoio ao retorno voluntário para migrantes e sobreviventes de tráfico ao longo do corredor de trânsito de Agadez.',
@@ -1264,7 +1264,7 @@ const pt = {
   'Nearby conflict events': 'Eventos de conflito próximos',
   'fatalities': 'mortes',
   'Pattern intelligence': 'Inteligência de padrões',
-  'From survivor intake to safer referral — even offline.': 'Do acolhimento da sobrevivente a um encaminhamento mais seguro — mesmo offline.',
+  'From survivor intake to safer referral, even offline.': 'Do acolhimento da sobrevivente a um encaminhamento mais seguro, mesmo offline.',
   'cases': 'casos',
   'simulated': 'simulado',
   'Cross-case': 'Entre casos',
@@ -1288,11 +1288,11 @@ const pt = {
   'Support & Care': 'Apoio e cuidado',
   'This case was just flagged': 'Este caso acabou de ser sinalizado como',
   'HIGH risk': 'risco ALTO',
-  'Vicarious trauma is real — take a moment for yourself before continuing.': 'O trauma vicário é real — reserve um momento para si antes de continuar.',
+  'Vicarious trauma is real, take a moment for yourself before continuing.': 'O trauma vicário é real, reserve um momento para si antes de continuar.',
   'Resources': 'Recursos',
   'Confidential staff counselling and wellbeing support.': 'Aconselhamento confidencial e apoio ao bem-estar da equipe.',
   'Inter-Agency Standing Committee mental health & psychosocial support guidance.': 'Orientação do Comitê Permanente Interagências sobre saúde mental e apoio psicossocial.',
-  'Staff welfare and peer support — ask your focal point for the current referral path.': 'Bem-estar da equipe e apoio entre pares — pergunte ao seu ponto focal sobre a via de encaminhamento atual.',
+  'Staff welfare and peer support, ask your focal point for the current referral path.': 'Bem-estar da equipe e apoio entre pares, pergunte ao seu ponto focal sobre a via de encaminhamento atual.',
   'Would you like to do a quick breathing exercise?': 'Gostaria de fazer um breve exercício de respiração?',
   'Skip for now': 'Pular por agora',
 
@@ -1302,9 +1302,9 @@ const pt = {
   'Quick breathing exercise · 7 seconds, inhale then exhale': 'Exercício de respiração rápido · 7 segundos, inspire e depois expire',
   'Demo data': 'Dados de demonstração',
 
-  'Ask the survivor for three things they will always remember — a name, a place, and a year.': 'Peça à pessoa sobrevivente três coisas que ela sempre lembrará — um nome, um lugar e um ano.',
+  'Ask the survivor for three things they will always remember, a name, a place, and a year.': 'Peça à pessoa sobrevivente três coisas que ela sempre lembrará, um nome, um lugar e um ano.',
   'Enter them here.': 'Insira-as aqui.',
-  'TRACE generates a secure code — the words are never saved.': 'O TRACE gera um código seguro — as palavras nunca são salvas.',
+  'TRACE generates a secure code, the words are never saved.': 'O TRACE gera um código seguro, as palavras nunca são salvas.',
   'Coach the survivor: "If you ever need to access your record at another organization, give them these three things."': 'Oriente a pessoa sobrevivente: "Se você precisar acessar seu registro em outra organização, forneça a eles estes três itens."',
   'Portable case record': 'Registro de caso portátil',
   'Case locator QR code': 'Código QR do localizador de caso',
@@ -1334,11 +1334,11 @@ const pt = {
   'Generate secure record': 'Gerar registro seguro',
   'Cancel': 'Cancelar',
 
-  'Simulates a survivor arriving at a new agency. Ask them for the three things they memorized, enter them exactly, and TRACE checks for a matching record — without ever seeing the original words stored anywhere.': 'Simula uma pessoa sobrevivente chegando a uma nova agência. Peça as três coisas que ela memorizou, insira-as exatamente, e o TRACE verifica se há um registro correspondente — sem que as palavras originais sejam armazenadas em nenhum lugar.',
+  'Simulates a survivor arriving at a new agency. Ask them for the three things they memorized, enter them exactly, and TRACE checks for a matching record, without ever seeing the original words stored anywhere.': 'Simula uma pessoa sobrevivente chegando a uma nova agência. Peça as três coisas que ela memorizou, insira-as exatamente, e o TRACE verifica se há um registro correspondente, sem que as palavras originais sejam armazenadas em nenhum lugar.',
   'Checking…': 'Verificando…',
   'Verify & look up': 'Verificar e buscar',
   'No matching portable record found for these three words.': 'Nenhum registro portátil correspondente encontrado para essas três palavras.',
-  'Access phrase verified — portable summary below': 'Frase de acesso verificada — resumo portátil abaixo',
+  'Access phrase verified, portable summary below': 'Frase de acesso verificada, resumo portátil abaixo',
   'Full case notes are not shared here. A new consent conversation is required for full access.': 'As notas completas do caso não são compartilhadas aqui. Uma nova conversa de consentimento é necessária para acesso total.',
   "Delete this record (survivor's request)": 'Excluir este registro (pedido da pessoa sobrevivente)',
 
@@ -1357,10 +1357,10 @@ const pt = {
   "This is your caseworker AI assistant. Let's take a 60-second tour.": 'Este é o seu assistente de IA como assistente social. Vamos fazer um tour de 60 segundos.',
   'Interface language': 'Idioma da interface',
   'Switch the interface and AI responses between English, French, Arabic, Spanish, and Portuguese at any time.': 'Alterne a interface e as respostas da IA entre inglês, francês, árabe, espanhol e português a qualquer momento.',
-  "Cross-case alerts from your organization's caseload — simulated for this prototype.": 'Alertas entre casos da carga de trabalho da sua organização — simulados para este protótipo.',
+  "Cross-case alerts from your organization's caseload, simulated for this prototype.": 'Alertas entre casos da carga de trabalho da sua organização, simulados para este protótipo.',
   'Choose a form type to begin a new case, or reopen an existing one.': 'Escolha um tipo de formulário para iniciar um novo caso, ou reabra um existente.',
   'Speak or type case notes in 8 languages. AI structures them into the form and flags risk automatically.': 'Fale ou digite notas de caso em 8 idiomas. A IA as estrutura no formulário e sinaliza o risco automaticamente.',
-  'Ask questions about the case, request a referral letter, or ask why a case was flagged — grounded in the case data.': 'Faça perguntas sobre o caso, solicite uma carta de encaminhamento, ou pergunte por que um caso foi sinalizado — com base nos dados do caso.',
+  'Ask questions about the case, request a referral letter, or ask why a case was flagged, grounded in the case data.': 'Faça perguntas sobre o caso, solicite uma carta de encaminhamento, ou pergunte por que um caso foi sinalizado, com base nos dados do caso.',
   'Take care of yourself too. Tap the heart any time for a breathing exercise and wellbeing resources.': 'Cuide de si também. Toque no coração a qualquer momento para um exercício de respiração e recursos de bem-estar.',
   'Skip': 'Pular',
   'Back': 'Voltar',
@@ -1368,7 +1368,7 @@ const pt = {
   'Next': 'Próximo',
 
   'Supervisor dashboard': 'Painel do supervisor',
-  'Live in full deployment — demo data shown.': 'Ativo em implantação completa — dados de demonstração exibidos.',
+  'Live in full deployment, demo data shown.': 'Ativo em implantação completa, dados de demonstração exibidos.',
   'Pattern alerts are de-identified and require supervisor review before any action.': 'Os alertas de padrões são desidentificados e exigem revisão do supervisor antes de qualquer ação.',
   'Caseload stats': 'Estatísticas da carga de casos',
   'Total': 'Total',
@@ -1516,8 +1516,8 @@ const pt = {
   'N/A': 'N/D',
   'Continue active': 'Continuar ativo',
   'Step down': 'Reduzir intensidade',
-  'Close — resolved': 'Encerrar — resolvido',
-  'Close — lost contact': 'Encerrar — contato perdido',
+  'Close, resolved': 'Encerrar, resolvido',
+  'Close, lost contact': 'Encerrar, contato perdido',
   'Escalate': 'Escalar'
 };
 

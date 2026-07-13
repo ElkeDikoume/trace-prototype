@@ -11,7 +11,7 @@ function ensureFormCardsVisible() {
       const section = document.querySelector('[data-tutorial="form-selector"]');
       section?.querySelector(':scope > button')?.click();
       // Give the browser a full paint cycle to settle the layout reflow
-      // from expanding the card grid before Shepherd measures anything —
+      // from expanding the card grid before Shepherd measures anything,
       // resolving on the same tick raced with the previous step's fade-out.
       setTimeout(resolve, 150);
     } else {
@@ -22,7 +22,7 @@ function ensureFormCardsVisible() {
 
 // Undoes window.__traceLoadSampleNotes's edit to the intake notes field if
 // the judge loaded the sample notes and then navigated Previous back to
-// this step — so re-entering the step always shows a clean field, matching
+// this step, so re-entering the step always shows a clean field, matching
 // the step's own "click below to load the raw notes" framing.
 function clearNotesIfSeededByTour() {
   return new Promise((resolve) => {
@@ -87,9 +87,11 @@ const STEP_DEFS = [
   {
     id: 'offline-indicator',
     attachTo: { element: '[data-tutorial="offline-indicator"]', on: 'bottom' },
-    title: 'Works offline — no connectivity required',
-    text: 'Works offline — no connectivity required. In the field — Diffa, Bangui, Lake Chad Basin — caseworkers can capture intake, flag risk, run AI structuring, generate referral letters, access the TRACE Assistant, and view the Insights tab. Zero connectivity required. Syncs automatically when connection returns.',
+    title: 'Works offline, no connectivity required',
+    text: 'In the field, in Diffa, Bangui, or the Lake Chad Basin, caseworkers can capture intake, flag risk from local rules, and prepare referral-ready records with zero connectivity. Syncs automatically when connection returns.',
     customButtons: (tour) => [
+      { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
+      { text: 'End Tour', action: () => tour.cancel(), classes: 'trace-shepherd-btn-ghost' },
       { text: 'Next →', action: () => tour.next(), classes: 'trace-shepherd-btn-primary' }
     ]
   },
@@ -97,14 +99,14 @@ const STEP_DEFS = [
     id: 'form-select',
     attachTo: { element: '[data-tutorial="form-cards-primary"]', on: 'bottom' },
     title: 'Select a form type',
-    text: "Choose the type of case record to open. HTCDS Intake is already selected for this demo — the IOM Human Trafficking Case Data Standards. Eight form types total, each with its own field schema. Caseworkers select from 8 IOM-standard protection form types. In production, existing forms — including paper forms photographed or ODK exports — can be uploaded and mapped automatically. Select 'HTCDS Trafficking Intake' for this demo.",
+    text: "Choose the type of case record to open. HTCDS Intake is already selected for this demo, the IOM Human Trafficking Case Data Standards. Eight form types total, each with its own field schema. Caseworkers select from 8 IOM-standard protection form types. In production, existing forms, including paper forms photographed or ODK exports, can be uploaded and mapped automatically. Select 'HTCDS Trafficking Intake' for this demo.",
     beforeShowPromise: ensureFormCardsVisible
   },
   {
     id: 'intake-notes',
     attachTo: { element: '[data-tutorial="voice-intake"]', on: 'top' },
     title: 'Enter intake notes',
-    text: "Caseworkers can TYPE their notes or SPEAK them — tap the microphone icon to use voice input in the caseworker's own language. For this demo, we have Amina's notes in Hausa ready. Click 'Load sample intake notes →' to load them. The notes will appear in the text area below.",
+    text: "Caseworkers can speak intake notes directly in their language, no typing needed. For this demo, Amina's notes are pre-recorded in Hausa. Click 'Load sample intake notes' to hear what TRACE receives in the field.",
     beforeShowPromise: clearNotesIfSeededByTour,
     customButtons: (tour) => [
       { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
@@ -124,24 +126,31 @@ const STEP_DEFS = [
     id: 'interpret-prompt',
     attachTo: { element: '[data-tutorial="interpret-button"]', on: 'right' },
     title: 'Verify meaning before structuring',
-    text: "Amina's notes are now in the field — written in Hausa. Before structuring, TRACE interprets them to English so the caseworker can verify meaning. Click 'Interpret →' to see the interpretation. This preserves the survivor's voice.",
+    text: "Amina spoke her intake notes in Hausa. TRACE interpreted them into English so the caseworker can verify meaning before structuring. This preserves the survivor's voice and avoids double translation.",
     customButtons: (tour) => [
       { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
       { text: 'End Tour', action: () => tour.cancel(), classes: 'trace-shepherd-btn-ghost' },
-      { text: "I've clicked Interpret →", action: () => tour.next(), classes: 'trace-shepherd-btn-primary' }
+      {
+        text: "I've clicked Interpret →",
+        action: async () => {
+          await window.__traceInterpretNow?.();
+          tour.next();
+        },
+        classes: 'trace-shepherd-btn-primary'
+      }
     ]
   },
   {
     id: 'interpretation',
     attachTo: { element: '[data-tutorial="online-interpretation"]', on: 'top' },
     title: 'Hausa → English interpretation',
-    text: "TRACE interpreted Hausa into English in real time. Hausa has 50+ million speakers across the Sahel — almost no humanitarian tools serve them. In production: Meta SeamlessM4T handles Hausa, Fulfulde, and Zarma.<br /><br />Now click the 'Structure notes with AI →' button to map these notes into the IOM case form fields. Give it about 30 seconds."
+    text: "TRACE interpreted Hausa into English in real time. Hausa has 50+ million speakers across the Sahel, yet almost no humanitarian tools serve them. In production: Meta SeamlessM4T handles Hausa, Fulfulde, and Zarma. For this pilot, Sub-Saharan African languages were prioritized: Hausa, Fulfulde, and Zarma. Additional language packs can be added in production.<br /><br />Now click the 'Structure notes with AI →' button to map these notes into the IOM case form fields. Give it about 30 seconds."
   },
   {
     id: 'structure-cta',
     attachTo: { element: '[data-tutorial="structure-button"]', on: 'bottom' },
     title: 'Structure with AI',
-    text: "Click the 'Structure notes with AI →' button now to continue. TRACE will map the interpreted notes into the correct IOM HTCDS form fields. This takes about 30 seconds — you'll see the fields populate as TRACE works.",
+    text: "Click the 'Structure notes with AI →' button now to continue. TRACE will map the interpreted notes into the correct IOM HTCDS form fields. This takes about 30 seconds, you'll see the fields populate as TRACE works.",
     customButtons: (tour) => [
       { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
       { text: 'End Tour', action: () => tour.cancel(), classes: 'trace-shepherd-btn-ghost' },
@@ -159,20 +168,20 @@ const STEP_DEFS = [
     id: 'form-fields',
     attachTo: { element: '[data-tutorial="form-fields"]', on: 'top' },
     title: 'Notes in. Fields out.',
-    text: 'Every field was populated from the spoken notes in about 5 seconds. Key fields like Age and Current Location were extracted directly from the spoken notes — the caseworker can edit any field before saving.',
+    text: 'Every field was populated from the spoken notes in about 5 seconds. Key fields like Age and Current Location were extracted directly from the spoken notes, the caseworker can edit any field before saving.',
     beforeShowPromise: waitForStructuring
   },
   {
     id: 'risk-flag',
     attachTo: { element: '[data-tutorial="risk-flag"]', on: 'bottom' },
     title: 'Risk score with receipts',
-    text: 'HIGH risk — not a black box. TRACE shows which exact fields triggered each of the four CTDC indicators: recruitment fraud, document confiscation, movement restriction, and debt bondage. And it tells the caseworker what information is still missing.'
+    text: 'HIGH risk, not a black box. TRACE shows which exact fields triggered each of the four CTDC indicators: recruitment fraud, document confiscation, movement restriction, and debt bondage.'
   },
   {
     id: 'ask-ai-why',
     attachTo: { element: '[data-tutorial="ask-ai-why"]', on: 'bottom' },
-    title: 'Not a black box',
-    text: "This case triggered four CTDC indicators — not a guess, not a black box. Every flag is traceable to specific words and field values. Click 'Ask AI why →' to open the TRACE Assistant with a plain-language explanation of every risk flag.",
+    title: 'Ask TRACE AI why',
+    text: "Every risk flag traces back to a specific field value or keyword, not a guess. Click 'Ask AI why' to open the TRACE Assistant. It will explain, in plain language, exactly which details triggered each CTDC indicator.",
     beforeShowPromise: ensureRiskBannerVisible,
     customButtons: (tour) => [
       { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
@@ -191,13 +200,13 @@ const STEP_DEFS = [
     id: 'services',
     attachTo: { element: '[data-tutorial="services"]', on: 'bottom' },
     title: 'Suggested referral services',
-    text: 'Based on case details and location, TRACE surfaces possible services for human review. These referral options come from a cached IOM and UNHCR provider directory, available offline. In production, organizations with administrative access configure which service directories populate this list — including UNHCR PING, IOM DTM partner networks, or their own verified provider list.'
+    text: 'Based on case details and location, TRACE surfaces possible services for human review. These referral options come from a cached IOM and UNHCR provider directory, available offline. In production, organizations with administrative access configure which service directories populate this list, including UNHCR PING, IOM DTM partner networks, or their own verified provider list.'
   },
   {
     id: 'chatbot',
     attachTo: { element: '[data-tutorial="chatbot-input"]', on: 'top' },
     title: 'Ask TRACE anything',
-    text: "The TRACE Assistant is open and grounded in Amina's case. The question above is pre-filled. Press Send to watch TRACE draft a complete referral letter — or type your own question.<br /><br />When you're done, you can return to this chat at any time by clicking the chat bubble in the bottom-right corner.",
+    text: "The TRACE Assistant is open and grounded in Amina's case. The question above is pre-filled. Press Send to watch TRACE draft a complete referral letter, or type your own question.<br /><br />When you're done, you can return to this chat at any time by clicking the chat bubble in the bottom-right corner.",
     beforeShowPromise: openChatbotWithPrefill,
     customButtons: (tour) => [
       { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
@@ -223,8 +232,8 @@ const STEP_DEFS = [
   {
     id: 'supervisor-tab',
     attachTo: { element: '[data-tutorial="documents-tab"]', on: 'bottom' },
-    title: 'Insights tab — where TRACE works for you.',
-    text: 'The referral letter TRACE just drafted is waiting here. The Insights tab holds every AI-generated document for this case: referral letter, case summary, IOM monthly return entry, missing information report, and follow-up plan. Each is editable and downloadable before any action is taken.',
+    title: 'Insights tab, where TRACE works for you.',
+    text: "Generate the referral letter here with one click. TRACE uses the structured fields, risk flags, and survivor details from this case to draft it. You review and edit before anything is sent.<br /><br />The Insights tab holds every AI-generated document for this case: referral letter, case summary, IOM monthly return entry, missing information report, and follow-up plan. Each is editable and downloadable before any action is taken. The Missing Information Report shows exactly what data gaps remain for a complete CTDC risk assessment, distinct from the risk score itself.",
     beforeShowPromise: closeChatbotThenSwitchToInsights
   },
   {
@@ -236,7 +245,12 @@ const STEP_DEFS = [
   {
     id: 'closing',
     title: "That's TRACE.",
-    text: 'Offline-first. Multilingual. Human-in-the-loop. Built for frontline caseworkers where the data gaps are largest and the tools are worst. Explore the rest on your own.'
+    text: 'Offline-first. Multilingual. Human-in-the-loop. Built for frontline caseworkers where the data gaps are largest and the tools are worst. Explore the rest on your own.',
+    customButtons: (tour) => [
+      { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
+      { text: 'End Tour', action: () => tour.cancel(), classes: 'trace-shepherd-btn-ghost' },
+      { text: 'Explore TRACE →', action: () => tour.complete(), classes: 'trace-shepherd-btn-primary' }
+    ]
   }
 ];
 
@@ -250,15 +264,34 @@ export function startGuidedTour({ onEnd } = {}) {
     }
   });
 
+  // Defensive cleanup: Shepherd should only ever have one step's element
+  // mounted at a time, but overlapping beforeShowPromise/customButton timers
+  // (this tour uses several) can occasionally let a new step show before the
+  // previous one has torn down, stacking dialogs and breaking Previous/Next.
+  // Force-destroy every step that isn't the one currently showing.
+  tour.on('show', () => {
+    const current = tour.getCurrentStep();
+    tour.steps.forEach((step) => {
+      if (step !== current && step.el && document.body.contains(step.el)) {
+        step.destroy();
+      }
+    });
+    // Fade the new step in (paired with the CSS opacity transition on
+    // .trace-shepherd) rather than having it appear instantly.
+    if (current?.el) {
+      current.el.style.opacity = '0';
+      requestAnimationFrame(() => {
+        current.el.style.opacity = '1';
+      });
+    }
+  });
+
   STEP_DEFS.forEach((def, i) => {
     const isFirst = i === 0;
-    const isLast = i === STEP_DEFS.length - 1;
     let buttons;
 
     if (def.customButtons) {
       buttons = def.customButtons(tour);
-    } else if (isLast) {
-      buttons = [{ text: 'Explore TRACE →', action: () => tour.complete(), classes: 'trace-shepherd-btn-primary' }];
     } else {
       buttons = [];
       if (!isFirst) {

@@ -1,4 +1,4 @@
-// SIMULATED DATA SOURCE — ACLED (Armed Conflict Location & Event Data)
+// SIMULATED DATA SOURCE, ACLED (Armed Conflict Location & Event Data)
 //
 // Stands in for a live query against the ACLED API (acleddata.com). To wire
 // up the real thing: replace the body of fetchAcledEvents() with a request
@@ -67,7 +67,7 @@ export const ACLED_EVENTS = [
     location: 'Bosso, Lake Chad Basin',
     country: 'Niger',
     fatalities: 0,
-    note: 'Reported abduction of 4 young women from a lakeside village — consistent with the recruitment-for-exploitation pattern flagged in recent case data.'
+    note: 'Reported abduction of 4 young women from a lakeside village, consistent with the recruitment-for-exploitation pattern flagged in recent case data.'
   }
 ];
 

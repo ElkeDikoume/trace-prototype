@@ -4,9 +4,9 @@ import { generateCaseLocator, hashAccessPhrase } from '../lib/portableRecord.js'
 import { useI18n } from '../lib/i18n.jsx';
 
 const WALKTHROUGH = [
-  'Ask the survivor for three things they will always remember — a name, a place, and a year.',
+  'Ask the survivor for three things they will always remember, a name, a place, and a year.',
   'Enter them here.',
-  'TRACE generates a secure code — the words are never saved.',
+  'TRACE generates a secure code, the words are never saved.',
   'Coach the survivor: "If you ever need to access your record at another organization, give them these three things."'
 ];
 
@@ -101,11 +101,11 @@ export default function PortableRecordSetup({ portableRecord, onSave, onDelete }
           </div>
 
           <div className="text-xs text-slate-400 space-y-1 mb-3">
-            <div><span className="text-slate-300 font-medium">{t('Preferred name:')}</span> {portableRecord.preferredName || '—'}</div>
-            <div><span className="text-slate-300 font-medium">{t('Preferred language:')}</span> {portableRecord.preferredLanguage || '—'}</div>
-            <div><span className="text-slate-300 font-medium">{t('Organizations involved:')}</span> {portableRecord.organizations || '—'}</div>
-            <div><span className="text-slate-300 font-medium">{t('Pre-authorized urgent needs:')}</span> {portableRecord.urgentNeeds || '—'}</div>
-            <div><span className="text-slate-300 font-medium">{t('Consent terms:')}</span> {portableRecord.consentTerms || '—'}</div>
+            <div><span className="text-slate-300 font-medium">{t('Preferred name:')}</span> {portableRecord.preferredName || '-'}</div>
+            <div><span className="text-slate-300 font-medium">{t('Preferred language:')}</span> {portableRecord.preferredLanguage || '-'}</div>
+            <div><span className="text-slate-300 font-medium">{t('Organizations involved:')}</span> {portableRecord.organizations || '-'}</div>
+            <div><span className="text-slate-300 font-medium">{t('Pre-authorized urgent needs:')}</span> {portableRecord.urgentNeeds || '-'}</div>
+            <div><span className="text-slate-300 font-medium">{t('Consent terms:')}</span> {portableRecord.consentTerms || '-'}</div>
           </div>
 
           <div className="flex gap-2">

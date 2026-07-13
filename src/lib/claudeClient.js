@@ -72,9 +72,9 @@ export async function interpretAndStructureNotes({ freeText, languageLabel, form
 
   const system = `You are a real-time interpreter and caseworker assistant supporting anti-trafficking and protection casework in the Sahel region, standing in for a live Meta SeamlessM4T speech/text interpretation pipeline.
 
-Step 1 — Interpretation: Translate the caseworker's field note from ${languageLabel} into French. Preserve names, places, and quoted statements exactly.
+Step 1, Interpretation: Translate the caseworker's field note from ${languageLabel} into French. Preserve names, places, and quoted statements exactly.
 
-Step 2 — Structuring: Using your French translation, extract information into this exact JSON schema for the "${form.name}" form (return ONLY valid JSON, no prose, no markdown fences):
+Step 2, Structuring: Using your French translation, extract information into this exact JSON schema for the "${form.name}" form (return ONLY valid JSON, no prose, no markdown fences):
 {
   "translation": "...",
   "fields": {
@@ -87,7 +87,7 @@ ${fieldList}
 
 Rules:
 - "translation" is the full French translation of the caseworker's note.
-- For fields with fixed options (type: select), output one of the exact option strings listed — these are controlled values and stay in English, do not translate them.
+- For fields with fixed options (type: select), output one of the exact option strings listed, these are controlled values and stay in English, do not translate them.
 - For free-text fields (type: text/textarea), write the value in French, translated from the source language.
 - Only include information actually present or clearly implied in the note. Do not invent details.
 - If a field has no information available, use an empty string "".
@@ -105,7 +105,7 @@ Rules:
 /**
  * Standalone online-mode interpretation demo: translates a local-language
  * field note into English, simulating a live Meta SeamlessM4T pass. Unlike
- * interpretAndStructureNotes(), this does not structure into a form — it's
+ * interpretAndStructureNotes(), this does not structure into a form, it's
  * the showcase panel for the interpretation capability itself.
  */
 export async function interpretToEnglish({ freeText, languageLabel }) {
@@ -113,7 +113,7 @@ export async function interpretToEnglish({ freeText, languageLabel }) {
 
 Translate the caseworker's field note from ${languageLabel} into English. Preserve names, places, and quoted statements exactly.
 
-Output format: wrap ONLY the translated English text in <translation></translation> tags, with nothing else inside or outside the tags — no preamble, no commentary, no explanation of the task.`;
+Output format: wrap ONLY the translated English text in <translation></translation> tags, with nothing else inside or outside the tags, no preamble, no commentary, no explanation of the task.`;
 
   const text = await callClaude({
     system,
@@ -129,11 +129,11 @@ Output format: wrap ONLY the translated English text in <translation></translati
 // structuring calls) so Claude's own output is unmistakably marked as demo
 // content, on top of the client-side watermark added around downloads.
 const DOCUMENT_WATERMARK_INSTRUCTION = `Begin every generated document with this header on its own line:
-⚠️  DEMO PROTOTYPE — NOT REAL CASE DATA — Austin AI Hub Hackathon 2026  ⚠️
+⚠️  DEMO PROTOTYPE, NOT REAL CASE DATA, Austin AI Hub Hackathon 2026  ⚠️
 =====================================
 And end every document with:
 =====================================
-END OF DEMO DOCUMENT — TRACE Hackathon Prototype
+END OF DEMO DOCUMENT, TRACE Hackathon Prototype
 trace-prototype-ten.vercel.app | Not for operational use`;
 
 function fieldSummary(form, caseData) {
@@ -149,7 +149,7 @@ function riskSummaryText(riskResult) {
 }
 
 /**
- * Documents tab — AI draft generators. Each produces plain text (no markdown
+ * Documents tab, AI draft generators. Each produces plain text (no markdown
  * fences/headers) that renders directly into an editable textarea (or, for
  * the missing-info report, a read-only list) so the caseworker can revise
  * before downloading.
@@ -159,9 +159,9 @@ export async function generateReferralLetter({ caseData, form, riskResult, servi
 
   const system = `You are TRACE, an AI assistant helping frontline anti-trafficking and protection caseworkers draft field documents. Draft a short, formally structured referral letter from the caseworker to a receiving service provider, based on the case data below.
 
-Include: a date placeholder, a recipient agency placeholder (use the most relevant candidate service below if one fits), a brief case summary that preserves confidentiality (use the survivor's identifier/pseudonym only — never invent a real name), the reason for referral, requested services, and a caseworker sign-off placeholder. Do not invent details not present in the case data.
+Include: a date placeholder, a recipient agency placeholder (use the most relevant candidate service below if one fits), a brief case summary that preserves confidentiality (use the survivor's identifier/pseudonym only, never invent a real name), the reason for referral, requested services, and a caseworker sign-off placeholder. Do not invent details not present in the case data.
 
-Output plain text only, ready to paste into a letter template — no markdown headers, no commentary.
+Output plain text only, ready to paste into a letter template, no markdown headers, no commentary.
 
 Case data:
 ${fieldSummary(form, caseData)}
@@ -182,7 +182,7 @@ export async function generateCaseSummary({ caseData, form, riskResult }) {
 
 Paragraph 1: who the survivor is and how the case came to attention. Paragraph 2: the trafficking/protection concern and risk assessment. Paragraph 3: current status and recommended next steps. Do not invent details not present in the case data.
 
-Output plain text only — no markdown headers, no commentary.
+Output plain text only, no markdown headers, no commentary.
 
 Case data:
 ${fieldSummary(form, caseData)}
@@ -200,7 +200,7 @@ export async function generateIomMonthlyReturnEntry({ caseData, form }) {
 
 Use these standard IOM monthly return fields, one per line, as a clean labeled list: Case reference, Reporting month/year (use a placeholder), Country/location, Age, Gender, Nationality, Type of exploitation, Referral pathway, Case status. Write "Not recorded" for any field with no data in the case. Do not invent data not present in the case.
 
-Output plain text only — no markdown headers, no commentary.
+Output plain text only, no markdown headers, no commentary.
 
 Case data:
 ${fieldSummary(form, caseData)}
@@ -211,7 +211,7 @@ ${DOCUMENT_WATERMARK_INSTRUCTION}`;
 }
 
 export async function generateMissingInfoReport({ caseData, form, riskResult }) {
-  const system = `You are TRACE, an AI assistant helping frontline anti-trafficking and protection caseworkers assess case completeness. Identify which fields in the case data below are empty, "Unknown", or unclear, focusing specifically on fields that are CTDC (Counter-Trafficking Data Collaborative) risk indicator fields — for example documents confiscated, debt/economic coercion, movement restriction, physical abuse, sexual abuse, recruitment method, and type of exploitation.
+  const system = `You are TRACE, an AI assistant helping frontline anti-trafficking and protection caseworkers assess case completeness. Identify which fields in the case data below are empty, "Unknown", or unclear, focusing specifically on fields that are CTDC (Counter-Trafficking Data Collaborative) risk indicator fields, for example documents confiscated, debt/economic coercion, movement restriction, physical abuse, sexual abuse, recruitment method, and type of exploitation.
 
 For each missing or unclear field, name the field and explain in one sentence why documenting it would matter for a complete CTDC risk assessment. If every relevant field is already documented, say so plainly.
 
@@ -233,7 +233,7 @@ export async function generateFollowUpPlan({ caseData, form, riskResult }) {
 
 Structure the plan as a short numbered list (3-6 items), each item actionable and specific to this case (e.g. which service to follow up with, what to re-assess, who to check in with). Do not invent details not present in the case data.
 
-Output plain text only — no markdown headers, no commentary.
+Output plain text only, no markdown headers, no commentary.
 
 Case data:
 ${fieldSummary(form, caseData)}
@@ -276,7 +276,7 @@ export async function askCaseChatbot({ question, form, caseData, riskResult, ser
     : 'No IOM DTM displacement data matched to this case location.';
 
   const acledSummary = (acledEvents || []).length
-    ? acledEvents.map((e) => `- ${e.date} ${e.eventType} — ${e.location}, ${e.country} (${e.actor}, ${e.fatalities} fatalities): ${e.note}`).join('\n')
+    ? acledEvents.map((e) => `- ${e.date} ${e.eventType}, ${e.location}, ${e.country} (${e.actor}, ${e.fatalities} fatalities): ${e.note}`).join('\n')
     : 'No recent ACLED conflict events matched to this case location.';
 
   const patternSummary = (patternAlerts || []).length
@@ -284,12 +284,12 @@ export async function askCaseChatbot({ question, form, caseData, riskResult, ser
     : 'No organization-wide pattern alerts currently active.';
 
   const languageInstruction = aiLanguage && aiLanguage !== 'English'
-    ? `Respond in ${aiLanguage}. All outputs must be in ${aiLanguage}, including referral letters and lists — regardless of the language of the case data or grounding context below (which may be in English).\n\n`
+    ? `Respond in ${aiLanguage}. All outputs must be in ${aiLanguage}, including referral letters and lists, regardless of the language of the case data or grounding context below (which may be in English).\n\n`
     : '';
 
   const system = `${languageInstruction}You are TRACE, an AI assistant embedded in a case management tool for frontline anti-trafficking and protection caseworkers (IOM/UNHCR/NGO partners) in West and Central Africa, including the Lake Chad Basin.
 
-Ground every answer in IOM Human Trafficking Case Data Standards (HTCDS) protocol and in the specific case data and contextual data sources provided below. Be concise, practical, and field-appropriate. If asked to generate a referral letter, produce a short, formally structured letter (date placeholder, recipient agency, case summary, reason for referral, requested services, caseworker sign-off placeholder). If asked why a case was flagged at a given risk level, explain using the matched indicators and evidence listed below — do not invent indicators that are not listed. When you use the CTDC, IOM DTM, ACLED, or pattern-intelligence context below, name the source explicitly (e.g. "per IOM DTM data..." or "CTDC-documented pattern..."), and note that in this prototype these are simulated/demo datasets standing in for the live integrations. If you don't have enough information, say so and suggest what the caseworker should document next.
+Ground every answer in IOM Human Trafficking Case Data Standards (HTCDS) protocol and in the specific case data and contextual data sources provided below. Be concise, practical, and field-appropriate. If asked to generate a referral letter, produce a short, formally structured letter (date placeholder, recipient agency, case summary, reason for referral, requested services, caseworker sign-off placeholder). If asked why a case was flagged at a given risk level, explain using the matched indicators and evidence listed below, do not invent indicators that are not listed. When you use the CTDC, IOM DTM, ACLED, or pattern-intelligence context below, name the source explicitly (e.g. "per IOM DTM data..." or "CTDC-documented pattern..."), and note that in this prototype these are simulated/demo datasets standing in for the live integrations. If you don't have enough information, say so and suggest what the caseworker should document next.
 
 Current form type: ${form ? form.name : 'None selected'}
 
@@ -302,16 +302,16 @@ ${riskSummary}
 Available services (IOM/UNHCR West Africa directory):
 ${serviceSummary}
 
-CTDC (Counter-Trafficking Data Collaborative) matched indicator patterns — simulated dataset:
+CTDC (Counter-Trafficking Data Collaborative) matched indicator patterns, simulated dataset:
 ${ctdcSummary}
 
-IOM DTM (Displacement Tracking Matrix) context for this case's location — simulated dataset:
+IOM DTM (Displacement Tracking Matrix) context for this case's location, simulated dataset:
 ${dtmSummary}
 
-ACLED (Armed Conflict Location & Event Data) — recent nearby conflict events, simulated dataset:
+ACLED (Armed Conflict Location & Event Data), recent nearby conflict events, simulated dataset:
 ${acledSummary}
 
-Pattern intelligence across the organization's caseload — simulated cross-case analysis:
+Pattern intelligence across the organization's caseload, simulated cross-case analysis:
 ${patternSummary}`;
 
   const messages = [

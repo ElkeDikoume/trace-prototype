@@ -4,7 +4,7 @@
 // Promise, mirroring the shape of a real API client (fetch + parse + return),
 // even though the data underneath is currently hardcoded. This means swapping
 // in a live integration later (CTDC, IOM DTM, ACLED, an internal caseload API)
-// only requires rewriting the body of the fetch function — call sites in the
+// only requires rewriting the body of the fetch function, call sites in the
 // UI never change.
 
 export function simulateLatency(ms = 200) {

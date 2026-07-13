@@ -1,4 +1,4 @@
-// SIMULATED DATA SOURCE — IOM DTM (Displacement Tracking Matrix)
+// SIMULATED DATA SOURCE, IOM DTM (Displacement Tracking Matrix)
 //
 // Stands in for a live query against IOM's DTM API (dtm.iom.int). To wire up
 // the real thing: replace the body of fetchDtmContext() with a request to the

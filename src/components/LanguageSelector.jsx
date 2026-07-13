@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { UI_LANGUAGES } from '../lib/i18n.jsx';
 
-// Full interface-language switching is a production feature — this demo
+// Full interface-language switching is a production feature, this demo
 // intentionally keeps the UI in English regardless of which option is
 // clicked, so the dropdown is browsable but non-functional beyond showing
 // what's on the roadmap. See the "Language selector" guided-tour step.
@@ -62,7 +62,7 @@ export default function LanguageSelector({ lang }) {
 
       {notice && (
         <div className="absolute right-0 top-9 z-[60] bg-trace-800 border border-trace-700 rounded-lg shadow-xl px-3 py-2 w-56 text-[11px] text-slate-300 leading-relaxed">
-          Language switching available in production — currently showing English for this demo.
+          Language switching available in production, currently showing English for this demo.
         </div>
       )}
     </div>

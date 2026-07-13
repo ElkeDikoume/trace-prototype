@@ -32,8 +32,8 @@ export const DEMO_CASE_DATA = {
 // (load notes) and Step 4 (interpretation panel) show the same testimony.
 // The debt-bondage sentence states that indicator explicitly (see prior
 // commit) so HIGH risk fires reliably. The final sentence adds her age and
-// current location explicitly, since neither was clearly stated before —
-// only her origin (Kano) was mentioned — so the tour's "form-fields" step
+// current location explicitly, since neither was clearly stated before,
+// only her origin (Kano) was mentioned, so the tour's "form-fields" step
 // can honestly point at Age and Current Location as fields the AI actually
 // extracted from the notes, not fields that happened to stay empty.
 export const DEMO_INTAKE_NOTES = "Ta ce mai daukar ma'aikata ya karɓi takardar shaidar ta, ba za ta iya tafiya ba. An kawo ta daga Kano, ana cewa za a ba ta aiki a gidan yara, amma an tilasta ta yin aiki ba tare da kuɗi ba. Ta ce an gaya mata cewa tana bin bashin daukar ma'aikata, kuma ana cire kuɗi daga albashinta kafin ta karɓi kome. Tana da shekaru 28, kuma a yanzu ana tsare da ita a N'Djamena.";

@@ -23,14 +23,14 @@ export default function PatternAlertsBanner({ alerts }) {
         </div>
         <span className="text-slate-500 text-xs flex-shrink-0">{open ? '▲' : '▼'}</span>
       </button>
-      <p className="text-[11px] text-slate-500 mt-0.5">{t('From survivor intake to safer referral — even offline.')}</p>
+      <p className="text-[11px] text-slate-500 mt-0.5">{t('From survivor intake to safer referral, even offline.')}</p>
 
       {open && (
         <div className="mt-2 space-y-2 max-h-40 overflow-y-auto scrollbar-thin">
           {alerts.map((a) => (
             <div key={a.id} className={`text-xs border-l-2 pl-2 ${SEVERITY_STYLES[a.severity] || 'border-trace-700 text-slate-300'}`}>
               <div className="font-medium">
-                {a.title} <span className="text-slate-500 font-normal">— {a.region} · {a.casesCited} {t('cases')} · {a.detectedDate}</span>
+                {a.title} <span className="text-slate-500 font-normal">: {a.region} · {a.casesCited} {t('cases')} · {a.detectedDate}</span>
               </div>
               <div className="text-slate-400 font-normal">{a.description}</div>
             </div>

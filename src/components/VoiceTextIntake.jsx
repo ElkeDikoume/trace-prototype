@@ -162,7 +162,7 @@ export default function VoiceTextIntake({ form, onStructured, onlineMode }) {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-trace-accent opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-trace-accent"></span>
           </span>
-          {t('Online mode — real-time interpretation active (powered by SeamlessM4T)')}
+          {t('Online mode, real-time interpretation active (powered by SeamlessM4T)')}
         </div>
       )}
 
@@ -231,7 +231,7 @@ export default function VoiceTextIntake({ form, onStructured, onlineMode }) {
           {interpreting ? t('Interpreting…') : busy ? t('Structuring…') : isLocalLanguage ? `✨ ${t('Interpret & structure')}` : `✨ ${t('Structure with AI')}`}
         </button>
         {!speechSupported && (
-          <span className="text-xs text-slate-500">{t('Voice input unsupported here — typing still works.')}</span>
+          <span className="text-xs text-slate-500">{t('Voice input unsupported here, typing still works.')}</span>
         )}
       </div>
 

@@ -4,10 +4,10 @@ import { useI18n } from '../lib/i18n.jsx';
 const STEPS = [
   { selector: '[data-tutorial="header"]', title: 'Welcome to TRACE', body: "This is your caseworker AI assistant. Let's take a 60-second tour." },
   { selector: '[data-tutorial="language-selector"]', title: 'Interface language', body: 'Switch the interface and AI responses between English, French, Arabic, Spanish, and Portuguese at any time.' },
-  { selector: '[data-tutorial="pattern-banner"]', title: 'Pattern intelligence', body: "Cross-case alerts from your organization's caseload — simulated for this prototype." },
+  { selector: '[data-tutorial="pattern-banner"]', title: 'Pattern intelligence', body: "Cross-case alerts from your organization's caseload, simulated for this prototype." },
   { selector: '[data-tutorial="form-selector"]', title: 'Start a new case', body: 'Choose a form type to begin a new case, or reopen an existing one.' },
   { selector: '[data-tutorial="active-form"]', title: 'Voice or text intake', body: 'Speak or type case notes in 8 languages. AI structures them into the form and flags risk automatically.' },
-  { selector: '[data-tutorial="chatbot"]', title: 'Ask TRACE', body: 'Ask questions about the case, request a referral letter, or ask why a case was flagged — grounded in the case data.' },
+  { selector: '[data-tutorial="chatbot"]', title: 'Ask TRACE', body: 'Ask questions about the case, request a referral letter, or ask why a case was flagged, grounded in the case data.' },
   { selector: '[data-tutorial="support-care"]', title: 'Support & Care', body: 'Take care of yourself too. Tap the heart any time for a breathing exercise and wellbeing resources.' }
 ];
 

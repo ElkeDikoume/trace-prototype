@@ -49,7 +49,7 @@ export default function SurvivorLookupModal({ open, onClose, cases, onDelete }) 
 
         <div className="p-4">
           <p className="text-xs text-slate-400 mb-3">
-            {t('Simulates a survivor arriving at a new agency. Ask them for the three things they memorized, enter them exactly, and TRACE checks for a matching record — without ever seeing the original words stored anywhere.')}
+            {t('Simulates a survivor arriving at a new agency. Ask them for the three things they memorized, enter them exactly, and TRACE checks for a matching record, without ever seeing the original words stored anywhere.')}
           </p>
 
           <div className="grid grid-cols-3 gap-2 mb-2">
@@ -72,13 +72,13 @@ export default function SurvivorLookupModal({ open, onClose, cases, onDelete }) 
 
           {result && (
             <div className="bg-trace-800 border border-trace-700 rounded-lg p-3">
-              <div className="text-xs text-trace-risk-low font-medium mb-2">✓ {t('Access phrase verified — portable summary below')}</div>
+              <div className="text-xs text-trace-risk-low font-medium mb-2">✓ {t('Access phrase verified, portable summary below')}</div>
               <div className="text-xs text-slate-400 space-y-1 mb-3">
-                <div><span className="text-slate-300 font-medium">{t('Preferred name:')}</span> {result.portableRecord.preferredName || '—'}</div>
-                <div><span className="text-slate-300 font-medium">{t('Preferred language:')}</span> {result.portableRecord.preferredLanguage || '—'}</div>
-                <div><span className="text-slate-300 font-medium">{t('Organizations involved:')}</span> {result.portableRecord.organizations || '—'}</div>
-                <div><span className="text-slate-300 font-medium">{t('Pre-authorized urgent needs:')}</span> {result.portableRecord.urgentNeeds || '—'}</div>
-                <div><span className="text-slate-300 font-medium">{t('Consent terms:')}</span> {result.portableRecord.consentTerms || '—'}</div>
+                <div><span className="text-slate-300 font-medium">{t('Preferred name:')}</span> {result.portableRecord.preferredName || '-'}</div>
+                <div><span className="text-slate-300 font-medium">{t('Preferred language:')}</span> {result.portableRecord.preferredLanguage || '-'}</div>
+                <div><span className="text-slate-300 font-medium">{t('Organizations involved:')}</span> {result.portableRecord.organizations || '-'}</div>
+                <div><span className="text-slate-300 font-medium">{t('Pre-authorized urgent needs:')}</span> {result.portableRecord.urgentNeeds || '-'}</div>
+                <div><span className="text-slate-300 font-medium">{t('Consent terms:')}</span> {result.portableRecord.consentTerms || '-'}</div>
               </div>
               <p className="text-[11px] text-slate-500 mb-3">{t('Full case notes are not shared here. A new consent conversation is required for full access.')}</p>
               <button onClick={handleDelete} className="text-xs px-2 py-1 rounded bg-trace-risk-high/15 border border-trace-risk-high text-trace-risk-high hover:bg-trace-risk-high/25">

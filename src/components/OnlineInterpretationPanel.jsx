@@ -3,7 +3,7 @@ import { interpretToEnglish } from '../lib/claudeClient.js';
 import { isSpeechRecognitionSupported, createRecognizer } from '../lib/speech.js';
 import { useI18n } from '../lib/i18n.jsx';
 
-// Kept in sync with DEMO_INTAKE_NOTES in data/demoCase.js — the guided
+// Kept in sync with DEMO_INTAKE_NOTES in data/demoCase.js, the guided
 // tour's Step 3 loads that exact text into the intake form, and Step 4
 // spotlights this panel, so both must show identical testimony.
 const HAUSA_DEMO_TEXT = "Ta ce mai daukar ma'aikata ya karɓi takardar shaidar ta, ba za ta iya tafiya ba. An kawo ta daga Kano, ana cewa za a ba ta aiki a gidan yara, amma an tilasta ta yin aiki ba tare da kuɗi ba. Ta ce an gaya mata cewa tana bin bashin daukar ma'aikata, kuma ana cire kuɗi daga albashinta kafin ta karɓi kome. Tana da shekaru 28, kuma a yanzu ana tsare da ita a N'Djamena.";
@@ -21,6 +21,31 @@ export default function OnlineInterpretationPanel({ onlineMode }) {
   const [open, setOpen] = useState(true);
 
   useEffect(() => () => recognizerRef.current?.abort?.(), []);
+
+  async function handleInterpret() {
+    if (!text.trim()) return;
+    setBusy(true);
+    setError('');
+    try {
+      const result = await interpretToEnglish({ freeText: text, languageLabel: 'Hausa' });
+      setTranslation(result);
+    } catch (err) {
+      setError(err.message || t('Failed to interpret and structure notes.'));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  // Lets the guided tour's "I've clicked Interpret" button trigger the same
+  // interpretation call as the real button below, so both paths produce the
+  // same result. Re-registered every render so the tour always calls the
+  // closure with the current text/onlineMode, not a stale one from mount.
+  useEffect(() => {
+    window.__traceInterpretNow = handleInterpret;
+    return () => {
+      delete window.__traceInterpretNow;
+    };
+  });
 
   if (!onlineMode) {
     return (
@@ -64,20 +89,6 @@ export default function OnlineInterpretationPanel({ onlineMode }) {
     setListening(true);
   }
 
-  async function handleTranslate() {
-    if (!text.trim()) return;
-    setBusy(true);
-    setError('');
-    try {
-      const result = await interpretToEnglish({ freeText: text, languageLabel: 'Hausa' });
-      setTranslation(result);
-    } catch (err) {
-      setError(err.message || t('Failed to interpret and structure notes.'));
-    } finally {
-      setBusy(false);
-    }
-  }
-
   return (
     <div data-tutorial="online-interpretation" className="flex-shrink-0 bg-trace-900 border-b border-trace-700 px-4 py-3">
       <div className="flex items-center justify-between mb-2">
@@ -119,11 +130,11 @@ export default function OnlineInterpretationPanel({ onlineMode }) {
             </button>
             <button
               data-tutorial="interpret-button"
-              onClick={handleTranslate}
+              onClick={handleInterpret}
               disabled={busy}
               className="px-3 py-1.5 rounded-md text-sm font-medium bg-trace-accent text-white hover:bg-sky-500 disabled:opacity-50"
             >
-              {busy ? t('Interpreting…') : `✨ ${t('Translate')}`}
+              {busy ? t('Interpreting…') : `✨ ${t('Interpret')}`}
             </button>
           </div>
           {error && <p className="text-xs text-red-400 mb-2">{error}</p>}

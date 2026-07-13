@@ -29,7 +29,7 @@ function Field({ field, value, onChange }) {
   if (field.type === 'select') {
     return (
       <select value={value || ''} onChange={(e) => onChange(field.key, e.target.value)} className={common}>
-        <option value="">{t('— select —')}</option>
+        <option value="">{t('Select...')}</option>
         {field.options.map((opt) => (
           <option key={opt} value={opt}>{t(opt)}</option>
         ))}

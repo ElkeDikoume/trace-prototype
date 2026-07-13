@@ -142,7 +142,7 @@ export const FORM_TYPES = [
       { key: 'currentRiskLevel', label: 'Current perceived risk level', type: 'select', options: ['Low', 'Medium', 'High', 'Unknown'] },
       { key: 'servicesOutstanding', label: 'Services still outstanding', type: 'textarea' },
       { key: 'clientWellbeing', label: 'Client well-being assessment', type: 'textarea' },
-      { key: 'caseStatus', label: 'Recommended case status', type: 'select', options: ['Continue active', 'Step down', 'Close — resolved', 'Close — lost contact', 'Escalate'] },
+      { key: 'caseStatus', label: 'Recommended case status', type: 'select', options: ['Continue active', 'Step down', 'Close, resolved', 'Close, lost contact', 'Escalate'] },
       { key: 'reviewNotes', label: 'Review notes', type: 'textarea' }
     ]
   }

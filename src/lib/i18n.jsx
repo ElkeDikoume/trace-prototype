@@ -27,7 +27,7 @@ export function getLanguageMeta(code) {
 }
 
 // English source strings are the dictionary keys, so English itself needs no
-// translation table — untranslated strings (or an untranslated language)
+// translation table, untranslated strings (or an untranslated language)
 // fall back to the original English text automatically.
 export function translate(lang, str) {
   if (!str || lang === 'en') return str;

@@ -258,7 +258,7 @@ export default function App() {
     setShowWelcome(false);
   }
 
-  // Mock Microsoft SSO — no real auth, just a localStorage-backed "session"
+  // Mock Microsoft SSO, no real auth, just a localStorage-backed "session"
   // so judges see what an org-connected login would surface in the header.
   function handleSignIn() {
     const session = { org: "N'Djamena IOM Office", role: 'Caseworker', mode: 'demo' };
@@ -280,7 +280,7 @@ export default function App() {
       if (!tourLaunchedRef.current) {
         tourLaunchedRef.current = true;
         // The old hand-rolled tutorial and the Shepherd tour must never be
-        // visible at the same time — they'd stack.
+        // visible at the same time, they'd stack.
         setShowTutorial(false);
         guidedTourRef.current = startGuidedTour({
           onEnd: () => { guidedTourRef.current = null; }
@@ -301,7 +301,7 @@ export default function App() {
       handleFieldChange('caseworkerNotes', DEMO_INTAKE_NOTES);
       // VoiceTextIntake's freeform notes textarea (what its own "Structure
       // with AI" button actually reads from) is local component state, not
-      // wired to caseData — set it directly via the native input setter so
+      // wired to caseData, set it directly via the native input setter so
       // React's controlled-input tracking picks up the change.
       const textarea = document.querySelector('[data-tutorial="voice-intake"] textarea');
       if (textarea) {
@@ -504,7 +504,7 @@ export default function App() {
         <div className="flex items-center gap-1.5 flex-wrap justify-end">
           {mockSession ? (
             <span className="text-[11px] text-slate-400 bg-trace-800 border border-trace-700 px-2 py-0.5 rounded">
-              🏢 {mockSession.org} — Demo
+              🏢 {mockSession.org}, Demo
             </span>
           ) : (
             <button onClick={() => setShowWelcome(true)} className="text-[11px] text-slate-500 hover:text-slate-300">
