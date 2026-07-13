@@ -8,7 +8,6 @@ import { fetchCtdcIndicators } from './services/ctdcService.js';
 import { fetchDtmContext } from './services/iomDtmService.js';
 import { fetchAcledEvents } from './services/acledService.js';
 import { fetchPatternAlerts } from './services/patternIntelligenceService.js';
-import { getStoredTheme, storeTheme, applyTheme } from './lib/theme.js';
 import { usePWAInstall } from './lib/usePWAInstall.js';
 import { computeFollowUpReminder, isReminderDue } from './lib/followUp.js';
 import { DEMO_CASE_FORM_ID, DEMO_CASE_DATA, DEMO_INTAKE_NOTES, EXAMPLE_CASE_IBRAHIM, EXAMPLE_CASE_MARIECLAIRE } from './data/demoCase.js';
@@ -62,7 +61,6 @@ export default function App() {
   const [ctdcMatches, setCtdcMatches] = useState([]);
   const [dtmContext, setDtmContext] = useState(null);
   const [acledEvents, setAcledEvents] = useState([]);
-  const [theme, setTheme] = useState(getStoredTheme);
   const [lang, setLang] = useState(getStoredLanguage);
   const { installPrompt, promptInstall } = usePWAInstall();
   const [showSupportCare, setShowSupportCare] = useState(false);
@@ -101,11 +99,6 @@ export default function App() {
       return () => clearTimeout(id);
     }
   }, []);
-
-  useEffect(() => {
-    applyTheme(theme);
-    storeTheme(theme);
-  }, [theme]);
 
   useEffect(() => {
     storeLanguage(lang);
@@ -527,12 +520,7 @@ export default function App() {
           >
             ↺ {t('Restart')}
           </button>
-          <HeaderOverflowMenu
-            theme={theme}
-            onToggleTheme={() => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))}
-            onOpenSupportCare={() => { setSupportCareHighRiskPrompt(false); setShowSupportCare(true); }}
-            onOpenLookup={() => setShowLookup(true)}
-          />
+          <HeaderOverflowMenu onOpenLookup={() => setShowLookup(true)} />
         </div>
       </header>
 

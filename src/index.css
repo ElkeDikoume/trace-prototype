@@ -22,41 +22,6 @@ textarea, input, select {
   border-radius: 9999px;
 }
 
-/* ---- Light theme ----
-   Dark mode is the default (unstyled utility classes below). Toggling
-   [data-theme="light"] on <html> raises the specificity of this block above
-   the plain Tailwind utilities so it wins without touching any component. */
-[data-theme='light'] {
-  color-scheme: light;
-}
-[data-theme='light'] textarea,
-[data-theme='light'] input,
-[data-theme='light'] select {
-  color-scheme: light;
-}
-[data-theme='light'] .bg-trace-950 { background-color: #f8fafc; }
-[data-theme='light'] .bg-trace-900 { background-color: #ffffff; }
-[data-theme='light'] .bg-trace-800 { background-color: #f1f5f9; }
-[data-theme='light'] .bg-trace-800\/60 { background-color: rgb(241 245 249 / 0.6); }
-[data-theme='light'] .bg-trace-700 { background-color: #e2e8f0; }
-[data-theme='light'] .bg-trace-600 { background-color: #cbd5e1; }
-[data-theme='light'] .hover\:bg-trace-800:hover { background-color: #e2e8f0; }
-[data-theme='light'] .hover\:bg-trace-700:hover { background-color: #dbe3ec; }
-[data-theme='light'] .hover\:bg-trace-600:hover { background-color: #cbd5e1; }
-[data-theme='light'] .border-trace-700 { border-color: #cbd5e1; }
-[data-theme='light'] .border-trace-600 { border-color: #94a3b8; }
-[data-theme='light'] .text-slate-50 { color: #0f172a; }
-[data-theme='light'] .text-slate-100 { color: #1e293b; }
-[data-theme='light'] .text-slate-200 { color: #334155; }
-[data-theme='light'] .text-slate-300 { color: #475569; }
-[data-theme='light'] .text-slate-400 { color: #64748b; }
-[data-theme='light'] .text-slate-500 { color: #94a3b8; }
-[data-theme='light'] .text-slate-600 { color: #94a3b8; }
-[data-theme='light'] .hover\:text-slate-200:hover { color: #334155; }
-[data-theme='light'] .placeholder\:text-slate-500::placeholder { color: #94a3b8; }
-[data-theme='light'] .text-red-400 { color: #dc2626; }
-[data-theme='light'] .scrollbar-thin::-webkit-scrollbar-thumb { background-color: #cbd5e1; }
-
 /* Simple breathing exercise: 3.5s inhale, 3.5s exhale = 7s loop */
 @keyframes breatheInOut {
   0% { transform: scale(0.55); }
