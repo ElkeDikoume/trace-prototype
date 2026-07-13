@@ -346,7 +346,7 @@ export default function App() {
   // the data handleSendChat closes over changes, so the tour always asks
   // against the current case/risk/context rather than a stale snapshot.
   useEffect(() => {
-    window.__traceAskDemo = (question) => handleSendChat(question || 'Why was this case flagged as high risk? Reference the specific indicators that triggered each flag.');
+    window.__traceAskDemo = (question, opts) => handleSendChat(question || 'Why was this case flagged as high risk? Reference the specific indicators that triggered each flag.', opts);
     return () => {
       delete window.__traceAskDemo;
     };
@@ -407,7 +407,12 @@ export default function App() {
     persist({ ...activeCase, data: merged });
   }
 
-  async function handleSendChat(question) {
+  // saveAsDocument (a documents.* key, e.g. 'caseSummary') lets a caller
+  // route this response straight into the Insights tab's document slot as
+  // soon as it finishes, alongside the chat transcript, in the same
+  // persist() call — the tour's demo question uses this so the judge can
+  // switch to Insights afterward and find the Case Summary already drafted.
+  async function handleSendChat(question, { saveAsDocument } = {}) {
     if (!activeCase) return;
     const history = activeCase.chatHistory || [];
     const withUser = [...history, { role: 'user', content: question }];
@@ -427,7 +432,11 @@ export default function App() {
         patternAlerts,
         aiLanguage: getLanguageMeta(lang).aiName
       });
-      persist({ ...activeCase, chatHistory: [...withUser, { role: 'assistant', content: answer }] });
+      const updated = { ...activeCase, chatHistory: [...withUser, { role: 'assistant', content: answer }] };
+      if (saveAsDocument) {
+        updated.documents = { ...(activeCase.documents || {}), [saveAsDocument]: { content: answer, status: 'draft' } };
+      }
+      persist(updated);
     } catch (err) {
       persist({
         ...activeCase,

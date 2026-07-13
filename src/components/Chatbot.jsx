@@ -2,10 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import { useI18n } from '../lib/i18n.jsx';
 
 const QUICK_QUESTIONS = [
-  'What services fit this case?',
-  'Why was this flagged?',
-  'Generate a referral letter',
-  'What information is still missing?'
+  'Why was this flagged HIGH RISK?',
+  "What's missing from this assessment?",
+  'What should happen in the next 48 hours?',
+  'Draft a supervisor handoff note'
 ];
 
 function renderEmphasis(text, keyPrefix) {

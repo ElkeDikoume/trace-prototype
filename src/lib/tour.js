@@ -48,7 +48,7 @@ function ensureRiskBannerVisible() {
   });
 }
 
-const REFERRAL_DEMO_QUESTION = "Write a referral letter for Amina to Maison de la Femme in N'Djamena.";
+const SUPERVISOR_SUMMARY_QUESTION = 'Summarize this case for a supervisor handoff in 3 paragraphs.';
 
 // Opens the floating chat bubble programmatically before the chatbot step's
 // spotlight renders, since the panel is a toggled overlay now rather than an
@@ -58,7 +58,7 @@ function openChatbotWithPrefill() {
   return new Promise((resolve) => {
     window.__traceOpenChatbot?.();
     setTimeout(() => {
-      window.__tracePreFillChat?.(REFERRAL_DEMO_QUESTION);
+      window.__tracePreFillChat?.(SUPERVISOR_SUMMARY_QUESTION);
       resolve();
     }, 400);
   });
@@ -206,7 +206,7 @@ const STEP_DEFS = [
     id: 'chatbot',
     attachTo: { element: '[data-tutorial="chatbot-input"]', on: 'top' },
     title: 'Ask TRACE anything',
-    text: "The TRACE Assistant is open and grounded in Amina's case. The question above is pre-filled. Press Send to watch TRACE draft a complete referral letter, or type your own question.<br /><br />When you're done, you can return to this chat at any time by clicking the chat bubble in the bottom-right corner.",
+    text: "The TRACE Assistant is grounded in Amina's case. The question above will generate a supervisor handoff summary that saves to the Insights tab, watch the Case Summary flip to 'Draft ready'. Or type any question: risk explanations, next steps, missing data gaps, IOM reporting format. Press Send to try it.",
     beforeShowPromise: openChatbotWithPrefill,
     customButtons: (tour) => [
       { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
@@ -221,9 +221,10 @@ const STEP_DEFS = [
       },
       {
         text: 'Send & Continue →',
-        action: () => {
-          window.__traceAskDemo?.(REFERRAL_DEMO_QUESTION);
-          setTimeout(() => tour.next(), 500);
+        action: async () => {
+          await window.__traceAskDemo?.(SUPERVISOR_SUMMARY_QUESTION, { saveAsDocument: 'caseSummary' });
+          window.__traceCloseChatbot?.();
+          tour.next();
         },
         classes: 'trace-shepherd-btn-primary'
       }
@@ -233,7 +234,7 @@ const STEP_DEFS = [
     id: 'supervisor-tab',
     attachTo: { element: '[data-tutorial="documents-tab"]', on: 'bottom' },
     title: 'Insights tab, where TRACE works for you.',
-    text: "Generate the referral letter here with one click. TRACE uses the structured fields, risk flags, and survivor details from this case to draft it. You review and edit before anything is sent.<br /><br />The Insights tab holds every AI-generated document for this case: referral letter, case summary, IOM monthly return entry, missing information report, and follow-up plan. Each is editable and downloadable before any action is taken. The Missing Information Report shows exactly what data gaps remain for a complete CTDC risk assessment, distinct from the risk score itself.",
+    text: "The Case Summary TRACE just drafted in chat is waiting here, already marked 'Draft ready'. Every other document (referral letter, IOM monthly return entry, missing information report, follow-up plan) generates the same way, with one click, using the structured fields, risk flags, and survivor details from this case. You review and edit before anything is sent.<br /><br />Each is editable and downloadable before any action is taken. The Missing Information Report shows exactly what data gaps remain for a complete CTDC risk assessment, distinct from the risk score itself.",
     beforeShowPromise: closeChatbotThenSwitchToInsights
   },
   {
