@@ -499,6 +499,14 @@ export default function App() {
           >
             {onlineMode ? `● ${t('Online')}` : `○ ${t('Offline')}`}
           </button>
+          {onlineMode && (
+            <span
+              title="Claude API live · CTDC/DTM data simulated for demo"
+              className="text-[10px] text-slate-500 border border-trace-700 rounded px-1.5 py-0.5 ml-1 cursor-help"
+            >
+              ⓘ demo data
+            </span>
+          )}
         </div>
       </header>
 

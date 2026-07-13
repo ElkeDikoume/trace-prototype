@@ -31,6 +31,7 @@ export default function RiskFlag({ riskResult, onAskWhy }) {
           {t('Ask AI why →')}
         </button>
       </div>
+      <p className="text-[10px] text-slate-500 mt-1">Decision support only — caseworker review required before any action.</p>
 
       <div className="mt-2">
         {riskResult.matched.length === 0 ? (

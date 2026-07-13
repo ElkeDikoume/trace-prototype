@@ -9,6 +9,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icons/icon-192.png', 'icons/icon-512.png'],
       manifest: {
+        version: '0.2.0',
         name: 'TRACE — Caseworker Assistant',
         short_name: 'TRACE',
         description: 'Offline-first case intake, risk flagging, and AI assistant for anti-trafficking caseworkers',
