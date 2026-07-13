@@ -102,7 +102,10 @@ textarea, input, select {
   gap: 0.5rem;
 }
 .trace-shepherd .shepherd-cancel-icon span {
-  color: #64748b;
+  color: #94a3b8; /* slate-400 */
+}
+.trace-shepherd .shepherd-cancel-icon:hover span {
+  color: #f1f5f9; /* slate-100 */
 }
 .trace-shepherd .shepherd-button {
   border-radius: 0.375rem;
