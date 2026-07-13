@@ -25,55 +25,55 @@ const STEP_DEFS = [
     id: 'pattern-intelligence',
     attachTo: { element: '[data-tutorial="pattern-banner"]', on: 'bottom' },
     title: 'Cross-case intelligence',
-    text: "Before opening a single case, TRACE surfaces what no individual worker can see — the same broker appearing across unconnected files, a new trafficking corridor emerging. Flagged for human review."
+    text: 'Before opening a single case, TRACE shows what no individual caseworker can see alone. Same broker name across 3 unconnected files. A new corridor in 7 days. All flagged for human review — never acted on automatically.'
   },
   {
     id: 'form-cards',
     attachTo: { element: '[data-tutorial="form-cards-primary"]', on: 'bottom' },
-    title: '8 standard humanitarian forms',
-    text: 'Select the intake type. TRACE knows the IOM HTCDS schema for each one and pre-populates every field it can from existing case data.',
+    title: 'Choose your form type',
+    text: "A caseworker in N'Djamena opened TRACE and selected HTCDS Intake — the IOM standard for anti-trafficking documentation. Eight form types. TRACE knows the field schema for each one.",
     beforeShowPromise: ensureFormCardsVisible
   },
   {
     id: 'form-fields',
     attachTo: { element: '[data-tutorial="form-fields"]', on: 'top' },
-    title: 'Structured automatically',
-    text: 'Case notes spoken or typed in any of 5 languages are structured into the correct fields. This case arrived in Arabic. Every field you see was filled by TRACE.'
+    title: 'Notes in. Structure out.',
+    text: "She spoke her intake notes in Hausa. Eight seconds later, TRACE filled every field you're looking at — no typing, no template. The caseworker reviews and corrects. That's the loop."
   },
   {
     id: 'interpretation',
     attachTo: { element: '[data-tutorial="online-interpretation"]', on: 'top' },
-    title: 'Local language interpretation',
-    text: 'Hausa to English in one step — no separate translation pass. 50+ million speakers across the Sahel. Almost no humanitarian tools serve them. TRACE does.'
+    title: '50 million speakers. Almost no tools.',
+    text: 'The raw notes were in Hausa. TRACE interpreted them to English before structuring. Hausa, Fulfulde, Zarma — local languages across the Sahel that existing humanitarian tools almost entirely ignore.'
   },
   {
     id: 'risk-flag',
     attachTo: { element: '[data-tutorial="risk-flag"]', on: 'bottom' },
-    title: "Risk flag with what's missing",
-    text: 'HIGH risk. Three CTDC indicators matched. But TRACE goes further: it tells the caseworker exactly what information is still missing that would sharpen or reduce this read.'
+    title: 'Risk score with receipts',
+    text: 'HIGH risk — not a black box. TRACE shows which exact fields triggered each CTDC indicator: document confiscation, debt bondage, movement restriction. The caseworker can verify every flag. And TRACE tells her what information is still missing.'
   },
   {
     id: 'chatbot',
     attachTo: { element: '[data-tutorial="chatbot-input"]', on: 'top' },
     title: 'Ask TRACE anything',
-    text: "Grounded in this case's data and IOM HTCDS protocol. Ask why it was flagged. Ask for service recommendations. Ask for a referral letter. Try it."
+    text: "Grounded in this case's data and IOM HTCDS protocol. 'Why was this flagged?' 'Draft a referral letter to Maison de la Femme.' 'What information am I still missing?' Try it — the chatbot is live."
   },
   {
     id: 'supervisor',
     attachTo: { element: '[data-tutorial="supervisor-tab"]', on: 'bottom' },
-    title: 'Supervisor intelligence',
-    text: 'Geographic risk hotspots, caseload distribution, and cross-case patterns. All flagged for caseworker and supervisor review — never autonomous.'
+    title: 'What no single caseworker sees',
+    text: 'Geographic hotspots, caseload distribution, cross-case patterns. De-identified. Flagged for supervisor review. No autonomous action. This is what makes TRACE an organizational tool, not just a caseworker tool.'
   },
   {
     id: 'support-care',
     attachTo: { element: '[data-tutorial="support-care"]', on: 'bottom' },
-    title: 'Caseworker wellbeing',
-    text: 'After every HIGH risk case, TRACE checks in on the caseworker. Vicarious trauma is documented in this work. TRACE takes it seriously.'
+    title: 'The caseworker is the resource',
+    text: 'After every HIGH-risk case, TRACE checks in. Vicarious trauma is documented in this work — burnout is one of the leading causes of data gaps in trafficking case management. TRACE takes it seriously.'
   },
   {
     id: 'closing',
-    title: "You've seen TRACE.",
-    text: 'Live prototype built for frontline anti-trafficking caseworkers. Offline-first. Multilingual. Human-in-the-loop. Explore the rest on your own.'
+    title: "That's TRACE.",
+    text: 'Offline-first. Multilingual. Human-in-the-loop. Built for frontline caseworkers in the Lake Chad Basin and francophone West Africa — where the data gaps are largest and the tools are worst. Explore the rest on your own.'
   }
 ];
 
@@ -93,7 +93,7 @@ export function startGuidedTour({ onEnd } = {}) {
     const buttons = [];
 
     if (isLast) {
-      buttons.push({ text: 'Done', action: () => tour.complete(), classes: 'trace-shepherd-btn-primary' });
+      buttons.push({ text: 'Explore TRACE →', action: () => tour.complete(), classes: 'trace-shepherd-btn-primary' });
     } else {
       if (!isFirst) {
         buttons.push({ text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' });
