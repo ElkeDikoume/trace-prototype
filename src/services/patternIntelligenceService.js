@@ -14,7 +14,7 @@ export const PATTERN_ALERTS = [
   {
     id: 'pattern-001',
     title: 'Recurring employer name across cases',
-    description: '"Alhaji Moussa Transport & Logistics" is named as employer or recruiter in 3 separate case files logged in Diffa and Niamey since June 2026 — consistent with an active recruitment network.',
+    description: '"Alhaji Moussa Transport & Logistics" is named as employer or recruiter in 3 separate case files logged in Diffa and Niamey since June 2026 — consistent with an active recruitment network (flagged for caseworker review).',
     severity: 'high',
     casesCited: 3,
     region: 'Diffa / Niamey',
@@ -23,7 +23,7 @@ export const PATTERN_ALERTS = [
   {
     id: 'pattern-002',
     title: 'Shared recruitment channel',
-    description: '5 cases opened since May 2026 report recruitment through the same informal WhatsApp job-broker group operating between Zinder and Agadez, all promising hospitality or domestic work abroad.',
+    description: '5 cases opened since May 2026 report recruitment through the same informal WhatsApp job-broker group operating between Zinder and Agadez, all promising hospitality or domestic work abroad (flagged for caseworker review).',
     severity: 'elevated',
     casesCited: 5,
     region: 'Zinder–Agadez corridor',
@@ -32,7 +32,7 @@ export const PATTERN_ALERTS = [
   {
     id: 'pattern-003',
     title: 'Rising debt bondage indicators',
-    description: 'Debt bondage indicators among domestic-worker cases in Niamey are up 40% quarter-over-quarter, coinciding with new arrivals from recent border-area displacement — brokers may be targeting recently displaced households.',
+    description: 'Debt bondage indicators among domestic-worker cases in Niamey are up 40% quarter-over-quarter, coinciding with new arrivals from recent border-area displacement — brokers may be targeting recently displaced households (flagged for caseworker review).',
     severity: 'watch',
     casesCited: 11,
     region: 'Niamey',

@@ -23,6 +23,7 @@ export default function PatternAlertsBanner({ alerts }) {
         </div>
         <span className="text-slate-500 text-xs flex-shrink-0">{open ? '▲' : '▼'}</span>
       </button>
+      <p className="text-[11px] text-slate-500 mt-0.5">{t('From survivor intake to safer referral — even offline.')}</p>
 
       {open && (
         <div className="mt-2 space-y-2 max-h-40 overflow-y-auto scrollbar-thin">
