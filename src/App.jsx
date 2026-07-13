@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { FORM_TYPES, getFormById } from './data/forms.js';
 import { analyzeRisk } from './data/riskIndicators.js';
 import { suggestServices } from './data/services.js';
-import { listCases, saveCase, newCaseId } from './lib/storage.js';
+import { listCases, saveCase, newCaseId, deleteCase } from './lib/storage.js';
 import { askCaseChatbot } from './lib/claudeClient.js';
 import { fetchCtdcIndicators } from './services/ctdcService.js';
 import { fetchDtmContext } from './services/iomDtmService.js';
@@ -32,6 +32,7 @@ import WelcomeSplash from './components/WelcomeSplash.jsx';
 
 const TUTORIAL_SEEN_KEY = 'trace_tutorial_seen';
 const WELCOME_SEEN_KEY = 'trace_welcome_seen';
+const DEMO_CASE_ID = 'demo-case';
 
 function caseLocation(data) {
   return data?.currentLocation || data?.location || data?.exploitationLocation || data?.incidentLocation || '';
@@ -211,8 +212,11 @@ export default function App() {
   }
 
   function handleStartDemo({ suppressHighRiskPrompt = false } = {}) {
+    // Fixed ID so replaying the demo always replaces the single demo
+    // record instead of stacking up duplicate "Amina K." entries.
+    deleteCase(DEMO_CASE_ID);
     const record = {
-      id: newCaseId(),
+      id: DEMO_CASE_ID,
       formId: DEMO_CASE_FORM_ID,
       data: { ...DEMO_CASE_DATA },
       chatHistory: []
