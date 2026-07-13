@@ -38,6 +38,15 @@ function caseLocation(data) {
   return data?.currentLocation || data?.location || data?.exploitationLocation || data?.incidentLocation || '';
 }
 
+// Short preview for chat answers that aren't actually a handoff note, so the
+// Insights tab still visibly reacts to "any message" without a long,
+// off-topic chat reply (e.g. a risk explanation) overwriting the Case
+// Summary with irrelevant content.
+function firstTwoSentences(text) {
+  const sentences = (text || '').match(/[^.!?]+[.!?]+(\s|$)/g) || [text];
+  return sentences.slice(0, 2).join('').trim();
+}
+
 function caseLabel(c) {
   return c.data?.fullName || c.data?.clientIdentifier || c.data?.survivorIdentifier || c.data?.caseId || 'Untitled';
 }
@@ -423,7 +432,7 @@ export default function App() {
   // saveAsDocument (a documents.* key, e.g. 'caseSummary') lets a caller
   // route this response straight into the Insights tab's document slot as
   // soon as it finishes, alongside the chat transcript, in the same
-  // persist() call — the tour's demo question uses this so the judge can
+  // persist() call, the tour's demo question uses this so the judge can
   // switch to Insights afterward and find the Case Summary already drafted.
   async function handleSendChat(question, { saveAsDocument } = {}) {
     if (!activeCase) return;
@@ -447,7 +456,13 @@ export default function App() {
       });
       const updated = { ...activeCase, chatHistory: [...withUser, { role: 'assistant', content: answer }] };
       if (saveAsDocument) {
-        updated.documents = { ...(activeCase.documents || {}), [saveAsDocument]: { content: answer, status: 'draft' } };
+        // A literal handoff-note request gets the full note as the Case
+        // Summary content, any other question just gets a short preview so
+        // Insights still reflects "something was generated" without being
+        // overwritten by unrelated chat replies.
+        const isHandoffNote = /handoff/i.test(question);
+        const content = isHandoffNote ? answer : firstTwoSentences(answer);
+        updated.documents = { ...(activeCase.documents || {}), [saveAsDocument]: { content, status: 'draft' } };
       }
       persist(updated);
     } catch (err) {

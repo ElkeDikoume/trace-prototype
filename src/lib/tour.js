@@ -69,7 +69,7 @@ function ensureOnlineForConnectivityIntro() {
   });
 }
 
-const SUPERVISOR_SUMMARY_QUESTION = 'Summarize this case for a supervisor handoff in 3 paragraphs.';
+const HANDOFF_NOTE_PROMPT = "Draft a supervisor handoff note for Amina K., who has been assessed HIGH RISK for labor trafficking and needs urgent shelter referral.";
 
 // Opens the floating chat bubble programmatically before the chatbot step's
 // spotlight renders, since the panel is a toggled overlay now rather than an
@@ -79,10 +79,20 @@ function openChatbotWithPrefill() {
   return new Promise((resolve) => {
     window.__traceOpenChatbot?.();
     setTimeout(() => {
-      window.__tracePreFillChat?.(SUPERVISOR_SUMMARY_QUESTION);
+      window.__tracePreFillChat?.(HANDOFF_NOTE_PROMPT);
       resolve();
     }, 400);
   });
+}
+
+// The judge may have already pressed the chat panel's own Send button (or a
+// quick-action chip) before reaching for this step's "Send & Continue"
+// button, in which case re-sending would duplicate the question. Detects an
+// already-sent copy by checking the rendered chat transcript rather than
+// React state, since this file lives outside React.
+function hasAlreadySentHandoffNote() {
+  return [...document.querySelectorAll('[data-tutorial="chatbot"] .whitespace-pre-wrap')]
+    .some((el) => el.textContent.trim() === HANDOFF_NOTE_PROMPT);
 }
 
 // Closes the chat bubble and switches to the Insights tab programmatically
@@ -244,16 +254,10 @@ const STEP_DEFS = [
     ]
   },
   {
-    id: 'services',
-    attachTo: { element: '[data-tutorial="services"]', on: 'bottom' },
-    title: 'Suggested referral services',
-    text: 'Based on case details and location, TRACE surfaces possible services for human review. These referral options come from a cached IOM and UNHCR provider directory, available offline. In production, organizations with administrative access configure which service directories populate this list, including UNHCR PING, IOM DTM partner networks, or their own verified provider list.'
-  },
-  {
     id: 'chatbot',
     attachTo: { element: '[data-tutorial="chatbot-input"]', on: 'top' },
     title: 'Ask TRACE anything',
-    text: "The TRACE Assistant is grounded in Amina's case. The question above will generate a supervisor handoff summary that saves to the Insights tab, watch the Case Summary flip to 'Draft ready'. Or type any question: risk explanations, next steps, missing data gaps, IOM reporting format. Press Send to try it.",
+    text: "The TRACE Assistant is grounded in Amina's case. A supervisor handoff note is already typed in above, use the quick-action chips for other common questions, or type your own. Any response updates the Case Summary in the Insights tab, watch it flip to 'Draft ready'. Press Send to try it.",
     beforeShowPromise: openChatbotWithPrefill,
     customButtons: (tour) => [
       { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
@@ -269,13 +273,21 @@ const STEP_DEFS = [
       {
         text: 'Send & Continue →',
         action: async () => {
-          await window.__traceAskDemo?.(SUPERVISOR_SUMMARY_QUESTION, { saveAsDocument: 'caseSummary' });
+          if (!hasAlreadySentHandoffNote()) {
+            await window.__traceAskDemo?.(HANDOFF_NOTE_PROMPT, { saveAsDocument: 'caseSummary' });
+          }
           window.__traceCloseChatbot?.();
-          tour.next();
+          setTimeout(() => tour.next(), 300);
         },
         classes: 'trace-shepherd-btn-primary'
       }
     ]
+  },
+  {
+    id: 'services',
+    attachTo: { element: '[data-tutorial="services"]', on: 'bottom' },
+    title: 'Suggested referral services',
+    text: 'Based on case details and location, TRACE surfaces possible services for human review. These referral options come from a cached IOM and UNHCR provider directory, available offline. In production, organizations with administrative access configure which service directories populate this list, including UNHCR PING, IOM DTM partner networks, or their own verified provider list.'
   },
   {
     id: 'supervisor-tab',
