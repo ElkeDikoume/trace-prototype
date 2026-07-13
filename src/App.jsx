@@ -20,6 +20,7 @@ import FormSelector from './components/FormSelector.jsx';
 import ActiveForm from './components/ActiveForm.jsx';
 import Chatbot from './components/Chatbot.jsx';
 import HeaderOverflowMenu from './components/HeaderOverflowMenu.jsx';
+import OnlineStatusToggle from './components/OnlineStatusToggle.jsx';
 import SupportCarePanel from './components/SupportCarePanel.jsx';
 import SurvivorLookupModal from './components/SurvivorLookupModal.jsx';
 import FollowUpBanner from './components/FollowUpBanner.jsx';
@@ -493,17 +494,7 @@ export default function App() {
             </button>
           )}
           <LanguageSelector lang={lang} onChange={setLang} />
-          <button
-            data-tutorial="offline-indicator"
-            onClick={() => setOnlineMode((v) => !v)}
-            className={`text-xs px-2 py-1 rounded-full border flex items-center gap-1 ${
-              onlineMode
-                ? 'bg-trace-risk-low/15 border-trace-risk-low text-trace-risk-low'
-                : 'bg-trace-700 border-trace-600 text-slate-300'
-            }`}
-          >
-            {onlineMode ? `● ${t('Online')}` : `○ ${t('Offline')}`}
-          </button>
+          <OnlineStatusToggle onlineMode={onlineMode} onToggle={() => setOnlineMode((v) => !v)} />
           {installPrompt && (
             <button
               onClick={promptInstall}
