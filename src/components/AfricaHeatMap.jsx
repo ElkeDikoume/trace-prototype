@@ -16,10 +16,11 @@ export default function AfricaHeatMap() {
   const { t } = useI18n();
   return (
     <div className="bg-trace-800 border border-trace-700 rounded-lg p-3">
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-1">
         <h3 className="text-sm font-semibold text-slate-200">{t('Regional risk hotspots')}</h3>
         <span className="text-[10px] text-slate-500">{t('illustrative, not to scale')}</span>
       </div>
+      <p className="text-[11px] text-slate-500 mb-2">{t('West Africa / Lake Chad Basin region')}</p>
       <svg viewBox="0 0 300 330" className="w-full max-w-xs mx-auto">
         <path
           d="M170,10 L228,16 C246,22 256,42 252,66 C248,90 258,112 274,132
@@ -35,6 +36,8 @@ export default function AfricaHeatMap() {
           strokeWidth="2"
           className="fill-trace-700"
         />
+        <text x="55" y="118" fill="#94a3b8" fontSize="12" fontWeight="600" letterSpacing="0.5">{t('NIGER')}</text>
+        <text x="150" y="185" fill="#94a3b8" fontSize="12" fontWeight="600" letterSpacing="0.5">{t('CHAD')}</text>
         {REGIONS.map((r) => (
           <g key={r.id}>
             <circle cx={r.x} cy={r.y} r="10" fill={LEVEL_COLOR[r.level]} opacity="0.35">

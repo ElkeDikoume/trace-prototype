@@ -310,7 +310,7 @@ export default function App() {
 
   return (
     <I18nContext.Provider value={{ lang, t, setLang }}>
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen overflow-hidden">
       <header data-tutorial="header" className="flex-shrink-0 px-4 py-3 border-b border-trace-700 bg-trace-950 flex items-center justify-between">
         <div>
           <h1 className="text-lg font-bold text-slate-50 tracking-tight">TRACE</h1>
@@ -377,37 +377,39 @@ export default function App() {
         <SupervisorView stats={supervisorStats} />
       ) : (
         <>
-          <PatternAlertsBanner alerts={patternAlerts} />
+          <div className="flex-1 min-h-0 overflow-y-auto scrollbar-thin flex flex-col">
+            <PatternAlertsBanner alerts={patternAlerts} />
 
-          <OnlineInterpretationPanel onlineMode={onlineMode} />
+            <FormSelector
+              forms={FORM_TYPES}
+              cases={cases}
+              activeCaseId={activeCase?.id}
+              onNewCase={handleNewCase}
+              onOpenCase={handleOpenCase}
+            />
 
-          <FormSelector
-            forms={FORM_TYPES}
-            cases={cases}
-            activeCaseId={activeCase?.id}
-            onNewCase={handleNewCase}
-            onOpenCase={handleOpenCase}
-          />
+            <ActiveForm
+              form={activeForm}
+              caseData={activeCase?.data || {}}
+              onFieldChange={handleFieldChange}
+              onStructured={handleStructured}
+              riskResult={riskResult}
+              services={services}
+              onAskWhy={handleAskWhy}
+              ctdcMatches={ctdcMatches}
+              dtmContext={dtmContext}
+              acledEvents={acledEvents}
+              onlineMode={onlineMode}
+              portableRecord={activeCase?.portableRecord}
+              onSavePortableRecord={handleSavePortableRecord}
+              onDeletePortableRecord={() => activeCase && handleDeletePortableRecord(activeCase.id)}
+              followUpReminder={activeCase?.followUpReminder}
+              onToggleFollowUp={handleToggleFollowUp}
+              onStartDemo={handleStartDemo}
+            />
 
-          <ActiveForm
-            form={activeForm}
-            caseData={activeCase?.data || {}}
-            onFieldChange={handleFieldChange}
-            onStructured={handleStructured}
-            riskResult={riskResult}
-            services={services}
-            onAskWhy={handleAskWhy}
-            ctdcMatches={ctdcMatches}
-            dtmContext={dtmContext}
-            acledEvents={acledEvents}
-            onlineMode={onlineMode}
-            portableRecord={activeCase?.portableRecord}
-            onSavePortableRecord={handleSavePortableRecord}
-            onDeletePortableRecord={() => activeCase && handleDeletePortableRecord(activeCase.id)}
-            followUpReminder={activeCase?.followUpReminder}
-            onToggleFollowUp={handleToggleFollowUp}
-            onStartDemo={handleStartDemo}
-          />
+            <OnlineInterpretationPanel onlineMode={onlineMode} />
+          </div>
 
           <Chatbot
             messages={activeCase?.chatHistory || []}

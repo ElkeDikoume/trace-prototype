@@ -10,7 +10,7 @@ const SEVERITY_STYLES = {
 
 export default function PatternAlertsBanner({ alerts }) {
   const { t } = useI18n();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
 
   if (!alerts || alerts.length === 0) return null;
 

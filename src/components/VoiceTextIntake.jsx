@@ -5,13 +5,18 @@ import { useI18n } from '../lib/i18n.jsx';
 
 const MIN_INTERPRETING_MS = 1100;
 
+// Maps app display-language codes (from i18n's UI_LANGUAGES) to the matching
+// Web Speech API voice code, so the voice input selector defaults to
+// whatever language the caseworker already has the app set to.
+const UI_LANG_TO_SPEECH_CODE = { en: 'en-US', fr: 'fr-FR', ar: 'ar-SA', es: 'es-ES', pt: 'pt-PT' };
+
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 export default function VoiceTextIntake({ form, onStructured, onlineMode }) {
-  const { t } = useI18n();
-  const [language, setLanguage] = useState('fr-FR');
+  const { t, lang } = useI18n();
+  const [language, setLanguage] = useState(() => UI_LANG_TO_SPEECH_CODE[lang] || 'en-US');
   const [text, setText] = useState('');
   const [listening, setListening] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -31,11 +36,21 @@ export default function VoiceTextIntake({ form, onStructured, onlineMode }) {
 
   useEffect(() => {
     if (!onlineMode && isLocalLanguage) {
-      setLanguage('fr-FR');
+      setLanguage(UI_LANG_TO_SPEECH_CODE[lang] || 'en-US');
       setTranslation('');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onlineMode]);
+
+  // Keep the voice input language synced with the app display language,
+  // unless the caseworker has deliberately picked a local language to
+  // capture testimony in (that choice is independent of the UI language).
+  useEffect(() => {
+    if (!isLocalLanguage) {
+      setLanguage(UI_LANG_TO_SPEECH_CODE[lang] || 'en-US');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lang]);
 
   function toggleListening() {
     setError('');

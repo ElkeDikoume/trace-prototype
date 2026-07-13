@@ -103,7 +103,7 @@ export default function ActiveForm({
   }
 
   return (
-    <section data-tutorial="active-form" className="flex-1 min-h-0 overflow-y-auto scrollbar-thin px-4 py-4">
+    <section data-tutorial="active-form" className="flex-shrink-0 px-4 py-4">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-lg font-semibold text-slate-100">{t(form.name)}</h2>
       </div>
