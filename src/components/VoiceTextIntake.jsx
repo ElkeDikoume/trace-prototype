@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { LANGUAGES, isSpeechRecognitionSupported, createRecognizer } from '../lib/speech.js';
 import { structureNotesIntoForm, interpretAndStructureNotes } from '../lib/claudeClient.js';
+import { DEMO_INTAKE_NOTES } from '../data/demoCase.js';
 import { useI18n } from '../lib/i18n.jsx';
 
 const MIN_INTERPRETING_MS = 1100;
@@ -23,6 +24,7 @@ export default function VoiceTextIntake({ form, onStructured, onlineMode }) {
   const [interpreting, setInterpreting] = useState(false);
   const [translation, setTranslation] = useState('');
   const [error, setError] = useState('');
+  const [speaking, setSpeaking] = useState(false);
   const recognizerRef = useRef(null);
   const speechSupported = isSpeechRecognitionSupported();
 
@@ -31,7 +33,10 @@ export default function VoiceTextIntake({ form, onStructured, onlineMode }) {
   const isLocalLanguage = !!selectedLanguage?.local;
 
   useEffect(() => {
-    return () => recognizerRef.current?.abort?.();
+    return () => {
+      recognizerRef.current?.abort?.();
+      window.speechSynthesis?.cancel();
+    };
   }, []);
 
   useEffect(() => {
@@ -78,6 +83,22 @@ export default function VoiceTextIntake({ form, onStructured, onlineMode }) {
     recognizerRef.current = recognizer;
     recognizer.start();
     setListening(true);
+  }
+
+  function toggleHearSample() {
+    if (!window.speechSynthesis) return;
+    if (speaking) {
+      window.speechSynthesis.cancel();
+      setSpeaking(false);
+      return;
+    }
+    const utterance = new SpeechSynthesisUtterance(DEMO_INTAKE_NOTES);
+    utterance.lang = 'ha-NG';
+    utterance.onend = () => setSpeaking(false);
+    utterance.onerror = () => setSpeaking(false);
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utterance);
+    setSpeaking(true);
   }
 
   async function handleStructure() {
@@ -145,14 +166,37 @@ export default function VoiceTextIntake({ form, onStructured, onlineMode }) {
         </div>
       )}
 
-      <textarea
-        dir="auto"
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        placeholder={t('Speak using the mic button, or type freeform case notes in any supported language...')}
-        rows={4}
-        className="w-full bg-trace-900 border border-trace-700 rounded-md p-2 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-trace-accent"
-      />
+      <label className="block text-xs text-slate-400 mb-1">{t('Type intake notes or speak them →')}</label>
+      <div className="flex items-start gap-2">
+        <textarea
+          dir="auto"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder={t('Speak using the mic button, or type freeform case notes in any supported language...')}
+          rows={4}
+          className="flex-1 bg-trace-900 border border-trace-700 rounded-md p-2 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-trace-accent"
+        />
+        <div className="flex flex-col items-center gap-2 pt-0.5">
+          {speechSupported && (
+            <button
+              onClick={toggleListening}
+              aria-label={listening ? t('Stop recording') : t('Start voice input')}
+              title={listening ? t('Stop recording') : t('Start voice input')}
+              className={`w-9 h-9 flex-shrink-0 flex items-center justify-center rounded-full text-lg transition-colors ${
+                listening ? 'bg-red-600/20 animate-pulse' : 'bg-trace-700 hover:bg-trace-600'
+              }`}
+            >
+              {listening ? '🔴' : '🎙'}
+            </button>
+          )}
+          <button
+            onClick={toggleHearSample}
+            className="text-xs text-slate-500 hover:text-slate-300 underline whitespace-nowrap"
+          >
+            {speaking ? `■ ${t('Stop')}` : `▶ ${t('Hear Hausa intake')}`}
+          </button>
+        </div>
+      </div>
 
       {interpreting && (
         <div className="mt-2 text-xs text-trace-accent flex items-center gap-2">
