@@ -37,7 +37,7 @@ function openChatbotBubble() {
   });
 }
 
-// Clicks the Documents tab (the previous step only spotlights it) and
+// Clicks the Insights tab (the previous step only spotlights it) and
 // waits for DocumentsPanel to mount before the next step measures it.
 function openDocumentsPanel() {
   return new Promise((resolve) => {
@@ -150,8 +150,8 @@ const STEP_DEFS = [
   {
     id: 'supervisor-tab',
     attachTo: { element: '[data-tutorial="documents-tab"]', on: 'bottom' },
-    title: 'Case documents',
-    text: "Everything TRACE generates lives here — referral letters, case summaries, IOM monthly return entries, and follow-up plans. One tab, every output, all editable before it leaves the caseworker's hands."
+    title: 'Insights tab — where TRACE works for you.',
+    text: 'Generate any case document in one click, review caseload patterns across your organization, and access IOM protocol guidance — all from one place.'
   },
   {
     id: 'supervisor-view',

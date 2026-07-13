@@ -18,7 +18,6 @@ import traceLogo from './assets/trace-logo.png';
 import FormSelector from './components/FormSelector.jsx';
 import ActiveForm from './components/ActiveForm.jsx';
 import Chatbot from './components/Chatbot.jsx';
-import PatternAlertsBanner from './components/PatternAlertsBanner.jsx';
 import ThemeToggle from './components/ThemeToggle.jsx';
 import SupportCareButton from './components/SupportCareButton.jsx';
 import SupportCarePanel from './components/SupportCarePanel.jsx';
@@ -567,7 +566,7 @@ export default function App() {
       <nav className="flex-shrink-0 flex border-b border-trace-700 bg-trace-950">
         {[
           { id: 'case', label: `📋 ${t('Case View')}` },
-          { id: 'documents', label: `📄 ${t('Documents')}` }
+          { id: 'documents', label: `📄 ${t('Insights')}` }
         ].map((tab) => (
           <button
             key={tab.id}
@@ -591,11 +590,10 @@ export default function App() {
           riskResult={riskResult}
           services={services}
           onSaveDocument={handleSaveDocument}
+          patternAlerts={patternAlerts}
         />
       ) : (
         <div className="flex-1 min-h-0 overflow-y-auto scrollbar-thin flex flex-col">
-          <PatternAlertsBanner alerts={patternAlerts} />
-
           <FormSelector
             forms={FORM_TYPES}
             cases={cases}
