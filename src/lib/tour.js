@@ -36,9 +36,19 @@ function clearNotesIfSeededByTour() {
 
 // Small paint/reflow buffer after the structuring promise has already
 // resolved (see the 'structure-cta' step's customButtons), so the
-// now-populated fields have settled before Shepherd measures them.
+// now-populated fields have settled before Shepherd measures them. Also
+// explicitly scrolls the "Case fields" heading (this step's attachTo
+// target) into view before Shepherd positions the popup, rather than
+// relying solely on Shepherd's own post-beforeShowPromise scrollTo timing,
+// since the form can be tall enough after structuring that the popup would
+// otherwise render partially above the viewport.
 function waitForStructuring() {
-  return new Promise((resolve) => setTimeout(resolve, 300));
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      document.querySelector('[data-tutorial="form-fields-heading"]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(resolve, 300);
+    }, 300);
+  });
 }
 
 function ensureRiskBannerVisible() {
