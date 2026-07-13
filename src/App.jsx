@@ -9,6 +9,7 @@ import { fetchDtmContext } from './services/iomDtmService.js';
 import { fetchAcledEvents } from './services/acledService.js';
 import { fetchPatternAlerts } from './services/patternIntelligenceService.js';
 import { getStoredTheme, storeTheme, applyTheme } from './lib/theme.js';
+import { usePWAInstall } from './lib/usePWAInstall.js';
 import { computeFollowUpReminder, isReminderDue } from './lib/followUp.js';
 import { DEMO_CASE_FORM_ID, DEMO_CASE_DATA, DEMO_INTAKE_NOTES, EXAMPLE_CASE_IBRAHIM, EXAMPLE_CASE_MARIECLAIRE } from './data/demoCase.js';
 import { I18nContext, getStoredLanguage, storeLanguage, getLanguageMeta, translate } from './lib/i18n.jsx';
@@ -62,6 +63,7 @@ export default function App() {
   const [acledEvents, setAcledEvents] = useState([]);
   const [theme, setTheme] = useState(getStoredTheme);
   const [lang, setLang] = useState(getStoredLanguage);
+  const { installPrompt, promptInstall } = usePWAInstall();
   const [showSupportCare, setShowSupportCare] = useState(false);
   const [supportCareHighRiskPrompt, setSupportCareHighRiskPrompt] = useState(false);
   const [showLookup, setShowLookup] = useState(false);
@@ -502,6 +504,14 @@ export default function App() {
           >
             {onlineMode ? `● ${t('Online')}` : `○ ${t('Offline')}`}
           </button>
+          {installPrompt && (
+            <button
+              onClick={promptInstall}
+              className="text-xs px-2 py-1 rounded border border-trace-accent text-trace-accent hover:bg-trace-accent hover:text-white transition-colors"
+            >
+              ⬇ {t('Install App')}
+            </button>
+          )}
           <button
             onClick={() => {
               window.__traceOpenChatbot?.();
