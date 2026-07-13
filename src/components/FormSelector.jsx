@@ -35,11 +35,22 @@ export default function FormSelector({ forms, cases, activeCaseId, onNewCase, on
     <section data-tutorial="form-selector" className="flex-shrink-0 bg-trace-900 border-b border-trace-700 px-4 py-4 max-h-[40vh] overflow-y-auto scrollbar-thin">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-400">{t('Start a new case')}</h2>
-        {activeCaseId && (
-          <button onClick={() => setExpanded(false)} className="text-xs text-slate-400 hover:text-slate-200">
-            {t('Collapse ▲')}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              ['trace_welcome_seen', 'trace_tutorial_seen', 'trace_examples_seeded', 'trace_mock_session', 'trace_cases_v1'].forEach((k) => localStorage.removeItem(k));
+              window.location.reload();
+            }}
+            className="text-xs text-slate-500 hover:text-slate-300 border border-trace-700 px-2 py-1 rounded transition-colors"
+          >
+            ↺ {t('Restart Demo')}
           </button>
-        )}
+          {activeCaseId && (
+            <button onClick={() => setExpanded(false)} className="text-xs text-slate-400 hover:text-slate-200">
+              {t('Collapse ▲')}
+            </button>
+          )}
+        </div>
       </div>
       <p className="text-[10px] text-slate-500 mb-3">{t('Uses pseudonyms, consented data sharing, and minimal case data by default.')}</p>
       <div data-tutorial="form-cards-primary" className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-2">

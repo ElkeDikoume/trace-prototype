@@ -71,6 +71,13 @@ export default function App() {
   const [showWelcome, setShowWelcome] = useState(() => !localStorage.getItem(WELCOME_SEEN_KEY));
   const [pendingTourStart, setPendingTourStart] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
+  const [mockSession, setMockSession] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('trace_mock_session'));
+    } catch {
+      return null;
+    }
+  });
   const [, setTick] = useState(0);
 
   const seenLevelsRef = useRef({});
@@ -257,6 +264,15 @@ export default function App() {
     setShowWelcome(false);
   }
 
+  // Mock Microsoft SSO — no real auth, just a localStorage-backed "session"
+  // so judges see what an org-connected login would surface in the header.
+  function handleSignIn() {
+    const session = { org: "N'Djamena IOM Office", role: 'Caseworker', mode: 'demo' };
+    localStorage.setItem('trace_mock_session', JSON.stringify(session));
+    setMockSession(session);
+    handleExploreOnMyOwn();
+  }
+
   // Waits for the demo case (and its DOM) to be ready before starting Shepherd,
   // so both "Start Guided Demo" from the splash and "Replay Demo Tour" from the
   // header can trigger the same reliable sequence: load demo data, then tour.
@@ -321,7 +337,7 @@ export default function App() {
   // the data handleSendChat closes over changes, so the tour always asks
   // against the current case/risk/context rather than a stale snapshot.
   useEffect(() => {
-    window.__traceAskDemo = () => handleSendChat('Why was this case flagged as high risk? Reference the specific indicators that triggered each flag.');
+    window.__traceAskDemo = (question) => handleSendChat(question || 'Why was this case flagged as high risk? Reference the specific indicators that triggered each flag.');
     return () => {
       delete window.__traceAskDemo;
     };
@@ -466,6 +482,15 @@ export default function App() {
           <p className="text-[11px] text-slate-500 mt-1">{t('Multilingual intake, risk explanation, and safer referrals for caseworkers in low-connectivity settings.')}</p>
         </div>
         <div className="flex items-center gap-1.5 flex-wrap justify-end">
+          {mockSession ? (
+            <span className="text-[11px] text-slate-400 bg-trace-800 border border-trace-700 px-2 py-0.5 rounded">
+              🏢 {mockSession.org} — Demo
+            </span>
+          ) : (
+            <button onClick={() => setShowWelcome(true)} className="text-[11px] text-slate-500 hover:text-slate-300">
+              {t('Sign in')}
+            </button>
+          )}
           {activeForm && view === 'case' && (
             <span className="text-xs px-2 py-1 rounded-full bg-trace-800 border border-trace-700 text-slate-300">
               {t(activeForm.shortName)}
@@ -484,14 +509,13 @@ export default function App() {
           </button>
           <button
             onClick={() => {
-              // Never let the old tutorial and the Shepherd tour overlap.
-              if (guidedTourRef.current) {
-                guidedTourRef.current.cancel();
-              }
-              setShowTutorial(true);
+              window.__traceOpenChatbot?.();
+              setTimeout(() => {
+                window.__traceAskDemo?.('How do I use TRACE? Give me a quick overview of the main steps.');
+              }, 200);
             }}
-            aria-label={t('Replay tutorial')}
-            title={t('Replay tutorial')}
+            aria-label={t('Help')}
+            title={t('Help')}
             className="w-7 h-7 flex items-center justify-center rounded-full bg-trace-800 border border-trace-700 text-sm hover:bg-trace-700"
           >
             ?
@@ -571,6 +595,7 @@ export default function App() {
 
           <ActiveForm
             form={activeForm}
+            caseId={activeCase?.id}
             caseData={activeCase?.data || {}}
             onFieldChange={handleFieldChange}
             onStructured={handleStructured}
@@ -617,7 +642,7 @@ export default function App() {
       />
       {showTutorial && <TutorialOverlay onFinish={handleFinishTutorial} />}
       {showWelcome && (
-        <WelcomeSplash onStartDemo={handleStartGuidedTourDemo} onExplore={handleExploreOnMyOwn} />
+        <WelcomeSplash onStartDemo={handleStartGuidedTourDemo} onExplore={handleExploreOnMyOwn} onSignIn={handleSignIn} />
       )}
     </div>
     </I18nContext.Provider>

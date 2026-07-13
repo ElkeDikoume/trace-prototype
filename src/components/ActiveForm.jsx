@@ -82,7 +82,7 @@ function Field({ field, value, onChange }) {
 }
 
 export default function ActiveForm({
-  form, caseData, onFieldChange, onStructured, riskResult, services, onAskWhy,
+  form, caseId, caseData, onFieldChange, onStructured, riskResult, services, onAskWhy,
   ctdcMatches, dtmContext, acledEvents, onlineMode, portableRecord, onSavePortableRecord, onDeletePortableRecord,
   followUpReminder, onToggleFollowUp, onStartDemo
 }) {
@@ -112,7 +112,7 @@ export default function ActiveForm({
 
       <VoiceTextIntake form={form} onStructured={onStructured} onlineMode={onlineMode} />
 
-      {form.riskEligible && <RiskFlag riskResult={riskResult} onAskWhy={onAskWhy} />}
+      {form.riskEligible && <RiskFlag riskResult={riskResult} onAskWhy={onAskWhy} caseId={caseId} />}
 
       {form.riskEligible && (
         <FollowUpReminder reminder={followUpReminder} onToggle={onToggleFollowUp} />
