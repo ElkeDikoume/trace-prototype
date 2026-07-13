@@ -12,6 +12,7 @@ import { getStoredTheme, storeTheme, applyTheme } from './lib/theme.js';
 import { computeFollowUpReminder, isReminderDue } from './lib/followUp.js';
 import { DEMO_CASE_FORM_ID, DEMO_CASE_DATA } from './data/demoCase.js';
 import { I18nContext, getStoredLanguage, storeLanguage, getLanguageMeta, translate } from './lib/i18n.jsx';
+import traceLogo from './assets/trace-logo.png';
 
 import FormSelector from './components/FormSelector.jsx';
 import ActiveForm from './components/ActiveForm.jsx';
@@ -313,8 +314,14 @@ export default function App() {
     <div className="flex flex-col h-screen overflow-hidden">
       <header data-tutorial="header" className="flex-shrink-0 px-4 py-3 border-b border-trace-700 bg-trace-950 flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-bold text-slate-50 tracking-tight">TRACE</h1>
-          <p className="text-[11px] text-slate-500 -mt-0.5">{t('Caseworker AI assistant · offline-first')}</p>
+          <button
+            onClick={() => { setView('case'); setActiveCase(null); }}
+            aria-label={t('TRACE home')}
+            className="rounded-md bg-white p-1 leading-none hover:opacity-90 transition-opacity"
+          >
+            <img src={traceLogo} alt="TRACE" className="h-10 w-auto block" />
+          </button>
+          <p className="text-[11px] text-slate-500 mt-1">{t('Caseworker AI assistant · offline-first')}</p>
         </div>
         <div className="flex items-center gap-1.5 flex-wrap justify-end">
           {activeForm && view === 'case' && (
