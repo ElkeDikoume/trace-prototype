@@ -27,13 +27,19 @@ function waitForStructuring() {
   return new Promise((resolve) => setTimeout(resolve, 300));
 }
 
+const REFERRAL_DEMO_QUESTION = "Write a referral letter for Amina to Maison de la Femme in N'Djamena.";
+
 // Opens the floating chat bubble programmatically before the chatbot step's
 // spotlight renders, since the panel is a toggled overlay now rather than an
-// always-visible bottom panel.
-function openChatbotBubble() {
+// always-visible bottom panel. Once it's open, pre-fills (but does not send)
+// the demo question so the judge can press Send themselves.
+function openChatbotWithPrefill() {
   return new Promise((resolve) => {
     window.__traceOpenChatbot?.();
-    setTimeout(resolve, 200);
+    setTimeout(() => {
+      window.__tracePreFillChat?.(REFERRAL_DEMO_QUESTION);
+      resolve();
+    }, 400);
   });
 }
 
@@ -131,17 +137,17 @@ const STEP_DEFS = [
     id: 'chatbot',
     attachTo: { element: '[data-tutorial="chatbot-input"]', on: 'top' },
     title: 'Ask TRACE anything',
-    text: "Grounded in this case and IOM HTCDS protocol. The chatbot is live — watch it answer a real question about this case.",
-    beforeShowPromise: openChatbotBubble,
+    text: 'Type a question to TRACE — or press Send to use the one pre-filled below. Watch it respond live.',
+    beforeShowPromise: openChatbotWithPrefill,
     customButtons: (tour) => [
       { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
       { text: 'End Tour', action: () => tour.cancel(), classes: 'trace-shepherd-btn-ghost' },
       { text: 'Skip →', action: () => tour.next(), classes: 'trace-shepherd-btn-secondary' },
       {
-        text: 'Ask TRACE: why was this flagged? →',
+        text: 'Send & Continue →',
         action: () => {
-          window.__traceAskDemo?.();
-          setTimeout(() => tour.next(), 600);
+          window.__traceAskDemo?.(REFERRAL_DEMO_QUESTION);
+          setTimeout(() => tour.next(), 500);
         },
         classes: 'trace-shepherd-btn-primary'
       }

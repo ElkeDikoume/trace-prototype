@@ -51,6 +51,13 @@ export default function Chatbot({ messages, onSend, busy, hasCase, pendingQuesti
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pendingQuestion]);
 
+  useEffect(() => {
+    window.__tracePreFillChat = (text) => setInput(text);
+    return () => {
+      delete window.__tracePreFillChat;
+    };
+  }, []);
+
   function send(text) {
     const q = (text ?? input).trim();
     if (!q || busy) return;
