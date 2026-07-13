@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  -webkit-tap-highlight-color: transparent;
+}
+
+textarea, input, select {
+  color-scheme: dark;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: #334155;
+  border-radius: 9999px;
+}
+
+/* ---- Light theme ----
+   Dark mode is the default (unstyled utility classes below). Toggling
+   [data-theme="light"] on <html> raises the specificity of this block above
+   the plain Tailwind utilities so it wins without touching any component. */
+[data-theme='light'] {
+  color-scheme: light;
+}
+[data-theme='light'] textarea,
+[data-theme='light'] input,
+[data-theme='light'] select {
+  color-scheme: light;
+}
+[data-theme='light'] .bg-trace-950 { background-color: #f8fafc; }
+[data-theme='light'] .bg-trace-900 { background-color: #ffffff; }
+[data-theme='light'] .bg-trace-800 { background-color: #f1f5f9; }
+[data-theme='light'] .bg-trace-800\/60 { background-color: rgb(241 245 249 / 0.6); }
+[data-theme='light'] .bg-trace-700 { background-color: #e2e8f0; }
+[data-theme='light'] .bg-trace-600 { background-color: #cbd5e1; }
+[data-theme='light'] .hover\:bg-trace-800:hover { background-color: #e2e8f0; }
+[data-theme='light'] .hover\:bg-trace-700:hover { background-color: #dbe3ec; }
+[data-theme='light'] .hover\:bg-trace-600:hover { background-color: #cbd5e1; }
+[data-theme='light'] .border-trace-700 { border-color: #cbd5e1; }
+[data-theme='light'] .border-trace-600 { border-color: #94a3b8; }
+[data-theme='light'] .text-slate-50 { color: #0f172a; }
+[data-theme='light'] .text-slate-100 { color: #1e293b; }
+[data-theme='light'] .text-slate-200 { color: #334155; }
+[data-theme='light'] .text-slate-300 { color: #475569; }
+[data-theme='light'] .text-slate-400 { color: #64748b; }
+[data-theme='light'] .text-slate-500 { color: #94a3b8; }
+[data-theme='light'] .text-slate-600 { color: #94a3b8; }
+[data-theme='light'] .hover\:text-slate-200:hover { color: #334155; }
+[data-theme='light'] .placeholder\:text-slate-500::placeholder { color: #94a3b8; }
+[data-theme='light'] .text-red-400 { color: #dc2626; }
+[data-theme='light'] .scrollbar-thin::-webkit-scrollbar-thumb { background-color: #cbd5e1; }
+
+/* Compressed 4-7-8 breathing exercise: 1.5s inhale, 2.5s hold, 3s exhale = 7s loop */
+@keyframes breathe478 {
+  0% { transform: scale(0.55); }
+  21% { transform: scale(1); }
+  57% { transform: scale(1); }
+  100% { transform: scale(0.55); }
+}
+.breathe-circle {
+  animation: breathe478 7s ease-in-out infinite;
+}
