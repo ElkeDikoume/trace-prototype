@@ -128,10 +128,13 @@ Output format: wrap ONLY the translated English text in <translation></translati
 // Appended to every document-generation system prompt (not the chatbot or
 // structuring calls) so Claude's own output is unmistakably marked as demo
 // content, on top of the client-side watermark added around downloads.
-const DOCUMENT_WATERMARK_INSTRUCTION = `IMPORTANT: Begin every generated document with the following header on its own line:
-⚠️ DEMO PROTOTYPE — NOT REAL CASE DATA — Austin AI Hub Hackathon 2026 ⚠️
+const DOCUMENT_WATERMARK_INSTRUCTION = `Begin every generated document with this header on its own line:
+⚠️  DEMO PROTOTYPE — NOT REAL CASE DATA — Austin AI Hub Hackathon 2026  ⚠️
+=====================================
 And end every document with:
---- END OF DEMO DOCUMENT — TRACE Hackathon Prototype — trace-prototype-ten.vercel.app ---`;
+=====================================
+END OF DEMO DOCUMENT — TRACE Hackathon Prototype
+trace-prototype-ten.vercel.app | Not for operational use`;
 
 function fieldSummary(form, caseData) {
   return form.fields.map((f) => `${f.label}: ${caseData?.[f.key] || '(not recorded)'}`).join('\n');

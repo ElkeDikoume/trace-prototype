@@ -92,11 +92,8 @@ const PATTERN_REPORT_PROMPT = "Generate a pattern intelligence briefing report f
 // on top of the one Claude is instructed to write into the text itself
 // (see DOCUMENT_WATERMARK_INSTRUCTION in claudeClient.js), so the warning
 // survives even if a caseworker edits the AI's own header/footer lines out.
-const WATERMARK_HEADER = '⚠️  DEMO PROTOTYPE — NOT REAL CASE DATA — Austin AI Hub Hackathon 2026  ⚠️\n' +
-  '================================================================\n\n';
-const WATERMARK_FOOTER = '\n\n================================================================\n' +
-  'END OF DEMO DOCUMENT — TRACE Hackathon Prototype\n' +
-  'trace-prototype-ten.vercel.app | Not for operational use\n';
+const WATERMARK_HEADER = '⚠️  DEMO PROTOTYPE — NOT REAL CASE DATA — Austin AI Hub Hackathon 2026  ⚠️\n=====================================\n\n';
+const WATERMARK_FOOTER = '\n\n=====================================\nEND OF DEMO DOCUMENT — TRACE Hackathon Prototype\ntrace-prototype-ten.vercel.app | Not for operational use';
 
 function caseLabelText(caseRecord) {
   return caseRecord?.data?.fullName || caseRecord?.data?.clientIdentifier || caseRecord?.data?.survivorIdentifier || caseRecord?.data?.caseId || 'Untitled case';
