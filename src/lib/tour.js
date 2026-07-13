@@ -79,7 +79,7 @@ const STEP_DEFS = [
     id: 'risk-flag',
     attachTo: { element: '[data-tutorial="risk-flag"]', on: 'bottom' },
     title: 'Risk score with receipts',
-    text: 'HIGH risk — not a black box. TRACE shows which exact fields triggered each CTDC indicator: document confiscation, debt bondage, movement restriction. And it tells the caseworker what information is still missing.'
+    text: 'HIGH risk — not a black box. TRACE shows which exact fields triggered each of the four CTDC indicators: recruitment fraud, document confiscation, movement restriction, and debt bondage. And it tells the caseworker what information is still missing.'
   },
   {
     id: 'services',

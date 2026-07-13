@@ -29,10 +29,16 @@ export const DEMO_CASE_DATA = {
 // notes field to demonstrate live AI structuring (see App.jsx's
 // window.__traceLoadSampleNotes). Kept identical to the source text in
 // OnlineInterpretationPanel.jsx's interpretation example, so Step 3
-// (load notes) and Step 4 (interpretation panel) show the same testimony:
-// a recruiter confiscated her ID, brought her from Kano under a false
-// promise of childcare work, and forced her to work unpaid.
-export const DEMO_INTAKE_NOTES = "Ta ce mai daukar ma'aikata ya karɓi takardar shaidar ta, ba za ta iya tafiya ba. An kawo ta daga Kano, ana cewa za a ba ta aiki a gidan yara, amma an tilasta ta yin aiki ba tare da kuɗi ba.";
+// (load notes) and Step 4 (interpretation panel) show the same testimony.
+// The final sentence (added on top of the original two) states a debt
+// bondage indicator explicitly — recruitment fraud, document confiscation,
+// and movement restriction were already clear in the text, but debt was
+// only implied ("forced to work without pay"), which let the debt_bondage
+// indicator (riskIndicators.js, keyed off keywords like "debt"/"owe" in
+// debtOwed or any free-text field) miss on some structuring calls, landing
+// on MEDIUM instead of HIGH. Spelling out the debt explicitly makes HIGH
+// risk (4 indicators, score 7.5) fire reliably.
+export const DEMO_INTAKE_NOTES = "Ta ce mai daukar ma'aikata ya karɓi takardar shaidar ta, ba za ta iya tafiya ba. An kawo ta daga Kano, ana cewa za a ba ta aiki a gidan yara, amma an tilasta ta yin aiki ba tare da kuɗi ba. Ta ce an gaya mata cewa tana bin bashin daukar ma'aikata, kuma ana cire kuɗi daga albashinta kafin ta karɓi kome.";
 
 // Two additional seeded examples so first-time visitors see varied case
 // types (form type, geography, profile) without running the demo first.

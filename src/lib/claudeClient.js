@@ -53,7 +53,7 @@ Rules:
   const text = await callClaude({
     system,
     messages: [{ role: 'user', content: `Language of notes: ${language}\n\nCaseworker notes:\n${freeText}` }],
-    max_tokens: 1536
+    max_tokens: 4096
   });
 
   return extractJson(text);
@@ -96,7 +96,7 @@ Rules:
   const text = await callClaude({
     system,
     messages: [{ role: 'user', content: `Source language: ${languageLabel}\n\nCaseworker field note:\n${freeText}` }],
-    max_tokens: 1792
+    max_tokens: 4096
   });
 
   return extractJson(text);
