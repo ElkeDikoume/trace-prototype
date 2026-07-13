@@ -1,4 +1,5 @@
 import SourceBadge from './SourceBadge.jsx';
+import DemoDataBadge from './DemoDataBadge.jsx';
 import { useI18n } from '../lib/i18n.jsx';
 
 export default function AcledPanel({ events }) {
@@ -7,9 +8,12 @@ export default function AcledPanel({ events }) {
 
   return (
     <div className="bg-trace-800 border border-trace-700 rounded-lg p-3 mb-3">
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
         <h3 className="text-sm font-semibold text-slate-200">{t('Nearby conflict events')}</h3>
-        <SourceBadge label="ACLED" />
+        <div className="flex items-center gap-1.5">
+          <SourceBadge label="ACLED" />
+          <DemoDataBadge />
+        </div>
       </div>
       <div className="space-y-2">
         {events.map((e) => (

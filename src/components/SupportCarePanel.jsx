@@ -55,19 +55,19 @@ export default function SupportCarePanel({ open, onClose, highRiskPrompt }) {
 
           {!breathingStarted && (
             <div className="flex flex-col items-center text-center py-4 mb-2">
-              <p className="text-sm text-slate-300 mb-4">{t('A short breathing exercise can help you reset.')}</p>
+              <p className="text-sm text-slate-300 mb-4">{t('Would you like to do a quick breathing exercise?')}</p>
               <div className="flex gap-2">
                 <button
                   onClick={() => setBreathingStarted(true)}
                   className="px-4 py-2 rounded-md text-sm font-medium bg-trace-accent text-white hover:bg-sky-500"
                 >
-                  🫁 {t('Start breathing exercise')}
+                  🫁 {t('Yes')}
                 </button>
                 <button
                   onClick={onClose}
                   className="px-4 py-2 rounded-md text-sm text-slate-300 border border-trace-700 hover:bg-trace-800"
                 >
-                  {t('Dismiss')}
+                  {t('Skip for now')}
                 </button>
               </div>
             </div>

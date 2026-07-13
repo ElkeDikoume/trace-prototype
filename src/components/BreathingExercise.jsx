@@ -1,13 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useI18n } from '../lib/i18n.jsx';
 
-// Compressed 4-7-8 technique scaled proportionally to a 7-second cycle
-// (1.5s inhale, 2.5s hold, 3s exhale) so the exercise stays quick.
 const CYCLE_SECONDS = 7;
 const PHASES = [
-  { label: 'Breathe in…', start: 0, end: 1.5 },
-  { label: 'Hold…', start: 1.5, end: 4 },
-  { label: 'Breathe out…', start: 4, end: 7 }
+  { label: 'Breathe in…', start: 0, end: 3.5 },
+  { label: 'Breathe out…', start: 3.5, end: 7 }
 ];
 
 export default function BreathingExercise() {
@@ -32,7 +29,7 @@ export default function BreathingExercise() {
         <span className="relative text-2xl font-semibold text-trace-accent">{secondsLeft}</span>
       </div>
       <p className="text-sm font-medium text-slate-200">{t(phase.label)}</p>
-      <p className="text-[11px] text-slate-500 mt-1">{t('Quick breathing exercise · inhale 1.5s, hold 2.5s, exhale 3s')}</p>
+      <p className="text-[11px] text-slate-500 mt-1">{t('Quick breathing exercise · 7 seconds, inhale then exhale')}</p>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import SourceBadge from './SourceBadge.jsx';
+import DemoDataBadge from './DemoDataBadge.jsx';
 import { useI18n } from '../lib/i18n.jsx';
 
 export default function CtdcPanel({ records }) {
@@ -7,9 +8,12 @@ export default function CtdcPanel({ records }) {
 
   return (
     <div className="bg-trace-800 border border-trace-700 rounded-lg p-3 mb-3">
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
         <h3 className="text-sm font-semibold text-slate-200">{t('Matched trafficking patterns')}</h3>
-        <SourceBadge label="CTDC indicators" />
+        <div className="flex items-center gap-1.5">
+          <SourceBadge label="CTDC indicators" />
+          <DemoDataBadge />
+        </div>
       </div>
       <div className="space-y-2">
         {records.map((r) => (

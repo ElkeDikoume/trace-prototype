@@ -57,13 +57,12 @@ textarea, input, select {
 [data-theme='light'] .text-red-400 { color: #dc2626; }
 [data-theme='light'] .scrollbar-thin::-webkit-scrollbar-thumb { background-color: #cbd5e1; }
 
-/* Compressed 4-7-8 breathing exercise: 1.5s inhale, 2.5s hold, 3s exhale = 7s loop */
-@keyframes breathe478 {
+/* Simple breathing exercise: 3.5s inhale, 3.5s exhale = 7s loop */
+@keyframes breatheInOut {
   0% { transform: scale(0.55); }
-  21% { transform: scale(1); }
-  57% { transform: scale(1); }
+  50% { transform: scale(1); }
   100% { transform: scale(0.55); }
 }
 .breathe-circle {
-  animation: breathe478 7s ease-in-out infinite;
+  animation: breatheInOut 7s ease-in-out infinite;
 }

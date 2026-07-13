@@ -1,4 +1,5 @@
 import SourceBadge from './SourceBadge.jsx';
+import DemoDataBadge from './DemoDataBadge.jsx';
 import { useI18n } from '../lib/i18n.jsx';
 
 const TREND_ICON = { increasing: '↑', stable: '→', decreasing: '↓' };
@@ -9,9 +10,12 @@ export default function DtmPanel({ context }) {
 
   return (
     <div className="bg-trace-800 border border-trace-700 rounded-lg p-3 mb-3">
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
         <h3 className="text-sm font-semibold text-slate-200">{t('Displacement context')} — {context.location}</h3>
-        <SourceBadge label="IOM DTM" />
+        <div className="flex items-center gap-1.5">
+          <SourceBadge label="IOM DTM" />
+          <DemoDataBadge />
+        </div>
       </div>
       <div className="grid grid-cols-2 gap-2 text-xs mb-2">
         <div>

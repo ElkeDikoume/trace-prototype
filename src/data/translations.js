@@ -161,14 +161,15 @@ const fr = {
   'Confidential staff counselling and wellbeing support.': 'Conseil confidentiel et soutien au bien-être du personnel.',
   'Inter-Agency Standing Committee mental health & psychosocial support guidance.': 'Orientation du Comité permanent inter-organisations sur la santé mentale et le soutien psychosocial.',
   'Staff welfare and peer support — ask your focal point for the current referral path.': "Bien-être du personnel et soutien entre pairs — demandez à votre point focal la filière de référencement actuelle.",
-  'A short breathing exercise can help you reset.': 'Un court exercice de respiration peut vous aider à vous ressourcer.',
-  'Start breathing exercise': "Démarrer l'exercice de respiration",
+  'Would you like to do a quick breathing exercise?': 'Souhaitez-vous faire un court exercice de respiration ?',
+  'Skip for now': 'Ignorer pour l\'instant',
 
   // BreathingExercise
   'Breathe in…': 'Inspirez…',
   'Hold…': 'Retenez…',
   'Breathe out…': 'Expirez…',
-  'Quick breathing exercise · inhale 1.5s, hold 2.5s, exhale 3s': 'Exercice de respiration rapide · inspirez 1,5 s, retenez 2,5 s, expirez 3 s',
+  'Quick breathing exercise · 7 seconds, inhale then exhale': 'Exercice de respiration rapide · 7 secondes, inspirez puis expirez',
+  'Demo data': 'Données de démonstration',
 
   // Portable Record
   'Ask the survivor for three things they will always remember — a name, a place, and a year.': 'Demandez à la survivante/au survivant trois choses qu\'elle/il se rappellera toujours — un nom, un lieu et une année.',
@@ -539,13 +540,14 @@ const ar = {
   'Confidential staff counselling and wellbeing support.': 'استشارة سرية للموظفين ودعم للرفاهية.',
   'Inter-Agency Standing Committee mental health & psychosocial support guidance.': 'إرشادات اللجنة الدائمة المشتركة بين الوكالات بشأن الصحة النفسية والدعم النفسي الاجتماعي.',
   'Staff welfare and peer support — ask your focal point for the current referral path.': 'رفاهية الموظفين والدعم من الأقران — اسأل نقطة الاتصال لديك عن مسار الإحالة الحالي.',
-  'A short breathing exercise can help you reset.': 'يمكن لتمرين تنفس قصير أن يساعدك على استعادة توازنك.',
-  'Start breathing exercise': 'بدء تمرين التنفس',
+  'Would you like to do a quick breathing exercise?': 'هل ترغب في القيام بتمرين تنفس سريع؟',
+  'Skip for now': 'تخطَّ الآن',
 
   'Breathe in…': 'استنشق…',
   'Hold…': 'احبس النفس…',
   'Breathe out…': 'ازفر…',
-  'Quick breathing exercise · inhale 1.5s, hold 2.5s, exhale 3s': 'تمرين تنفس سريع · استنشق 1.5 ثانية، احبس 2.5 ثانية، ازفر 3 ثوانٍ',
+  'Quick breathing exercise · 7 seconds, inhale then exhale': 'تمرين تنفس سريع · 7 ثوانٍ، استنشق ثم ازفر',
+  'Demo data': 'بيانات تجريبية',
 
   'Ask the survivor for three things they will always remember — a name, a place, and a year.': 'اطلب من الناجي/الناجية ثلاثة أشياء سيتذكرها دائمًا — اسم ومكان وسنة.',
   'Enter them here.': 'أدخلها هنا.',
@@ -909,13 +911,14 @@ const es = {
   'Confidential staff counselling and wellbeing support.': 'Asesoramiento confidencial y apoyo de bienestar para el personal.',
   'Inter-Agency Standing Committee mental health & psychosocial support guidance.': 'Orientación del Comité Permanente entre Organismos sobre salud mental y apoyo psicosocial.',
   'Staff welfare and peer support — ask your focal point for the current referral path.': 'Bienestar del personal y apoyo entre pares — consulte a su punto focal sobre la vía de referencia actual.',
-  'A short breathing exercise can help you reset.': 'Un breve ejercicio de respiración puede ayudarle a recuperar el equilibrio.',
-  'Start breathing exercise': 'Iniciar ejercicio de respiración',
+  'Would you like to do a quick breathing exercise?': '¿Le gustaría hacer un breve ejercicio de respiración?',
+  'Skip for now': 'Omitir por ahora',
 
   'Breathe in…': 'Inhale…',
   'Hold…': 'Retenga…',
   'Breathe out…': 'Exhale…',
-  'Quick breathing exercise · inhale 1.5s, hold 2.5s, exhale 3s': 'Ejercicio de respiración rápido · inhale 1,5 s, retenga 2,5 s, exhale 3 s',
+  'Quick breathing exercise · 7 seconds, inhale then exhale': 'Ejercicio de respiración rápido · 7 segundos, inhale y luego exhale',
+  'Demo data': 'Datos de demostración',
 
   'Ask the survivor for three things they will always remember — a name, a place, and a year.': 'Pida a la persona sobreviviente tres cosas que siempre recordará — un nombre, un lugar y un año.',
   'Enter them here.': 'Introdúzcalas aquí.',
@@ -1279,13 +1282,14 @@ const pt = {
   'Confidential staff counselling and wellbeing support.': 'Aconselhamento confidencial e apoio ao bem-estar da equipe.',
   'Inter-Agency Standing Committee mental health & psychosocial support guidance.': 'Orientação do Comitê Permanente Interagências sobre saúde mental e apoio psicossocial.',
   'Staff welfare and peer support — ask your focal point for the current referral path.': 'Bem-estar da equipe e apoio entre pares — pergunte ao seu ponto focal sobre a via de encaminhamento atual.',
-  'A short breathing exercise can help you reset.': 'Um breve exercício de respiração pode ajudá-lo a se reequilibrar.',
-  'Start breathing exercise': 'Iniciar exercício de respiração',
+  'Would you like to do a quick breathing exercise?': 'Gostaria de fazer um breve exercício de respiração?',
+  'Skip for now': 'Pular por agora',
 
   'Breathe in…': 'Inspire…',
   'Hold…': 'Segure…',
   'Breathe out…': 'Expire…',
-  'Quick breathing exercise · inhale 1.5s, hold 2.5s, exhale 3s': 'Exercício de respiração rápido · inspire 1,5 s, segure 2,5 s, expire 3 s',
+  'Quick breathing exercise · 7 seconds, inhale then exhale': 'Exercício de respiração rápido · 7 segundos, inspire e depois expire',
+  'Demo data': 'Dados de demonstração',
 
   'Ask the survivor for three things they will always remember — a name, a place, and a year.': 'Peça à pessoa sobrevivente três coisas que ela sempre lembrará — um nome, um lugar e um ano.',
   'Enter them here.': 'Insira-as aqui.',
