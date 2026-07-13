@@ -48,6 +48,17 @@ function ensureRiskBannerVisible() {
   });
 }
 
+// Guarantees the "online" beat of the connectivity demo always shows a
+// consistent state, whether the judge arrives forward from the language
+// step or backward (Previous) from the "offline" beat, where the app
+// would otherwise still be sitting in simulated offline mode.
+function ensureOnlineForConnectivityIntro() {
+  return new Promise((resolve) => {
+    window.__traceSetOnline?.();
+    resolve();
+  });
+}
+
 const SUPERVISOR_SUMMARY_QUESTION = 'Summarize this case for a supervisor handoff in 3 paragraphs.';
 
 // Opens the floating chat bubble programmatically before the chatbot step's
@@ -87,12 +98,38 @@ const STEP_DEFS = [
   {
     id: 'offline-indicator',
     attachTo: { element: '[data-tutorial="offline-indicator"]', on: 'bottom' },
-    title: 'Works offline, no connectivity required',
-    text: 'In the field, in Diffa, Bangui, or the Lake Chad Basin, caseworkers can capture intake, flag risk from local rules, and prepare referral-ready records with zero connectivity. Syncs automatically when connection returns.',
+    title: 'Full capabilities, online',
+    text: 'When connected, TRACE has full capabilities: voice intake, local language interpretation, AI structuring, risk flagging, and document generation.',
+    beforeShowPromise: ensureOnlineForConnectivityIntro,
     customButtons: (tour) => [
       { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
       { text: 'End Tour', action: () => tour.cancel(), classes: 'trace-shepherd-btn-ghost' },
-      { text: 'Next →', action: () => tour.next(), classes: 'trace-shepherd-btn-primary' }
+      {
+        text: 'Switch to Offline →',
+        action: () => {
+          window.__traceSetOffline?.();
+          setTimeout(() => tour.next(), 300);
+        },
+        classes: 'trace-shepherd-btn-primary'
+      }
+    ]
+  },
+  {
+    id: 'offline-indicator-offline',
+    attachTo: { element: '[data-tutorial="offline-indicator"]', on: 'bottom' },
+    title: 'Still fully functional, offline',
+    text: "In offline mode, in Diffa, Bangui, or the Lake Chad Basin, caseworkers can still capture intake notes, run local risk checks, and prepare referral-ready records. Local language interpretation requires a connection and is unavailable offline. Everything syncs automatically when connectivity returns.",
+    customButtons: (tour) => [
+      { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
+      { text: 'End Tour', action: () => tour.cancel(), classes: 'trace-shepherd-btn-ghost' },
+      {
+        text: 'Restore connection →',
+        action: () => {
+          window.__traceSetOnline?.();
+          setTimeout(() => tour.next(), 300);
+        },
+        classes: 'trace-shepherd-btn-primary'
+      }
     ]
   },
   {

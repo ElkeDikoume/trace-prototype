@@ -364,6 +364,19 @@ export default function App() {
     };
   }, []);
 
+  // Lets the guided tour's connectivity demo step actually flip the app's
+  // online/offline state (rather than just describing it), so the judge
+  // sees the header indicator and the Interpret button's availability
+  // change in real time.
+  useEffect(() => {
+    window.__traceSetOffline = () => setOnlineMode(false);
+    window.__traceSetOnline = () => setOnlineMode(true);
+    return () => {
+      delete window.__traceSetOffline;
+      delete window.__traceSetOnline;
+    };
+  }, []);
+
   // Lets the guided tour switch to the Insights tab programmatically (rather
   // than clicking the nav button) before a step's spotlight renders.
   useEffect(() => {
