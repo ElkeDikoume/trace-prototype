@@ -2,6 +2,7 @@ import express from 'express';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { callClaude } from '../api/_lib/anthropic.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const KEY_FILE = path.resolve(__dirname, '..', 'API_KEY.txt');
@@ -29,8 +30,6 @@ if (!apiKey) {
 const app = express();
 app.use(express.json({ limit: '2mb' }));
 
-const MODEL = 'claude-sonnet-5';
-
 app.post('/api/claude', async (req, res) => {
   if (!apiKey) {
     return res.status(500).json({ error: 'Server has no Anthropic API key configured. Check API_KEY.txt.' });
@@ -40,33 +39,11 @@ app.post('/api/claude', async (req, res) => {
     return res.status(400).json({ error: 'Request must include a non-empty messages array.' });
   }
   try {
-    const upstream = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        max_tokens: max_tokens || 1024,
-        system: system || undefined,
-        messages
-      })
-    });
-    const data = await upstream.json();
-    if (!upstream.ok) {
-      console.error('[TRACE server] Anthropic API error:', data);
-      return res.status(upstream.status).json({ error: data?.error?.message || 'Anthropic API error' });
-    }
-    const text = (data.content || [])
-      .filter((block) => block.type === 'text')
-      .map((block) => block.text)
-      .join('\n');
-    res.json({ text, raw: data });
+    const result = await callClaude({ apiKey, system, messages, max_tokens });
+    res.json(result);
   } catch (err) {
-    console.error('[TRACE server] Request failed:', err);
-    res.status(500).json({ error: 'Failed to reach Anthropic API. Check your connection.' });
+    console.error('[TRACE server] Anthropic API error:', err.data || err.message);
+    res.status(err.status || 500).json({ error: err.data?.error?.message || err.message || 'Failed to reach Anthropic API.' });
   }
 });
 
