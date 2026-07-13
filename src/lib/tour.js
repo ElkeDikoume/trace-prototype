@@ -45,7 +45,7 @@ const STEP_DEFS = [
     id: 'intake-notes',
     attachTo: { element: '[data-tutorial="voice-intake"]', on: 'top' },
     title: 'Enter intake notes',
-    text: 'Caseworkers start with unstructured notes from an interview, hotline call, or shelter visit — typed or spoken, in any of 5 languages.',
+    text: "In the field, caseworkers often begin with notes in the survivor's own language. This example arrived in Hausa — a language spoken by 50+ million people across the Sahel, with almost no humanitarian tool support. Click below to load the raw notes.",
     customButtons: (tour) => [
       { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
       { text: 'End Tour', action: () => tour.cancel(), classes: 'trace-shepherd-btn-ghost' },

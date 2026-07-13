@@ -25,10 +25,14 @@ export const DEMO_CASE_DATA = {
   caseworkerNotes: 'Case captured via Arabic voice intake at an N\'Djamena partner shelter. Survivor presents with labor trafficking indicators: recruitment fraud, document confiscation, debt bondage, and movement restriction.'
 };
 
-// Raw intake note text the guided tour loads into a blank case's notes
-// field to demonstrate live AI structuring (see App.jsx's
-// window.__traceLoadSampleNotes).
-export const DEMO_INTAKE_NOTES = DEMO_CASE_DATA.caseworkerNotes;
+// Raw Hausa-language intake note the guided tour loads into a blank case's
+// notes field to demonstrate live AI structuring (see App.jsx's
+// window.__traceLoadSampleNotes). Kept identical to the source text in
+// OnlineInterpretationPanel.jsx's interpretation example, so Step 3
+// (load notes) and Step 4 (interpretation panel) show the same testimony:
+// a recruiter confiscated her ID, brought her from Kano under a false
+// promise of childcare work, and forced her to work unpaid.
+export const DEMO_INTAKE_NOTES = "Ta ce mai daukar ma'aikata ya karɓi takardar shaidar ta, ba za ta iya tafiya ba. An kawo ta daga Kano, ana cewa za a ba ta aiki a gidan yara, amma an tilasta ta yin aiki ba tare da kuɗi ba.";
 
 // Two additional seeded examples so first-time visitors see varied case
 // types (form type, geography, profile) without running the demo first.
