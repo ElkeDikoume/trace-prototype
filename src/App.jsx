@@ -18,8 +18,7 @@ import traceLogo from './assets/trace-logo.png';
 import FormSelector from './components/FormSelector.jsx';
 import ActiveForm from './components/ActiveForm.jsx';
 import Chatbot from './components/Chatbot.jsx';
-import ThemeToggle from './components/ThemeToggle.jsx';
-import SupportCareButton from './components/SupportCareButton.jsx';
+import HeaderOverflowMenu from './components/HeaderOverflowMenu.jsx';
 import SupportCarePanel from './components/SupportCarePanel.jsx';
 import SurvivorLookupModal from './components/SurvivorLookupModal.jsx';
 import FollowUpBanner from './components/FollowUpBanner.jsx';
@@ -490,21 +489,17 @@ export default function App() {
               {t('Sign in')}
             </button>
           )}
-          {activeForm && view === 'case' && (
-            <span className="text-xs px-2 py-1 rounded-full bg-trace-800 border border-trace-700 text-slate-300">
-              {t(activeForm.shortName)}
-            </span>
-          )}
           <LanguageSelector lang={lang} onChange={setLang} />
-          <ThemeToggle theme={theme} onToggle={() => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))} />
-          <SupportCareButton onClick={() => { setSupportCareHighRiskPrompt(false); setShowSupportCare(true); }} />
           <button
-            onClick={() => setShowLookup(true)}
-            aria-label={t('Find portable record')}
-            title={t('Find portable record')}
-            className="w-7 h-7 flex items-center justify-center rounded-full bg-trace-800 border border-trace-700 text-sm hover:bg-trace-700"
+            data-tutorial="offline-indicator"
+            onClick={() => setOnlineMode((v) => !v)}
+            className={`text-xs px-2 py-1 rounded-full border flex items-center gap-1 ${
+              onlineMode
+                ? 'bg-trace-risk-low/15 border-trace-risk-low text-trace-risk-low'
+                : 'bg-trace-700 border-trace-600 text-slate-300'
+            }`}
           >
-            🔎
+            {onlineMode ? `● ${t('Online')}` : `○ ${t('Offline')}`}
           </button>
           <button
             onClick={() => {
@@ -519,47 +514,12 @@ export default function App() {
           >
             ?
           </button>
-          <button
-            onClick={() => {
-              localStorage.removeItem(WELCOME_SEEN_KEY);
-              localStorage.removeItem(TUTORIAL_SEEN_KEY);
-              handleReplayGuidedTour();
-            }}
-            title="Replay Demo Tour"
-            className="text-xs px-2 py-1 rounded-full bg-trace-accent text-white hover:bg-sky-500 font-medium whitespace-nowrap"
-          >
-            ▶ Replay Demo Tour
-          </button>
-          <button
-            onClick={() => {
-              ['trace_welcome_seen', 'trace_tutorial_seen', 'trace_examples_seeded', 'trace_mock_session', 'trace_cases_v1']
-                .forEach((k) => localStorage.removeItem(k));
-              window.location.reload();
-            }}
-            title="Restart Demo"
-            className="text-xs text-slate-400 hover:text-white border border-trace-700 px-2 py-1 rounded transition-colors"
-          >
-            ↺ Restart
-          </button>
-          <button
-            data-tutorial="offline-indicator"
-            onClick={() => setOnlineMode((v) => !v)}
-            className={`text-xs px-2 py-1 rounded-full border flex items-center gap-1 ${
-              onlineMode
-                ? 'bg-trace-risk-low/15 border-trace-risk-low text-trace-risk-low'
-                : 'bg-trace-700 border-trace-600 text-slate-300'
-            }`}
-          >
-            {onlineMode ? `● ${t('Online')}` : `○ ${t('Offline')}`}
-          </button>
-          {onlineMode && (
-            <span
-              title="Claude API live · CTDC/DTM data simulated for demo"
-              className="text-[10px] text-slate-500 border border-trace-700 rounded px-1.5 py-0.5 ml-1 cursor-help"
-            >
-              ⓘ demo data
-            </span>
-          )}
+          <HeaderOverflowMenu
+            theme={theme}
+            onToggleTheme={() => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))}
+            onOpenSupportCare={() => { setSupportCareHighRiskPrompt(false); setShowSupportCare(true); }}
+            onOpenLookup={() => setShowLookup(true)}
+          />
         </div>
       </header>
 
