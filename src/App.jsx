@@ -532,6 +532,17 @@ export default function App() {
             ▶ Replay Demo Tour
           </button>
           <button
+            onClick={() => {
+              ['trace_welcome_seen', 'trace_tutorial_seen', 'trace_examples_seeded', 'trace_mock_session', 'trace_cases_v1']
+                .forEach((k) => localStorage.removeItem(k));
+              window.location.reload();
+            }}
+            title="Restart Demo"
+            className="text-xs text-slate-400 hover:text-white border border-trace-700 px-2 py-1 rounded transition-colors"
+          >
+            ↺ Restart
+          </button>
+          <button
             onClick={() => setOnlineMode((v) => !v)}
             className={`text-xs px-2 py-1 rounded-full border flex items-center gap-1 ${
               onlineMode
