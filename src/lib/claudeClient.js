@@ -125,6 +125,14 @@ Output format: wrap ONLY the translated English text in <translation></translati
   return (match ? match[1] : text).trim();
 }
 
+// Appended to every document-generation system prompt (not the chatbot or
+// structuring calls) so Claude's own output is unmistakably marked as demo
+// content, on top of the client-side watermark added around downloads.
+const DOCUMENT_WATERMARK_INSTRUCTION = `IMPORTANT: Begin every generated document with the following header on its own line:
+⚠️ DEMO PROTOTYPE — NOT REAL CASE DATA — Austin AI Hub Hackathon 2026 ⚠️
+And end every document with:
+--- END OF DEMO DOCUMENT — TRACE Hackathon Prototype — trace-prototype-ten.vercel.app ---`;
+
 function fieldSummary(form, caseData) {
   return form.fields.map((f) => `${f.label}: ${caseData?.[f.key] || '(not recorded)'}`).join('\n');
 }
@@ -159,7 +167,9 @@ Risk assessment:
 ${riskSummaryText(riskResult)}
 
 Candidate services:
-${serviceSummary}`;
+${serviceSummary}
+
+${DOCUMENT_WATERMARK_INSTRUCTION}`;
 
   return callClaude({ system, messages: [{ role: 'user', content: 'Draft the referral letter.' }], max_tokens: 1024 });
 }
@@ -175,7 +185,9 @@ Case data:
 ${fieldSummary(form, caseData)}
 
 Risk assessment:
-${riskSummaryText(riskResult)}`;
+${riskSummaryText(riskResult)}
+
+${DOCUMENT_WATERMARK_INSTRUCTION}`;
 
   return callClaude({ system, messages: [{ role: 'user', content: 'Write the case summary.' }], max_tokens: 1024 });
 }
@@ -188,7 +200,9 @@ Use these standard IOM monthly return fields, one per line, as a clean labeled l
 Output plain text only — no markdown headers, no commentary.
 
 Case data:
-${fieldSummary(form, caseData)}`;
+${fieldSummary(form, caseData)}
+
+${DOCUMENT_WATERMARK_INSTRUCTION}`;
 
   return callClaude({ system, messages: [{ role: 'user', content: 'Format the monthly return entry.' }], max_tokens: 768 });
 }
@@ -204,7 +218,9 @@ Case data:
 ${fieldSummary(form, caseData)}
 
 Risk assessment:
-${riskSummaryText(riskResult)}`;
+${riskSummaryText(riskResult)}
+
+${DOCUMENT_WATERMARK_INSTRUCTION}`;
 
   return callClaude({ system, messages: [{ role: 'user', content: 'Identify the missing information.' }], max_tokens: 1024 });
 }
@@ -220,7 +236,9 @@ Case data:
 ${fieldSummary(form, caseData)}
 
 Risk assessment:
-${riskSummaryText(riskResult)}`;
+${riskSummaryText(riskResult)}
+
+${DOCUMENT_WATERMARK_INSTRUCTION}`;
 
   return callClaude({ system, messages: [{ role: 'user', content: 'Draft the follow-up plan.' }], max_tokens: 768 });
 }

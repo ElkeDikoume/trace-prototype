@@ -88,8 +88,34 @@ const PROTOCOL_QUESTIONS = [
 
 const PATTERN_REPORT_PROMPT = "Generate a pattern intelligence briefing report for my supervisor. Base it on these caseload alerts: (1) 'Alhaji Moussa Transport & Logistics' named as recruiter in 3 cases in Diffa/Niamey since June 2026; (2) 5 cases recruited through the same WhatsApp broker group in the Zinder–Agadez corridor; (3) Debt bondage indicators among Niamey domestic-worker cases up 40% quarter-over-quarter. Format as a structured supervisor briefing document with an executive summary, pattern details, recommended actions, and a note that all data is de-identified.";
 
+// Wrapped around every downloaded file's content — a client-side watermark
+// on top of the one Claude is instructed to write into the text itself
+// (see DOCUMENT_WATERMARK_INSTRUCTION in claudeClient.js), so the warning
+// survives even if a caseworker edits the AI's own header/footer lines out.
+const WATERMARK_HEADER = '⚠️  DEMO PROTOTYPE — NOT REAL CASE DATA — Austin AI Hub Hackathon 2026  ⚠️\n' +
+  '================================================================\n\n';
+const WATERMARK_FOOTER = '\n\n================================================================\n' +
+  'END OF DEMO DOCUMENT — TRACE Hackathon Prototype\n' +
+  'trace-prototype-ten.vercel.app | Not for operational use\n';
+
 function caseLabelText(caseRecord) {
   return caseRecord?.data?.fullName || caseRecord?.data?.clientIdentifier || caseRecord?.data?.survivorIdentifier || caseRecord?.data?.caseId || 'Untitled case';
+}
+
+function slugifyTitle(title) {
+  return title.trim().replace(/[^a-zA-Z0-9]+/g, '_');
+}
+
+function downloadTextFile(filename, content) {
+  const blob = new Blob([WATERMARK_HEADER + content + WATERMARK_FOOTER], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
 }
 
 function askTrace(question, delay) {
@@ -116,7 +142,6 @@ export default function DocumentsPanel({ caseRecord, form, riskResult, services,
   const [busy, setBusy] = useState({});
   const [errors, setErrors] = useState({});
   const [copied, setCopied] = useState({});
-  const [printPayload, setPrintPayload] = useState(null);
 
   const documents = caseRecord?.documents || {};
 
@@ -143,14 +168,16 @@ export default function DocumentsPanel({ caseRecord, form, riskResult, services,
     }
   }
 
-  function handlePrint(payload) {
-    setPrintPayload(payload);
-    setTimeout(() => window.print(), 50);
+  function handleDownloadCaseRecord() {
+    const header = `${form.name} — ${caseLabelText(caseRecord)}\n\n`;
+    const body = form.fields
+      .map((f) => `${f.label}: ${caseRecord.data?.[f.key] || '—'}`)
+      .join('\n');
+    downloadTextFile('TRACE_Case_Record_DEMO.txt', header + body);
   }
 
-  function handlePrintCaseRecord() {
-    const fields = form.fields.map((f) => [f.label, caseRecord.data?.[f.key] || '']);
-    handlePrint({ title: `${form.name} — ${caseLabelText(caseRecord)}`, fields });
+  function handleDownloadDoc(docDef, content) {
+    downloadTextFile(`TRACE_${slugifyTitle(docDef.title)}_DEMO.txt`, content);
   }
 
   return (
@@ -182,10 +209,10 @@ export default function DocumentsPanel({ caseRecord, form, riskResult, services,
                   {docDef.key === 'caseRecord' ? (
                     <div className="flex gap-2 mt-2">
                       <button
-                        onClick={handlePrintCaseRecord}
+                        onClick={handleDownloadCaseRecord}
                         className="text-xs px-2 py-1 rounded bg-trace-accent text-white hover:bg-sky-500"
                       >
-                        ⬇ {t('Download PDF')}
+                        ⬇ {t('Download')}
                       </button>
                     </div>
                   ) : (
@@ -225,10 +252,10 @@ export default function DocumentsPanel({ caseRecord, form, riskResult, services,
                           <div className="flex gap-2 mt-2 flex-wrap">
                             {docDef.downloadable && (
                               <button
-                                onClick={() => handlePrint({ title: docDef.title, text: content })}
+                                onClick={() => handleDownloadDoc(docDef, content)}
                                 className="text-xs px-2 py-1 rounded bg-trace-700 border border-trace-600 text-slate-200 hover:bg-trace-600"
                               >
-                                ⬇ {t('Download as PDF')}
+                                ⬇ {t('Download')}
                               </button>
                             )}
                             {docDef.copyable && (
@@ -289,30 +316,6 @@ export default function DocumentsPanel({ caseRecord, form, riskResult, services,
             </button>
           ))}
         </div>
-      </div>
-
-      {/* Off-screen print buffer: repositioned on top by the @media print rule
-          in index.css so window.print() renders only this document's content,
-          not the whole app chrome. */}
-      <div className="print-area" style={{ position: 'absolute', left: '-9999px', top: 0, width: '700px' }}>
-        {printPayload && (
-          <>
-            <h1 style={{ fontSize: 18, marginBottom: 4 }}>{printPayload.title}</h1>
-            <p style={{ fontSize: 11, color: '#666', marginBottom: 24 }}>
-              {t('Generated by TRACE (demo prototype)')} · {new Date().toLocaleString()}
-            </p>
-            {printPayload.fields ? (
-              printPayload.fields.map(([label, value]) => (
-                <div key={label} style={{ marginBottom: 10 }}>
-                  <div style={{ fontWeight: 600, fontSize: 11, textTransform: 'uppercase', color: '#555' }}>{t(label)}</div>
-                  <div style={{ fontSize: 14, whiteSpace: 'pre-wrap' }}>{value || '—'}</div>
-                </div>
-              ))
-            ) : (
-              <div style={{ fontSize: 14, whiteSpace: 'pre-wrap' }}>{printPayload.text}</div>
-            )}
-          </>
-        )}
       </div>
     </section>
   );
