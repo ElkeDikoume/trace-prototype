@@ -24,3 +24,46 @@ export const DEMO_CASE_DATA = {
   immediateNeeds: 'Currently in shelter care; needs a medical check-up and psychosocial support',
   caseworkerNotes: 'Case captured via Arabic voice intake at an N\'Djamena partner shelter. Survivor presents with labor trafficking indicators: recruitment fraud, document confiscation, debt bondage, and movement restriction.'
 };
+
+// Two additional seeded examples so first-time visitors see varied case
+// types (form type, geography, profile) without running the demo first.
+// A couple of fields are added beyond what's literally specified below
+// (location for Ibrahim, survivorIdentifier for Marie-Claire, and
+// incidentType mapped to a real select option) so the required fields for
+// each form schema (see forms.js) actually render filled in, rather than
+// appearing blank despite the case having real data.
+export const EXAMPLE_CASE_IBRAHIM = {
+  id: 'example-ibrahim',
+  formId: 'protection_monitoring',
+  data: {
+    fullName: 'Ibrahim S. (pseudonym)',
+    age: '16',
+    gender: 'Male',
+    nationality: 'Nigerien',
+    currentLocation: 'Diffa, Niger',
+    location: 'Diffa, Niger',
+    vulnerabilityIndicators: 'Unaccompanied minor, separated from family during displacement from Lake Chad area, no documentation',
+    protectionConcerns: 'At risk of recruitment by armed actors; no guardian present; no shelter arrangement',
+    immediateNeeds: 'Emergency shelter, legal documentation, family tracing',
+    caseworkerNotes: 'Referred by UNICEF partner at Diffa transit point. No family contact established.'
+  },
+  chatHistory: []
+};
+
+export const EXAMPLE_CASE_MARIECLAIRE = {
+  id: 'example-marieclaire',
+  formId: 'gbv_incident',
+  data: {
+    fullName: 'Marie-Claire T. (pseudonym)',
+    survivorIdentifier: 'Marie-Claire T. (pseudonym)',
+    age: '34',
+    gender: 'Female',
+    nationality: 'Congolese',
+    currentLocation: 'Bangui, CAR',
+    incidentType: 'Sexual assault',
+    incidentLocation: 'Transit shelter, Bangui',
+    immediateNeeds: 'Medical care, psychosocial support, legal aid',
+    caseworkerNotes: 'Survivor arrived at partner shelter in Bangui after displacement from DRC. Incident occurred during transit. Has two children, ages 4 and 7, currently with her.'
+  },
+  chatHistory: []
+};

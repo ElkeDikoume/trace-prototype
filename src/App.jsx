@@ -10,7 +10,7 @@ import { fetchAcledEvents } from './services/acledService.js';
 import { fetchPatternAlerts } from './services/patternIntelligenceService.js';
 import { getStoredTheme, storeTheme, applyTheme } from './lib/theme.js';
 import { computeFollowUpReminder, isReminderDue } from './lib/followUp.js';
-import { DEMO_CASE_FORM_ID, DEMO_CASE_DATA } from './data/demoCase.js';
+import { DEMO_CASE_FORM_ID, DEMO_CASE_DATA, EXAMPLE_CASE_IBRAHIM, EXAMPLE_CASE_MARIECLAIRE } from './data/demoCase.js';
 import { I18nContext, getStoredLanguage, storeLanguage, getLanguageMeta, translate } from './lib/i18n.jsx';
 import { startGuidedTour } from './lib/tour.js';
 import traceLogo from './assets/trace-logo.png';
@@ -32,6 +32,7 @@ import WelcomeSplash from './components/WelcomeSplash.jsx';
 
 const TUTORIAL_SEEN_KEY = 'trace_tutorial_seen';
 const WELCOME_SEEN_KEY = 'trace_welcome_seen';
+const EXAMPLES_SEEDED_KEY = 'trace_examples_seeded';
 const DEMO_CASE_ID = 'demo-case';
 
 function caseLocation(data) {
@@ -74,8 +75,15 @@ export default function App() {
   const seenLevelsRef = useRef({});
   const suppressNextHighRiskPromptRef = useRef(false);
   const tourLaunchedRef = useRef(false);
+  const guidedTourRef = useRef(null);
 
   useEffect(() => {
+    if (!localStorage.getItem(EXAMPLES_SEEDED_KEY)) {
+      saveCase({ id: DEMO_CASE_ID, formId: DEMO_CASE_FORM_ID, data: { ...DEMO_CASE_DATA }, chatHistory: [] });
+      saveCase({ ...EXAMPLE_CASE_IBRAHIM });
+      saveCase({ ...EXAMPLE_CASE_MARIECLAIRE });
+      localStorage.setItem(EXAMPLES_SEEDED_KEY, '1');
+    }
     setCases(listCases());
     fetchPatternAlerts().then(setPatternAlerts);
 
@@ -254,7 +262,12 @@ export default function App() {
     const id = setTimeout(() => {
       if (!tourLaunchedRef.current) {
         tourLaunchedRef.current = true;
-        startGuidedTour();
+        // The old hand-rolled tutorial and the Shepherd tour must never be
+        // visible at the same time — they'd stack.
+        setShowTutorial(false);
+        guidedTourRef.current = startGuidedTour({
+          onEnd: () => { guidedTourRef.current = null; }
+        });
       }
       setPendingTourStart(false);
     }, 300);
@@ -401,7 +414,13 @@ export default function App() {
             🔎
           </button>
           <button
-            onClick={() => setShowTutorial(true)}
+            onClick={() => {
+              // Never let the old tutorial and the Shepherd tour overlap.
+              if (guidedTourRef.current) {
+                guidedTourRef.current.cancel();
+              }
+              setShowTutorial(true);
+            }}
             aria-label={t('Replay tutorial')}
             title={t('Replay tutorial')}
             className="w-7 h-7 flex items-center justify-center rounded-full bg-trace-800 border border-trace-700 text-sm hover:bg-trace-700"
