@@ -20,11 +20,11 @@ function ensureFormCardsVisible() {
   });
 }
 
-// Gives the live Claude API structuring call (triggered by the previous
-// step's "Structure with AI" click) time to complete before spotlighting
-// the now-populated fields.
+// Small paint/reflow buffer after the structuring promise has already
+// resolved (see the 'structure-cta' step's customButtons), so the
+// now-populated fields have settled before Shepherd measures them.
 function waitForStructuring() {
-  return new Promise((resolve) => setTimeout(resolve, 4000));
+  return new Promise((resolve) => setTimeout(resolve, 300));
 }
 
 const STEP_DEFS = [
@@ -66,7 +66,19 @@ const STEP_DEFS = [
     id: 'structure-cta',
     attachTo: { element: '[data-tutorial="structure-button"]', on: 'bottom' },
     title: 'Structure with AI',
-    text: 'TRACE converts the freeform notes into the correct IOM fields. The AI does not replace judgment — it reduces documentation burden. Click Structure with AI below, then click Next once you see the fields populate.'
+    text: 'TRACE converts the freeform notes into the correct IOM fields. The AI does not replace judgment — it reduces documentation burden. Click below to structure the notes with AI.',
+    customButtons: (tour) => [
+      { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
+      { text: 'End Tour', action: () => tour.cancel(), classes: 'trace-shepherd-btn-ghost' },
+      {
+        text: 'Structure with AI →',
+        action: async () => {
+          await window.__traceStructureNow?.();
+          tour.next();
+        },
+        classes: 'trace-shepherd-btn-primary'
+      }
+    ]
   },
   {
     id: 'form-fields',
