@@ -267,8 +267,9 @@ export default function App() {
   function handleSignIn() {
     const session = { org: "N'Djamena IOM Office", role: 'Caseworker', mode: 'demo' };
     localStorage.setItem('trace_mock_session', JSON.stringify(session));
+    localStorage.setItem(WELCOME_SEEN_KEY, '1');
     setMockSession(session);
-    handleExploreOnMyOwn();
+    setShowWelcome(false);
   }
 
   // Waits for the demo case (and its DOM) to be ready before starting Shepherd,
