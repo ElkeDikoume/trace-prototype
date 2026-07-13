@@ -166,7 +166,7 @@ const STEP_DEFS = [
   },
   {
     id: 'form-fields',
-    attachTo: { element: '[data-tutorial="form-fields"]', on: 'top' },
+    attachTo: { element: '[data-tutorial="form-fields-heading"]', on: 'bottom' },
     title: 'Notes in. Fields out.',
     text: 'Every field was populated from the spoken notes in about 5 seconds. Key fields like Age and Current Location were extracted directly from the spoken notes, the caseworker can edit any field before saving.',
     beforeShowPromise: waitForStructuring

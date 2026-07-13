@@ -22,16 +22,11 @@ export default function WelcomeSplash({ onStartDemo, onExplore, onSignIn }) {
   return (
     <div className="fixed inset-0 z-[300] bg-trace-950/95 backdrop-blur-sm flex items-start justify-center px-4 py-8 overflow-y-auto">
       <div className="w-full max-w-lg relative bg-trace-900 border border-trace-700 rounded-2xl shadow-2xl pt-10 px-8 pb-8">
-        <div className="absolute top-4 right-4">
-          <LanguageSelector lang="en" />
-        </div>
-
-        {/* Logo + subtitle */}
+        {/* Logo */}
         <div className="flex flex-col items-center text-center">
           <div className="bg-white rounded-2xl p-3 flex-shrink-0">
             <img src={traceLogo} alt="TRACE" className="w-32 h-32 object-contain block" />
           </div>
-          <p className="text-base text-slate-300 mt-4">AI Caseworker Assistant</p>
           <p className="text-sm text-slate-400 mt-4 leading-relaxed max-w-sm">
             For this demo, you&apos;ll step into the role of a frontline caseworker in N&apos;Djamena, Chad.
           </p>
@@ -49,6 +44,10 @@ export default function WelcomeSplash({ onStartDemo, onExplore, onSignIn }) {
         </div>
 
         <div className="border-t border-trace-700 my-6" />
+
+        <div className="flex justify-center mb-4">
+          <LanguageSelector lang="en" />
+        </div>
 
         {/* Action buttons */}
         <div className="flex flex-col gap-3">

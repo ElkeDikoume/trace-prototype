@@ -132,7 +132,7 @@ export default function ActiveForm({
 
       <ServiceSuggestions services={services} />
 
-      <div className="flex items-center justify-between mb-2">
+      <div data-tutorial="form-fields-heading" className="flex items-center justify-between mb-2">
         <h3 className="text-sm font-semibold text-slate-200">{t('Case fields')}</h3>
         <button onClick={() => setFieldsOpen(!fieldsOpen)} className="text-slate-500 hover:text-slate-300 text-xs flex-shrink-0">
           {fieldsOpen ? '▲' : '▼'}
