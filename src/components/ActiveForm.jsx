@@ -130,7 +130,7 @@ export default function ActiveForm({
 
       <ServiceSuggestions services={services} />
 
-      <div className="space-y-3 pb-2">
+      <div data-tutorial="form-fields" className="space-y-3 pb-2">
         {form.fields.map((field) => (
           <div key={field.key}>
             <label className="block text-xs font-medium text-slate-400 mb-1">

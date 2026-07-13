@@ -12,6 +12,7 @@ import { getStoredTheme, storeTheme, applyTheme } from './lib/theme.js';
 import { computeFollowUpReminder, isReminderDue } from './lib/followUp.js';
 import { DEMO_CASE_FORM_ID, DEMO_CASE_DATA } from './data/demoCase.js';
 import { I18nContext, getStoredLanguage, storeLanguage, getLanguageMeta, translate } from './lib/i18n.jsx';
+import { startGuidedTour } from './lib/tour.js';
 import traceLogo from './assets/trace-logo.png';
 
 import FormSelector from './components/FormSelector.jsx';
@@ -27,8 +28,10 @@ import TutorialOverlay from './components/TutorialOverlay.jsx';
 import SupervisorView from './components/SupervisorView.jsx';
 import LanguageSelector from './components/LanguageSelector.jsx';
 import OnlineInterpretationPanel from './components/OnlineInterpretationPanel.jsx';
+import WelcomeSplash from './components/WelcomeSplash.jsx';
 
 const TUTORIAL_SEEN_KEY = 'trace_tutorial_seen';
+const WELCOME_SEEN_KEY = 'trace_welcome_seen';
 
 function caseLocation(data) {
   return data?.currentLocation || data?.location || data?.exploitationLocation || data?.incidentLocation || '';
@@ -63,15 +66,19 @@ export default function App() {
   const [supportCareHighRiskPrompt, setSupportCareHighRiskPrompt] = useState(false);
   const [showLookup, setShowLookup] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(() => !localStorage.getItem(WELCOME_SEEN_KEY));
+  const [pendingTourStart, setPendingTourStart] = useState(false);
   const [, setTick] = useState(0);
 
   const seenLevelsRef = useRef({});
+  const suppressNextHighRiskPromptRef = useRef(false);
+  const tourLaunchedRef = useRef(false);
 
   useEffect(() => {
     setCases(listCases());
     fetchPatternAlerts().then(setPatternAlerts);
 
-    if (!localStorage.getItem(TUTORIAL_SEEN_KEY)) {
+    if (!showWelcome && !localStorage.getItem(TUTORIAL_SEEN_KEY)) {
       const id = setTimeout(() => setShowTutorial(true), 400);
       return () => clearTimeout(id);
     }
@@ -168,12 +175,18 @@ export default function App() {
   }, [activeCase?.id, riskResult?.level]);
 
   // Support & Care auto-prompt: fires when a case newly becomes HIGH risk this session.
+  // Suppressed once when the guided tour kicks off the demo case, since the
+  // tour walks the caseworker to Support & Care deliberately at its own step.
   useEffect(() => {
     if (!activeCase || !riskResult) return;
     const prev = seenLevelsRef.current[activeCase.id];
     if (prev !== undefined && prev !== 'high' && riskResult.level === 'high') {
-      setShowSupportCare(true);
-      setSupportCareHighRiskPrompt(true);
+      if (suppressNextHighRiskPromptRef.current) {
+        suppressNextHighRiskPromptRef.current = false;
+      } else {
+        setShowSupportCare(true);
+        setSupportCareHighRiskPrompt(true);
+      }
     }
     seenLevelsRef.current[activeCase.id] = riskResult.level;
   }, [activeCase?.id, riskResult?.level]);
@@ -197,7 +210,7 @@ export default function App() {
     persist(record);
   }
 
-  function handleStartDemo() {
+  function handleStartDemo({ suppressHighRiskPrompt = false } = {}) {
     const record = {
       id: newCaseId(),
       formId: DEMO_CASE_FORM_ID,
@@ -208,8 +221,46 @@ export default function App() {
     // save transitioning into HIGH (triggering the Support & Care prompt),
     // rather than a case merely being reopened.
     seenLevelsRef.current[record.id] = 'low';
+    if (suppressHighRiskPrompt) suppressNextHighRiskPromptRef.current = true;
     setView('case');
     persist(record);
+  }
+
+  function handleStartGuidedTourDemo() {
+    localStorage.setItem(WELCOME_SEEN_KEY, '1');
+    setShowWelcome(false);
+    tourLaunchedRef.current = false;
+    handleStartDemo({ suppressHighRiskPrompt: true });
+    setPendingTourStart(true);
+  }
+
+  function handleExploreOnMyOwn() {
+    localStorage.setItem(WELCOME_SEEN_KEY, '1');
+    setShowWelcome(false);
+  }
+
+  // Waits for the demo case (and its DOM) to be ready before starting Shepherd,
+  // so both "Start Guided Demo" from the splash and "Replay Demo Tour" from the
+  // header can trigger the same reliable sequence: load demo data, then tour.
+  // tourLaunchedRef guards against React StrictMode's dev-only double-invoke
+  // (and any other double-fire from activeCase changing again mid-timer),
+  // since Shepherd has no built-in way to detect an already-running tour.
+  useEffect(() => {
+    if (!pendingTourStart || !activeCase) return;
+    const id = setTimeout(() => {
+      if (!tourLaunchedRef.current) {
+        tourLaunchedRef.current = true;
+        startGuidedTour();
+      }
+      setPendingTourStart(false);
+    }, 300);
+    return () => clearTimeout(id);
+  }, [pendingTourStart, activeCase]);
+
+  function handleReplayGuidedTour() {
+    tourLaunchedRef.current = false;
+    handleStartDemo({ suppressHighRiskPrompt: true });
+    setPendingTourStart(true);
   }
 
   function handleOpenCase(id) {
@@ -349,6 +400,13 @@ export default function App() {
             ?
           </button>
           <button
+            onClick={handleReplayGuidedTour}
+            title="Replay Demo Tour"
+            className="text-xs px-2 py-1 rounded-full bg-trace-800 border border-trace-700 text-slate-300 hover:bg-trace-700 whitespace-nowrap"
+          >
+            ▶ Replay Demo Tour
+          </button>
+          <button
             onClick={() => setOnlineMode((v) => !v)}
             className={`text-xs px-2 py-1 rounded-full border flex items-center gap-1 ${
               onlineMode
@@ -368,6 +426,7 @@ export default function App() {
         ].map((tab) => (
           <button
             key={tab.id}
+            data-tutorial={tab.id === 'supervisor' ? 'supervisor-tab' : undefined}
             onClick={() => setView(tab.id)}
             className={`flex-1 text-xs font-medium py-2 border-b-2 ${
               view === tab.id ? 'border-trace-accent text-trace-accent' : 'border-transparent text-slate-500 hover:text-slate-300'
@@ -441,6 +500,9 @@ export default function App() {
         onDelete={handleDeletePortableRecord}
       />
       {showTutorial && <TutorialOverlay onFinish={handleFinishTutorial} />}
+      {showWelcome && (
+        <WelcomeSplash onStartDemo={handleStartGuidedTourDemo} onExplore={handleExploreOnMyOwn} />
+      )}
     </div>
     </I18nContext.Provider>
   );

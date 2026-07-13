@@ -41,8 +41,20 @@ export default function FormSelector({ forms, cases, activeCaseId, onNewCase, on
           </button>
         )}
       </div>
+      <div data-tutorial="form-cards-primary" className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-2">
+        {forms.slice(0, 3).map((form) => (
+          <button
+            key={form.id}
+            onClick={() => onNewCase(form.id)}
+            className="text-left bg-trace-800 hover:bg-trace-700 active:scale-[0.98] transition rounded-lg p-3 border border-trace-700"
+          >
+            <div className="text-sm font-medium text-slate-100">{t(form.shortName)}</div>
+            <div className="text-xs text-slate-400 mt-1 line-clamp-2">{t(form.description)}</div>
+          </button>
+        ))}
+      </div>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
-        {forms.map((form) => (
+        {forms.slice(3).map((form) => (
           <button
             key={form.id}
             onClick={() => onNewCase(form.id)}

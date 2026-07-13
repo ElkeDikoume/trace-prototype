@@ -93,7 +93,7 @@ export default function Chatbot({ messages, onSend, busy, hasCase, pendingQuesti
         ))}
       </div>
 
-      <div className="px-4 pb-3 pt-1 flex gap-2">
+      <div data-tutorial="chatbot-input" className="px-4 pb-3 pt-1 flex gap-2">
         <input
           dir="auto"
           value={input}

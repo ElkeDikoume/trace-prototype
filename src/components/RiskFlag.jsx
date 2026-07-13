@@ -18,7 +18,7 @@ export default function RiskFlag({ riskResult, onAskWhy }) {
   const style = LEVEL_STYLES[riskResult.level];
 
   return (
-    <div className={`border rounded-lg p-3 mb-4 ${style.bg} ${style.border}`}>
+    <div data-tutorial="risk-flag" className={`border rounded-lg p-3 mb-4 ${style.bg} ${style.border}`}>
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div>
           <span className={`text-sm font-bold tracking-wide ${style.text}`}>{t(style.label)} {t('RISK')}</span>
