@@ -114,7 +114,7 @@ export default function OnlineInterpretationPanel({ onlineMode }) {
       <div className="bg-trace-800 border border-trace-700 rounded-md p-2">
         <div className="text-[10px] uppercase tracking-wide text-slate-500 mb-1">{t('Interpreted output (English)')}</div>
         <p className="text-sm text-slate-200 whitespace-pre-wrap">{translation}</p>
-        <p className="text-[11px] text-slate-500 mt-1">{t('Live interpretation via Meta SeamlessM4T in full deployment.')}</p>
+        <p className="text-[11px] text-slate-500 mt-1">{t('Powered by Claude API in this prototype · Meta SeamlessM4T in full deployment.')}</p>
       </div>
     </div>
   );
