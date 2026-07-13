@@ -3,8 +3,8 @@ import 'shepherd.js/dist/css/shepherd.css';
 
 // Clicks the FormSelector's collapsed toggle bar (if it's collapsed) so the
 // three primary form-type cards are actually in the DOM before Shepherd
-// tries to attach a spotlight to them. A demo case is already active by the
-// time the tour runs, so FormSelector defaults to its collapsed variant.
+// tries to attach a spotlight to them. A blank case is already active by
+// the time the tour runs, so FormSelector defaults to its collapsed variant.
 function ensureFormCardsVisible() {
   return new Promise((resolve) => {
     if (!document.querySelector('[data-tutorial="form-cards-primary"]')) {
@@ -20,60 +20,89 @@ function ensureFormCardsVisible() {
   });
 }
 
+// Gives the live Claude API structuring call (triggered by the previous
+// step's "Structure with AI" click) time to complete before spotlighting
+// the now-populated fields.
+function waitForStructuring() {
+  return new Promise((resolve) => setTimeout(resolve, 4000));
+}
+
 const STEP_DEFS = [
   {
-    id: 'pattern-intelligence',
-    attachTo: { element: '[data-tutorial="pattern-banner"]', on: 'bottom' },
-    title: 'Cross-case intelligence',
-    text: 'Before opening a single case, TRACE shows what no individual caseworker can see alone. Same broker name across 3 unconnected files. A new corridor in 7 days. All flagged for human review — never acted on automatically.'
+    id: 'language-selector',
+    attachTo: { element: '[data-tutorial="language-selector"]', on: 'bottom' },
+    title: 'Choose your language',
+    text: 'TRACE works in the caseworker\'s language. The interface and AI responses switch immediately. For this walkthrough, stay in English — but try switching and switching back.'
   },
   {
-    id: 'form-cards',
+    id: 'form-select',
     attachTo: { element: '[data-tutorial="form-cards-primary"]', on: 'bottom' },
-    title: 'Choose your form type',
-    text: "A caseworker in N'Djamena opened TRACE and selected HTCDS Intake — the IOM standard for anti-trafficking documentation. Eight form types. TRACE knows the field schema for each one.",
+    title: 'Select a form type',
+    text: 'Choose the type of case record to open. HTCDS Intake is already selected for this demo — the IOM Human Trafficking Case Data Standards. Eight form types total, each with its own field schema.',
     beforeShowPromise: ensureFormCardsVisible
   },
   {
-    id: 'form-fields',
-    attachTo: { element: '[data-tutorial="form-fields"]', on: 'top' },
-    title: 'Notes in. Structure out.',
-    text: "She spoke her intake notes in Hausa. Eight seconds later, TRACE filled every field you're looking at — no typing, no template. The caseworker reviews and corrects. That's the loop."
+    id: 'intake-notes',
+    attachTo: { element: '[data-tutorial="voice-intake"]', on: 'top' },
+    title: 'Enter intake notes',
+    text: 'Caseworkers start with unstructured notes from an interview, hotline call, or shelter visit — typed or spoken, in any of 5 languages.',
+    customButtons: (tour) => [
+      { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
+      { text: 'End Tour', action: () => tour.cancel(), classes: 'trace-shepherd-btn-ghost' },
+      {
+        text: 'Load sample intake notes →',
+        action: () => { window.__traceLoadSampleNotes?.(); tour.next(); },
+        classes: 'trace-shepherd-btn-primary'
+      }
+    ]
   },
   {
     id: 'interpretation',
     attachTo: { element: '[data-tutorial="online-interpretation"]', on: 'top' },
-    title: '50 million speakers. Almost no tools.',
-    text: 'The raw notes were in Hausa. TRACE interpreted them to English before structuring. Hausa, Fulfulde, Zarma — local languages across the Sahel that existing humanitarian tools almost entirely ignore.'
+    title: 'Hausa → English interpretation',
+    text: 'These notes arrived in Hausa. Before structuring, TRACE interprets them to English so the caseworker preserves the survivor\'s meaning. Hausa has 50+ million speakers — almost no humanitarian tools serve them.'
+  },
+  {
+    id: 'structure-cta',
+    attachTo: { element: '[data-tutorial="structure-button"]', on: 'bottom' },
+    title: 'Structure with AI',
+    text: 'TRACE converts the freeform notes into the correct IOM fields. The AI does not replace judgment — it reduces documentation burden. Click Structure with AI below, then click Next once you see the fields populate.'
+  },
+  {
+    id: 'form-fields',
+    attachTo: { element: '[data-tutorial="form-fields"]', on: 'top' },
+    title: 'Notes in. Fields out.',
+    text: 'Every field was populated from the spoken notes in about 5 seconds. The caseworker reviews and corrects — nothing is locked.',
+    beforeShowPromise: waitForStructuring
   },
   {
     id: 'risk-flag',
     attachTo: { element: '[data-tutorial="risk-flag"]', on: 'bottom' },
     title: 'Risk score with receipts',
-    text: 'HIGH risk — not a black box. TRACE shows which exact fields triggered each CTDC indicator: document confiscation, debt bondage, movement restriction. The caseworker can verify every flag. And TRACE tells her what information is still missing.'
+    text: 'HIGH risk — not a black box. TRACE shows which exact fields triggered each CTDC indicator: document confiscation, debt bondage, movement restriction. And it tells the caseworker what information is still missing.'
+  },
+  {
+    id: 'services',
+    attachTo: { element: '[data-tutorial="services"]', on: 'bottom' },
+    title: 'Suggested referral services',
+    text: 'Based on case details and location, TRACE surfaces possible services for human review. In full deployment this pulls from live IOM DTM and UNHCR directories.'
   },
   {
     id: 'chatbot',
     attachTo: { element: '[data-tutorial="chatbot-input"]', on: 'top' },
     title: 'Ask TRACE anything',
-    text: "Grounded in this case's data and IOM HTCDS protocol. 'Why was this flagged?' 'Draft a referral letter to Maison de la Femme.' 'What information am I still missing?' Try it — the chatbot is live."
+    text: "Grounded in this case and IOM HTCDS protocol. Try: 'Why was this flagged high risk?' or 'Draft a referral letter for this case.' The chatbot is live."
   },
   {
     id: 'supervisor',
     attachTo: { element: '[data-tutorial="supervisor-tab"]', on: 'bottom' },
-    title: 'What no single caseworker sees',
-    text: 'Geographic hotspots, caseload distribution, cross-case patterns. De-identified. Flagged for supervisor review. No autonomous action. This is what makes TRACE an organizational tool, not just a caseworker tool.'
-  },
-  {
-    id: 'support-care',
-    attachTo: { element: '[data-tutorial="support-care"]', on: 'bottom' },
-    title: 'The caseworker is the resource',
-    text: 'After every HIGH-risk case, TRACE checks in. Vicarious trauma is documented in this work — burnout is one of the leading causes of data gaps in trafficking case management. TRACE takes it seriously.'
+    title: 'Supervisor dashboard',
+    text: 'De-identified pattern alerts help supervisors see emerging service needs or recurring risks across the caseload. Alerts require human review before any action.'
   },
   {
     id: 'closing',
     title: "That's TRACE.",
-    text: 'Offline-first. Multilingual. Human-in-the-loop. Built for frontline caseworkers in the Lake Chad Basin and francophone West Africa — where the data gaps are largest and the tools are worst. Explore the rest on your own.'
+    text: 'Offline-first. Multilingual. Human-in-the-loop. Built for frontline caseworkers where the data gaps are largest and the tools are worst. Explore the rest on your own.'
   }
 ];
 
@@ -90,11 +119,14 @@ export function startGuidedTour({ onEnd } = {}) {
   STEP_DEFS.forEach((def, i) => {
     const isFirst = i === 0;
     const isLast = i === STEP_DEFS.length - 1;
-    const buttons = [];
+    let buttons;
 
-    if (isLast) {
-      buttons.push({ text: 'Explore TRACE →', action: () => tour.complete(), classes: 'trace-shepherd-btn-primary' });
+    if (def.customButtons) {
+      buttons = def.customButtons(tour);
+    } else if (isLast) {
+      buttons = [{ text: 'Explore TRACE →', action: () => tour.complete(), classes: 'trace-shepherd-btn-primary' }];
     } else {
+      buttons = [];
       if (!isFirst) {
         buttons.push({ text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' });
       }

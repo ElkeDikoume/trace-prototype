@@ -5,7 +5,7 @@ export default function ServiceSuggestions({ services }) {
   if (!services || services.length === 0) return null;
 
   return (
-    <div className="mb-4">
+    <div data-tutorial="services" className="mb-4">
       <h3 className="text-sm font-semibold text-slate-200 mb-2">{t('Suggested services')}</h3>
       <div className="space-y-2">
         {services.map((s) => (

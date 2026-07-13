@@ -25,6 +25,11 @@ export const DEMO_CASE_DATA = {
   caseworkerNotes: 'Case captured via Arabic voice intake at an N\'Djamena partner shelter. Survivor presents with labor trafficking indicators: recruitment fraud, document confiscation, debt bondage, and movement restriction.'
 };
 
+// Raw intake note text the guided tour loads into a blank case's notes
+// field to demonstrate live AI structuring (see App.jsx's
+// window.__traceLoadSampleNotes).
+export const DEMO_INTAKE_NOTES = DEMO_CASE_DATA.caseworkerNotes;
+
 // Two additional seeded examples so first-time visitors see varied case
 // types (form type, geography, profile) without running the demo first.
 // A couple of fields are added beyond what's literally specified below

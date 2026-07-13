@@ -3,14 +3,14 @@ import { FORM_TYPES, getFormById } from './data/forms.js';
 import { analyzeRisk } from './data/riskIndicators.js';
 import { suggestServices } from './data/services.js';
 import { listCases, saveCase, newCaseId, deleteCase } from './lib/storage.js';
-import { askCaseChatbot } from './lib/claudeClient.js';
+import { askCaseChatbot, structureNotesIntoForm } from './lib/claudeClient.js';
 import { fetchCtdcIndicators } from './services/ctdcService.js';
 import { fetchDtmContext } from './services/iomDtmService.js';
 import { fetchAcledEvents } from './services/acledService.js';
 import { fetchPatternAlerts } from './services/patternIntelligenceService.js';
 import { getStoredTheme, storeTheme, applyTheme } from './lib/theme.js';
 import { computeFollowUpReminder, isReminderDue } from './lib/followUp.js';
-import { DEMO_CASE_FORM_ID, DEMO_CASE_DATA, EXAMPLE_CASE_IBRAHIM, EXAMPLE_CASE_MARIECLAIRE } from './data/demoCase.js';
+import { DEMO_CASE_FORM_ID, DEMO_CASE_DATA, DEMO_INTAKE_NOTES, EXAMPLE_CASE_IBRAHIM, EXAMPLE_CASE_MARIECLAIRE } from './data/demoCase.js';
 import { I18nContext, getStoredLanguage, storeLanguage, getLanguageMeta, translate } from './lib/i18n.jsx';
 import { startGuidedTour } from './lib/tour.js';
 import traceLogo from './assets/trace-logo.png';
@@ -238,11 +238,30 @@ export default function App() {
     persist(record);
   }
 
+  // Blank HTCDS Intake case (not pre-filled) so the guided tour has the
+  // judge actually trigger AI structuring live, rather than viewing an
+  // already-completed case. Fixed ID so replaying always replaces the
+  // same record instead of accumulating duplicates.
+  function startGuidedTourCase() {
+    deleteCase(DEMO_CASE_ID);
+    const form = getFormById(DEMO_CASE_FORM_ID);
+    const record = {
+      id: DEMO_CASE_ID,
+      formId: DEMO_CASE_FORM_ID,
+      data: emptyData(form),
+      chatHistory: []
+    };
+    seenLevelsRef.current[record.id] = 'low';
+    suppressNextHighRiskPromptRef.current = true;
+    setView('case');
+    persist(record);
+  }
+
   function handleStartGuidedTourDemo() {
     localStorage.setItem(WELCOME_SEEN_KEY, '1');
     setShowWelcome(false);
     tourLaunchedRef.current = false;
-    handleStartDemo({ suppressHighRiskPrompt: true });
+    startGuidedTourCase();
     setPendingTourStart(true);
   }
 
@@ -274,9 +293,45 @@ export default function App() {
     return () => clearTimeout(id);
   }, [pendingTourStart, activeCase]);
 
+  // Lets the guided tour (a plain DOM/Shepherd script, outside React) drive
+  // two interactive moments without duplicating React state logic: loading
+  // the sample notes text, and running the same AI structuring call
+  // VoiceTextIntake's "Structure with AI" button makes. Re-created whenever
+  // activeCase/activeForm change so the closures never see stale data.
+  useEffect(() => {
+    window.__traceLoadSampleNotes = () => {
+      handleFieldChange('caseworkerNotes', DEMO_INTAKE_NOTES);
+      // VoiceTextIntake's freeform notes textarea (what its own "Structure
+      // with AI" button actually reads from) is local component state, not
+      // wired to caseData — set it directly via the native input setter so
+      // React's controlled-input tracking picks up the change.
+      const textarea = document.querySelector('[data-tutorial="voice-intake"] textarea');
+      if (textarea) {
+        const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value').set;
+        nativeSetter.call(textarea, DEMO_INTAKE_NOTES);
+        textarea.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    };
+    window.__traceStructureNow = async () => {
+      if (!activeCase) return;
+      const notes = activeCase.data?.caseworkerNotes || '';
+      if (!notes.trim()) return;
+      try {
+        const fields = await structureNotesIntoForm({ freeText: notes, language: 'en-US', form: activeForm });
+        handleStructured(fields);
+      } catch (err) {
+        console.error('[TRACE tour] Structuring failed:', err);
+      }
+    };
+    return () => {
+      delete window.__traceLoadSampleNotes;
+      delete window.__traceStructureNow;
+    };
+  }, [activeCase, activeForm]);
+
   function handleReplayGuidedTour() {
     tourLaunchedRef.current = false;
-    handleStartDemo({ suppressHighRiskPrompt: true });
+    startGuidedTourCase();
     setPendingTourStart(true);
   }
 

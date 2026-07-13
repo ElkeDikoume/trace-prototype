@@ -117,7 +117,7 @@ export default function VoiceTextIntake({ form, onStructured, onlineMode }) {
   }
 
   return (
-    <div className="bg-trace-800 border border-trace-700 rounded-lg p-3 mb-4">
+    <div data-tutorial="voice-intake" className="bg-trace-800 border border-trace-700 rounded-lg p-3 mb-4">
       <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
         <h3 className="text-sm font-semibold text-slate-200">{t('Voice or text intake')}</h3>
         <select
@@ -179,6 +179,7 @@ export default function VoiceTextIntake({ form, onStructured, onlineMode }) {
           <span>{listening ? `● ${t('Recording…')}` : `🎙 ${t('Speak')}`}</span>
         </button>
         <button
+          data-tutorial="structure-button"
           onClick={handleStructure}
           disabled={busy || interpreting}
           className="px-3 py-1.5 rounded-md text-sm font-medium bg-trace-accent text-white hover:bg-sky-500 disabled:opacity-50"
