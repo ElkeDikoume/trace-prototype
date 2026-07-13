@@ -20,62 +20,62 @@ const FEATURE_PILLS = [
 
 export default function WelcomeSplash({ onStartDemo, onExplore, onSignIn }) {
   return (
-    <div className="fixed inset-0 z-[300] bg-trace-950/95 backdrop-blur-sm flex items-start justify-center px-4 py-8 overflow-y-auto">
-      <div className="w-full max-w-lg relative bg-trace-900 border border-trace-700 rounded-2xl shadow-2xl pt-10 px-8 pb-8">
+    <div className="fixed inset-0 z-[300] bg-trace-950/95 backdrop-blur-sm flex items-start justify-center px-4 py-4 overflow-y-auto">
+      <div className="w-full max-w-lg relative bg-trace-900 border border-trace-700 rounded-2xl shadow-2xl pt-4 px-6 pb-4">
         {/* Logo */}
         <div className="flex flex-col items-center text-center">
-          <div className="bg-white rounded-2xl p-3 flex-shrink-0">
-            <img src={traceLogo} alt="TRACE" className="w-32 h-32 object-contain block" />
+          <div className="bg-white rounded-xl p-2 flex-shrink-0" style={{ maxHeight: '72px', maxWidth: '72px' }}>
+            <img src={traceLogo} alt="TRACE" className="w-14 h-14 object-contain block" />
           </div>
-          <p className="text-sm text-slate-400 mt-4 leading-relaxed max-w-sm">
+          <p className="text-sm text-slate-400 mt-2 leading-snug max-w-sm">
             For this demo, you&apos;ll step into the role of a frontline caseworker in N&apos;Djamena, Chad.
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-2 justify-center mt-6">
+        <div className="flex flex-wrap gap-1.5 justify-center mt-2">
           {FEATURE_PILLS.map((f) => (
-            <span key={f} className="text-[11px] text-slate-300 bg-trace-800 border border-trace-700 rounded-full px-3 py-1">
+            <span key={f} className="text-[11px] text-slate-300 bg-trace-800 border border-trace-700 rounded-full px-3 py-0.5">
               {f}
             </span>
           ))}
-          <span className="text-[11px] text-slate-500 border border-trace-700 rounded-full px-3 py-1 whitespace-nowrap">
+          <span className="text-[11px] text-slate-500 border border-trace-700 rounded-full px-3 py-0.5 whitespace-nowrap">
             PWA · iOS &amp; Android
           </span>
         </div>
 
-        <div className="border-t border-trace-700 my-6" />
+        <div className="border-t border-trace-700 my-2" />
 
-        <div className="flex justify-center mb-4">
+        <div className="flex justify-center mb-3">
           <LanguageSelector lang="en" />
         </div>
 
         {/* Action buttons */}
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2">
           <button
             onClick={onStartDemo}
-            className="w-full bg-trace-accent text-white font-semibold py-2.5 rounded-lg hover:bg-sky-500 transition-colors"
+            className="w-full bg-trace-accent text-white font-semibold py-2 rounded-lg hover:bg-sky-500 transition-colors"
           >
             ▶ Start Guided Demo
           </button>
           <button
             onClick={onExplore}
-            className="w-full text-slate-400 border border-trace-700 py-2 rounded-lg text-sm hover:text-slate-200 hover:border-slate-500 transition-colors"
+            className="w-full text-slate-400 border border-trace-700 py-1.5 rounded-lg text-sm hover:text-slate-200 hover:border-slate-500 transition-colors"
           >
             Explore on your own →
           </button>
         </div>
 
-        <div className="border-t border-trace-700 my-5" />
+        <div className="border-t border-trace-700 my-2" />
 
         <button
           onClick={onSignIn}
-          className="w-full flex items-center justify-center gap-3 bg-white text-gray-800 font-medium py-2.5 px-4 rounded-lg hover:bg-gray-100 transition-colors"
+          className="w-full flex items-center justify-center gap-3 bg-white text-gray-800 font-medium py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors"
         >
           <MicrosoftLogo />
           Sign in with Microsoft
         </button>
 
-        <p className="text-[10px] text-slate-600 text-center mt-4">
+        <p className="text-[10px] text-slate-600 text-center mt-2 leading-snug">
           Survivors never interact with TRACE directly. All outputs are reviewed by a trained caseworker.
         </p>
       </div>
