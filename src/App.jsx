@@ -543,6 +543,7 @@ export default function App() {
             ↺ Restart
           </button>
           <button
+            data-tutorial="offline-indicator"
             onClick={() => setOnlineMode((v) => !v)}
             className={`text-xs px-2 py-1 rounded-full border flex items-center gap-1 ${
               onlineMode

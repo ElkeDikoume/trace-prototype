@@ -54,6 +54,15 @@ const STEP_DEFS = [
     text: 'TRACE works in the caseworker\'s language. The interface and AI responses switch immediately. For this walkthrough, stay in English — but try switching and switching back.'
   },
   {
+    id: 'offline-indicator',
+    attachTo: { element: '[data-tutorial="offline-indicator"]', on: 'bottom' },
+    title: 'Works offline — no connectivity required',
+    text: 'TRACE stores cases locally on the device. Caseworkers in Diffa, Bangui, or the Lake Chad Basin can capture intake, flag risk, and generate referrals with zero connectivity. Data syncs automatically when a connection is restored.',
+    customButtons: (tour) => [
+      { text: 'Next →', action: () => tour.next(), classes: 'trace-shepherd-btn-primary' }
+    ]
+  },
+  {
     id: 'form-select',
     attachTo: { element: '[data-tutorial="form-cards-primary"]', on: 'bottom' },
     title: 'Select a form type',
