@@ -21,6 +21,20 @@ export default function WelcomeSplash({ onStartDemo, onExplore, onSignIn }) {
   return (
     <div className="fixed inset-0 z-[300] bg-trace-950/95 backdrop-blur-sm flex items-center justify-center px-4 overflow-y-auto">
       <div className="w-full max-w-lg bg-trace-900 border border-trace-700 rounded-2xl shadow-2xl p-8 my-4">
+        {/* Welcome message */}
+        <div className="flex flex-col items-center text-center">
+          <div className="bg-white rounded-lg p-1 mb-2">
+            <img src={traceLogo} alt="TRACE" className="w-8 h-8 object-contain block" />
+          </div>
+          <p className="text-lg font-semibold text-white">Welcome to TRACE</p>
+          <p className="text-sm text-slate-400 italic mt-1 leading-relaxed">
+            For this demo, you&apos;ll step into the role of a frontline caseworker in N&apos;Djamena, Chad. The AI
+            structuring, risk flags, and document generation are live. The case data is simulated.
+          </p>
+        </div>
+
+        <div className="border-t border-trace-700 my-5" />
+
         {/* TOP — context card */}
         <p className="text-xs uppercase tracking-widest text-trace-accent text-center">
           FIELD SCENARIO · N&apos;DJAMENA, CHAD
