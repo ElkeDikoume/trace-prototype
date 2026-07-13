@@ -23,6 +23,7 @@ export default function WelcomeSplash({ onStartDemo, onExplore }) {
           Explore on my own →
         </button>
       </div>
+      <p className="text-[11px] text-slate-500 mt-4 max-w-xs">Walk through a sample trafficking intake — from language selection to risk flag and referral. No real data required.</p>
     </div>
   );
 }
