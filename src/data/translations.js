@@ -8,7 +8,7 @@
 
 const fr = {
   // Header / nav / global
-  'Caseworker AI assistant · offline-first': 'Assistant IA pour travailleurs sociaux · hors ligne',
+  'Multilingual intake, risk explanation, and safer referrals for caseworkers in low-connectivity settings.': "Accueil multilingue, explication des risques et référencements plus sûrs pour les travailleurs sociaux en zones à faible connectivité.",
   'Find portable record': 'Trouver un dossier portable',
   'Replay tutorial': 'Revoir le tutoriel',
   'Online': 'En ligne',
@@ -47,6 +47,7 @@ const fr = {
   'Untitled': 'Sans titre',
   '+ New / switch case': '+ Nouveau / changer de dossier',
   'Start a new case': 'Démarrer un nouveau dossier',
+  'Uses pseudonyms, consented data sharing, and minimal case data by default.': 'Utilise des pseudonymes, un partage de données consenti et un minimum de données de dossier par défaut.',
   'Collapse ▲': 'Réduire ▲',
   'Open existing case': 'Ouvrir un dossier existant',
 
@@ -244,6 +245,7 @@ const fr = {
   // Supervisor
   'Supervisor dashboard': 'Tableau de bord superviseur',
   'Live in full deployment — demo data shown.': 'Actif en déploiement complet — données de démonstration affichées.',
+  'Pattern alerts are de-identified and require supervisor review before any action.': "Les alertes de tendances sont anonymisées et nécessitent l'examen d'un superviseur avant toute action.",
   'Caseload stats': 'Statistiques de la charge de travail',
   'Total': 'Total',
   'High': 'Élevé',
@@ -398,7 +400,7 @@ const fr = {
 };
 
 const ar = {
-  'Caseworker AI assistant · offline-first': 'مساعد ذكاء اصطناعي للأخصائيين الاجتماعيين · دون اتصال',
+  'Multilingual intake, risk explanation, and safer referrals for caseworkers in low-connectivity settings.': 'استقبال متعدد اللغات، وتفسير المخاطر، وإحالات أكثر أمانًا للأخصائيين الاجتماعيين في مناطق ضعيفة الاتصال.',
   'Find portable record': 'البحث عن سجل قابل للنقل',
   'Replay tutorial': 'إعادة الجولة التعريفية',
   'Online': 'متصل',
@@ -435,6 +437,7 @@ const ar = {
   'Untitled': 'بدون عنوان',
   '+ New / switch case': '+ ملف جديد / تبديل الملف',
   'Start a new case': 'بدء ملف جديد',
+  'Uses pseudonyms, consented data sharing, and minimal case data by default.': 'يستخدم أسماء مستعارة، ومشاركة بيانات بموافقة، وأقل قدر من بيانات الملف افتراضيًا.',
   'Collapse ▲': 'طي ▲',
   'Open existing case': 'فتح ملف موجود',
 
@@ -618,6 +621,7 @@ const ar = {
 
   'Supervisor dashboard': 'لوحة معلومات المشرف',
   'Live in full deployment — demo data shown.': 'مباشر في النشر الكامل — تُعرض بيانات تجريبية.',
+  'Pattern alerts are de-identified and require supervisor review before any action.': 'تنبيهات الأنماط مجهولة الهوية وتتطلب مراجعة المشرف قبل اتخاذ أي إجراء.',
   'Caseload stats': 'إحصائيات عبء العمل',
   'Total': 'الإجمالي',
   'High': 'مرتفع',
@@ -770,7 +774,7 @@ const ar = {
 };
 
 const es = {
-  'Caseworker AI assistant · offline-first': 'Asistente de IA para trabajadores sociales · sin conexión',
+  'Multilingual intake, risk explanation, and safer referrals for caseworkers in low-connectivity settings.': 'Recepción multilingüe, explicación de riesgos y derivaciones más seguras para trabajadores sociales en entornos de baja conectividad.',
   'Find portable record': 'Buscar expediente portátil',
   'Replay tutorial': 'Repetir el tutorial',
   'Online': 'En línea',
@@ -807,6 +811,7 @@ const es = {
   'Untitled': 'Sin título',
   '+ New / switch case': '+ Nuevo / cambiar de caso',
   'Start a new case': 'Iniciar un nuevo caso',
+  'Uses pseudonyms, consented data sharing, and minimal case data by default.': 'Utiliza seudónimos, uso compartido de datos con consentimiento y datos mínimos del caso de forma predeterminada.',
   'Collapse ▲': 'Contraer ▲',
   'Open existing case': 'Abrir caso existente',
 
@@ -990,6 +995,7 @@ const es = {
 
   'Supervisor dashboard': 'Panel del supervisor',
   'Live in full deployment — demo data shown.': 'En vivo en implementación completa — se muestran datos de demostración.',
+  'Pattern alerts are de-identified and require supervisor review before any action.': 'Las alertas de patrones están anonimizadas y requieren la revisión del supervisor antes de cualquier acción.',
   'Caseload stats': 'Estadísticas de la carga de casos',
   'Total': 'Total',
   'High': 'Alto',
@@ -1142,7 +1148,7 @@ const es = {
 };
 
 const pt = {
-  'Caseworker AI assistant · offline-first': 'Assistente de IA para assistentes sociais · offline',
+  'Multilingual intake, risk explanation, and safer referrals for caseworkers in low-connectivity settings.': 'Acolhimento multilíngue, explicação de risco e encaminhamentos mais seguros para assistentes sociais em ambientes de baixa conectividade.',
   'Find portable record': 'Encontrar registro portátil',
   'Replay tutorial': 'Repetir o tutorial',
   'Online': 'Online',
@@ -1179,6 +1185,7 @@ const pt = {
   'Untitled': 'Sem título',
   '+ New / switch case': '+ Novo / trocar caso',
   'Start a new case': 'Iniciar um novo caso',
+  'Uses pseudonyms, consented data sharing, and minimal case data by default.': 'Usa pseudônimos, compartilhamento de dados com consentimento e dados mínimos do caso por padrão.',
   'Collapse ▲': 'Recolher ▲',
   'Open existing case': 'Abrir caso existente',
 
@@ -1362,6 +1369,7 @@ const pt = {
 
   'Supervisor dashboard': 'Painel do supervisor',
   'Live in full deployment — demo data shown.': 'Ativo em implantação completa — dados de demonstração exibidos.',
+  'Pattern alerts are de-identified and require supervisor review before any action.': 'Os alertas de padrões são desidentificados e exigem revisão do supervisor antes de qualquer ação.',
   'Caseload stats': 'Estatísticas da carga de casos',
   'Total': 'Total',
   'High': 'Alto',

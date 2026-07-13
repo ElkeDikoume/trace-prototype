@@ -13,6 +13,7 @@ export default function SupervisorView({ stats }) {
       <div className="mb-3">
         <h2 className="text-lg font-semibold text-slate-100">{t('Supervisor dashboard')}</h2>
         <p className="text-xs text-slate-500">{t('Live in full deployment — demo data shown.')}</p>
+        <p className="text-xs text-slate-500 mt-0.5">{t('Pattern alerts are de-identified and require supervisor review before any action.')}</p>
       </div>
 
       <AfricaHeatMap />

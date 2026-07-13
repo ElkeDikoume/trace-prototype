@@ -14,7 +14,7 @@ export const PATTERN_ALERTS = [
   {
     id: 'pattern-001',
     title: 'Recurring employer name across cases',
-    description: '"Alhaji Moussa Transport & Logistics" is named as employer or recruiter in 3 separate case files logged in Diffa and Niamey since June 2026 — consistent with an active recruitment network (flagged for caseworker review).',
+    description: '"Alhaji Moussa Transport & Logistics" is named as employer or recruiter in 3 separate case files logged in Diffa and Niamey since June 2026 — may indicate a recurring recruitment pattern — flagged for caseworker review.',
     severity: 'high',
     casesCited: 3,
     region: 'Diffa / Niamey',

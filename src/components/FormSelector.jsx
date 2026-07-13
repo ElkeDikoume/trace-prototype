@@ -41,6 +41,7 @@ export default function FormSelector({ forms, cases, activeCaseId, onNewCase, on
           </button>
         )}
       </div>
+      <p className="text-[10px] text-slate-500 mb-3">{t('Uses pseudonyms, consented data sharing, and minimal case data by default.')}</p>
       <div data-tutorial="form-cards-primary" className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-2">
         {forms.slice(0, 3).map((form) => (
           <button

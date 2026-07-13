@@ -57,6 +57,23 @@ export default function Chatbot({ messages, onSend, busy, hasCase, pendingQuesti
     setInput('');
   }
 
+  if (!hasCase) {
+    return (
+      <section data-tutorial="chatbot" className="flex-shrink-0 border-t border-trace-700 bg-trace-900 px-4 py-2.5 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <span className="text-base">💬</span>
+          <span className="text-sm text-slate-500">{t('Ask TRACE')}</span>
+        </div>
+        <button
+          disabled
+          className="px-3 py-1.5 rounded-md bg-trace-accent text-white text-sm font-medium opacity-40 cursor-not-allowed"
+        >
+          {t('Send')}
+        </button>
+      </section>
+    );
+  }
+
   return (
     <section data-tutorial="chatbot" className="flex-shrink-0 border-t border-trace-700 bg-trace-900 flex flex-col" style={{ maxHeight: '42vh' }}>
       <div className="px-4 pt-2 pb-1 flex items-center justify-between">

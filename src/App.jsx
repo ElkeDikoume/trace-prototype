@@ -370,9 +370,14 @@ export default function App() {
             aria-label={t('TRACE home')}
             className="rounded-md bg-white p-1 leading-none hover:opacity-90 transition-opacity"
           >
-            <img src={traceLogo} alt="TRACE" className="h-10 w-auto block" />
+            <img
+              src={traceLogo}
+              alt="TRACE"
+              className="h-10 w-auto block"
+              onError={(e) => { e.currentTarget.style.display='none'; const span=document.createElement('span'); span.textContent='TRACE'; span.className='text-white font-bold text-lg px-1'; e.currentTarget.parentNode.appendChild(span); }}
+            />
           </button>
-          <p className="text-[11px] text-slate-500 mt-1">{t('Caseworker AI assistant · offline-first')}</p>
+          <p className="text-[11px] text-slate-500 mt-1">{t('Multilingual intake, risk explanation, and safer referrals for caseworkers in low-connectivity settings.')}</p>
         </div>
         <div className="flex items-center gap-1.5 flex-wrap justify-end">
           {activeForm && view === 'case' && (
