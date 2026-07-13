@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import VoiceTextIntake from './VoiceTextIntake.jsx';
 import RiskFlag from './RiskFlag.jsx';
 import ServiceSuggestions from './ServiceSuggestions.jsx';
@@ -86,6 +87,7 @@ export default function ActiveForm({
   followUpReminder, onToggleFollowUp, onStartDemo
 }) {
   const { t } = useI18n();
+  const [fieldsOpen, setFieldsOpen] = useState(true);
 
   if (!form) {
     return (
@@ -130,16 +132,25 @@ export default function ActiveForm({
 
       <ServiceSuggestions services={services} />
 
-      <div data-tutorial="form-fields" className="space-y-3 pb-2">
-        {form.fields.map((field) => (
-          <div key={field.key}>
-            <label className="block text-xs font-medium text-slate-400 mb-1">
-              {t(field.label)}{field.required && <span className="text-red-400"> *</span>}
-            </label>
-            <Field field={field} value={caseData[field.key]} onChange={onFieldChange} />
-          </div>
-        ))}
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="text-sm font-semibold text-slate-200">{t('Case fields')}</h3>
+        <button onClick={() => setFieldsOpen(!fieldsOpen)} className="text-slate-500 hover:text-slate-300 text-xs flex-shrink-0">
+          {fieldsOpen ? '▲' : '▼'}
+        </button>
       </div>
+
+      {fieldsOpen && (
+        <div data-tutorial="form-fields" className="space-y-3 pb-2">
+          {form.fields.map((field) => (
+            <div key={field.key}>
+              <label className="block text-xs font-medium text-slate-400 mb-1">
+                {t(field.label)}{field.required && <span className="text-red-400"> *</span>}
+              </label>
+              <Field field={field} value={caseData[field.key]} onChange={onFieldChange} />
+            </div>
+          ))}
+        </div>
+      )}
 
       <PortableRecordSetup
         portableRecord={portableRecord}

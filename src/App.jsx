@@ -25,7 +25,7 @@ import SupportCarePanel from './components/SupportCarePanel.jsx';
 import SurvivorLookupModal from './components/SurvivorLookupModal.jsx';
 import FollowUpBanner from './components/FollowUpBanner.jsx';
 import TutorialOverlay from './components/TutorialOverlay.jsx';
-import SupervisorView from './components/SupervisorView.jsx';
+import DocumentsPanel from './components/DocumentsPanel.jsx';
 import LanguageSelector from './components/LanguageSelector.jsx';
 import OnlineInterpretationPanel from './components/OnlineInterpretationPanel.jsx';
 import WelcomeSplash from './components/WelcomeSplash.jsx';
@@ -70,6 +70,7 @@ export default function App() {
   const [showTutorial, setShowTutorial] = useState(false);
   const [showWelcome, setShowWelcome] = useState(() => !localStorage.getItem(WELCOME_SEEN_KEY));
   const [pendingTourStart, setPendingTourStart] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
   const [, setTick] = useState(0);
 
   const seenLevelsRef = useRef({});
@@ -123,20 +124,6 @@ export default function App() {
     if (!activeCase) return [];
     return suggestServices(activeCase.data, activeCase.formId, 3);
   }, [activeCase]);
-
-  const supervisorStats = useMemo(() => {
-    let high = 0, medium = 0, low = 0;
-    cases.forEach((c) => {
-      const f = getFormById(c.formId);
-      if (f?.riskEligible) {
-        const r = analyzeRisk(c.data);
-        if (r.level === 'high') high++;
-        else if (r.level === 'medium') medium++;
-        else low++;
-      }
-    });
-    return { total: cases.length, high, medium, low };
-  }, [cases]);
 
   const dueFollowUps = useMemo(
     () => cases.filter((c) => isReminderDue(c.followUpReminder)).map((c) => ({ id: c.id, label: caseLabel(c) })),
@@ -340,6 +327,16 @@ export default function App() {
     };
   }, [activeCase, activeForm, riskResult, services, ctdcMatches, dtmContext, acledEvents, patternAlerts, lang]);
 
+  // Lets the guided tour open the floating chat bubble programmatically
+  // before its spotlight step renders, since the panel is now a toggled
+  // overlay rather than an always-visible bottom panel.
+  useEffect(() => {
+    window.__traceOpenChatbot = () => setChatOpen(true);
+    return () => {
+      delete window.__traceOpenChatbot;
+    };
+  }, []);
+
   function handleReplayGuidedTour() {
     tourLaunchedRef.current = false;
     startGuidedTourCase();
@@ -408,6 +405,12 @@ export default function App() {
   function handleAskWhy() {
     const level = riskResult ? t(riskResult.level.toUpperCase()) : '';
     setPendingQuestion(`${t('Why was this case flagged as')} ${level} ${t('risk? Reference the specific indicators.')}`);
+    setChatOpen(true);
+  }
+
+  function handleSaveDocument(key, content, status) {
+    if (!activeCase) return;
+    persist({ ...activeCase, documents: { ...(activeCase.documents || {}), [key]: { content, status } } });
   }
 
   function handleSavePortableRecord(record) {
@@ -528,11 +531,11 @@ export default function App() {
       <nav className="flex-shrink-0 flex border-b border-trace-700 bg-trace-950">
         {[
           { id: 'case', label: `📋 ${t('Case View')}` },
-          { id: 'supervisor', label: `🧭 ${t('Supervisor')}` }
+          { id: 'documents', label: `📄 ${t('Documents')}` }
         ].map((tab) => (
           <button
             key={tab.id}
-            data-tutorial={tab.id === 'supervisor' ? 'supervisor-tab' : 'case-view-tab'}
+            data-tutorial={tab.id === 'documents' ? 'documents-tab' : 'case-view-tab'}
             onClick={() => setView(tab.id)}
             className={`flex-1 text-xs font-medium py-2 border-b-2 ${
               view === tab.id ? 'border-trace-accent text-trace-accent' : 'border-transparent text-slate-500 hover:text-slate-300'
@@ -545,55 +548,61 @@ export default function App() {
 
       <FollowUpBanner dueCases={dueFollowUps} onOpen={handleOpenCase} onDismiss={handleDismissDueCase} />
 
-      {view === 'supervisor' ? (
-        <SupervisorView stats={supervisorStats} />
+      {view === 'documents' ? (
+        <DocumentsPanel
+          caseRecord={activeCase}
+          form={activeForm}
+          riskResult={riskResult}
+          services={services}
+          onSaveDocument={handleSaveDocument}
+        />
       ) : (
-        <>
-          <div className="flex-1 min-h-0 overflow-y-auto scrollbar-thin flex flex-col">
-            <PatternAlertsBanner alerts={patternAlerts} />
+        <div className="flex-1 min-h-0 overflow-y-auto scrollbar-thin flex flex-col">
+          <PatternAlertsBanner alerts={patternAlerts} />
 
-            <FormSelector
-              forms={FORM_TYPES}
-              cases={cases}
-              activeCaseId={activeCase?.id}
-              onNewCase={handleNewCase}
-              onOpenCase={handleOpenCase}
-              onReplayGuidedTour={handleReplayGuidedTour}
-            />
-
-            <ActiveForm
-              form={activeForm}
-              caseData={activeCase?.data || {}}
-              onFieldChange={handleFieldChange}
-              onStructured={handleStructured}
-              riskResult={riskResult}
-              services={services}
-              onAskWhy={handleAskWhy}
-              ctdcMatches={ctdcMatches}
-              dtmContext={dtmContext}
-              acledEvents={acledEvents}
-              onlineMode={onlineMode}
-              portableRecord={activeCase?.portableRecord}
-              onSavePortableRecord={handleSavePortableRecord}
-              onDeletePortableRecord={() => activeCase && handleDeletePortableRecord(activeCase.id)}
-              followUpReminder={activeCase?.followUpReminder}
-              onToggleFollowUp={handleToggleFollowUp}
-              onStartDemo={handleStartDemo}
-            />
-
-            <OnlineInterpretationPanel onlineMode={onlineMode} />
-          </div>
-
-          <Chatbot
-            messages={activeCase?.chatHistory || []}
-            onSend={handleSendChat}
-            busy={chatBusy}
-            hasCase={!!activeCase}
-            pendingQuestion={pendingQuestion}
-            onConsumePending={() => setPendingQuestion(null)}
+          <FormSelector
+            forms={FORM_TYPES}
+            cases={cases}
+            activeCaseId={activeCase?.id}
+            onNewCase={handleNewCase}
+            onOpenCase={handleOpenCase}
+            onReplayGuidedTour={handleReplayGuidedTour}
           />
-        </>
+
+          <ActiveForm
+            form={activeForm}
+            caseData={activeCase?.data || {}}
+            onFieldChange={handleFieldChange}
+            onStructured={handleStructured}
+            riskResult={riskResult}
+            services={services}
+            onAskWhy={handleAskWhy}
+            ctdcMatches={ctdcMatches}
+            dtmContext={dtmContext}
+            acledEvents={acledEvents}
+            onlineMode={onlineMode}
+            portableRecord={activeCase?.portableRecord}
+            onSavePortableRecord={handleSavePortableRecord}
+            onDeletePortableRecord={() => activeCase && handleDeletePortableRecord(activeCase.id)}
+            followUpReminder={activeCase?.followUpReminder}
+            onToggleFollowUp={handleToggleFollowUp}
+            onStartDemo={handleStartDemo}
+          />
+
+          <OnlineInterpretationPanel onlineMode={onlineMode} />
+        </div>
       )}
+
+      <Chatbot
+        messages={activeCase?.chatHistory || []}
+        onSend={handleSendChat}
+        busy={chatBusy}
+        hasCase={!!activeCase}
+        pendingQuestion={pendingQuestion}
+        onConsumePending={() => setPendingQuestion(null)}
+        open={chatOpen}
+        onToggle={() => setChatOpen((o) => !o)}
+      />
 
       <SupportCarePanel
         open={showSupportCare}

@@ -18,14 +18,20 @@ export default function OnlineInterpretationPanel({ onlineMode }) {
   const [error, setError] = useState('');
   const recognizerRef = useRef(null);
   const speechSupported = isSpeechRecognitionSupported();
+  const [open, setOpen] = useState(true);
 
   useEffect(() => () => recognizerRef.current?.abort?.(), []);
 
   if (!onlineMode) {
     return (
       <div data-tutorial="online-interpretation" className="flex-shrink-0 bg-trace-900 border-b border-trace-700 px-4 py-3">
-        <h2 className="text-sm font-semibold text-slate-100 mb-1">🌐 {t('Online Interpretation (Live Mode)')}</h2>
-        <p className="text-[11px] text-slate-500">{t('Local language interpretation requires connectivity.')}</p>
+        <div className="flex items-center justify-between mb-1">
+          <h2 className="text-sm font-semibold text-slate-100">🌐 {t('Online Interpretation (Live Mode)')}</h2>
+          <button onClick={() => setOpen(!open)} className="text-slate-500 hover:text-slate-300 text-xs flex-shrink-0">
+            {open ? '▲' : '▼'}
+          </button>
+        </div>
+        {open && <p className="text-[11px] text-slate-500">{t('Local language interpretation requires connectivity.')}</p>}
       </div>
     );
   }
@@ -74,51 +80,60 @@ export default function OnlineInterpretationPanel({ onlineMode }) {
 
   return (
     <div data-tutorial="online-interpretation" className="flex-shrink-0 bg-trace-900 border-b border-trace-700 px-4 py-3">
-      <div className="flex items-center gap-1.5 mb-2">
-        <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-trace-accent opacity-75" />
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-trace-accent" />
-        </span>
-        <h2 className="text-sm font-semibold text-slate-100">🌐 {t('Online Interpretation (Live Mode)')}</h2>
-      </div>
-
-      <div className="inline-flex items-center gap-1.5 mb-2 text-[11px] font-semibold px-2 py-1 rounded-full bg-trace-800 border border-trace-700 text-trace-accent">
-        Hausa <span aria-hidden="true">⇄</span> English
-      </div>
-
-      <textarea
-        dir="auto"
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        rows={3}
-        className="w-full bg-trace-800 border border-trace-700 rounded-md p-2 text-sm text-slate-100 focus:outline-none focus:ring-1 focus:ring-trace-accent mb-2"
-      />
-
-      <div className="flex items-center gap-2 mb-3 flex-wrap">
-        <button
-          onClick={toggleListening}
-          disabled={!speechSupported}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium disabled:opacity-40 ${
-            listening ? 'bg-red-600 text-white animate-pulse' : 'bg-trace-700 text-slate-100 hover:bg-trace-600'
-          }`}
-        >
-          {listening ? `● ${t('Recording…')}` : `🎙 ${t('Speak')}`}
-        </button>
-        <button
-          onClick={handleTranslate}
-          disabled={busy}
-          className="px-3 py-1.5 rounded-md text-sm font-medium bg-trace-accent text-white hover:bg-sky-500 disabled:opacity-50"
-        >
-          {busy ? t('Interpreting…') : `✨ ${t('Translate')}`}
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-1.5">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-trace-accent opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-trace-accent" />
+          </span>
+          <h2 className="text-sm font-semibold text-slate-100">🌐 {t('Online Interpretation (Live Mode)')}</h2>
+        </div>
+        <button onClick={() => setOpen(!open)} className="text-slate-500 hover:text-slate-300 text-xs flex-shrink-0">
+          {open ? '▲' : '▼'}
         </button>
       </div>
-      {error && <p className="text-xs text-red-400 mb-2">{error}</p>}
 
-      <div className="bg-trace-800 border border-trace-700 rounded-md p-2">
-        <div className="text-[10px] uppercase tracking-wide text-slate-500 mb-1">{t('Interpreted output (English)')}</div>
-        <p className="text-sm text-slate-200 whitespace-pre-wrap">{translation}</p>
-        <p className="text-[11px] text-slate-500 mt-1">{t('Powered by Claude API in this prototype · Meta SeamlessM4T in full deployment.')}</p>
-      </div>
+      {open && (
+        <>
+          <div className="inline-flex items-center gap-1.5 mb-2 text-[11px] font-semibold px-2 py-1 rounded-full bg-trace-800 border border-trace-700 text-trace-accent">
+            Hausa <span aria-hidden="true">⇄</span> English
+          </div>
+
+          <textarea
+            dir="auto"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            rows={3}
+            className="w-full bg-trace-800 border border-trace-700 rounded-md p-2 text-sm text-slate-100 focus:outline-none focus:ring-1 focus:ring-trace-accent mb-2"
+          />
+
+          <div className="flex items-center gap-2 mb-3 flex-wrap">
+            <button
+              onClick={toggleListening}
+              disabled={!speechSupported}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium disabled:opacity-40 ${
+                listening ? 'bg-red-600 text-white animate-pulse' : 'bg-trace-700 text-slate-100 hover:bg-trace-600'
+              }`}
+            >
+              {listening ? `● ${t('Recording…')}` : `🎙 ${t('Speak')}`}
+            </button>
+            <button
+              onClick={handleTranslate}
+              disabled={busy}
+              className="px-3 py-1.5 rounded-md text-sm font-medium bg-trace-accent text-white hover:bg-sky-500 disabled:opacity-50"
+            >
+              {busy ? t('Interpreting…') : `✨ ${t('Translate')}`}
+            </button>
+          </div>
+          {error && <p className="text-xs text-red-400 mb-2">{error}</p>}
+
+          <div className="bg-trace-800 border border-trace-700 rounded-md p-2">
+            <div className="text-[10px] uppercase tracking-wide text-slate-500 mb-1">{t('Interpreted output (English)')}</div>
+            <p className="text-sm text-slate-200 whitespace-pre-wrap">{translation}</p>
+            <p className="text-[11px] text-slate-500 mt-1">{t('Powered by Claude API in this prototype · Meta SeamlessM4T in full deployment.')}</p>
+          </div>
+        </>
+      )}
     </div>
   );
 }

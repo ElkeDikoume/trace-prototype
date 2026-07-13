@@ -27,21 +27,22 @@ function waitForStructuring() {
   return new Promise((resolve) => setTimeout(resolve, 300));
 }
 
-// Returns to the Case View tab before the chatbot step spotlights the
-// chat input, in case the judge wandered to the Supervisor tab first.
-function ensureCaseView() {
+// Opens the floating chat bubble programmatically before the chatbot step's
+// spotlight renders, since the panel is a toggled overlay now rather than an
+// always-visible bottom panel.
+function openChatbotBubble() {
   return new Promise((resolve) => {
-    document.querySelector('[data-tutorial="case-view-tab"]')?.click();
-    setTimeout(resolve, 250);
+    window.__traceOpenChatbot?.();
+    setTimeout(resolve, 200);
   });
 }
 
-// Clicks the Supervisor tab (the previous step only spotlights it) and
-// waits for SupervisorView to mount before the next step measures it.
-function openSupervisorView() {
+// Clicks the Documents tab (the previous step only spotlights it) and
+// waits for DocumentsPanel to mount before the next step measures it.
+function openDocumentsPanel() {
   return new Promise((resolve) => {
-    document.querySelector('[data-tutorial="supervisor-tab"]')?.click();
-    setTimeout(resolve, 350);
+    document.querySelector('[data-tutorial="documents-tab"]')?.click();
+    setTimeout(resolve, 300);
   });
 }
 
@@ -122,7 +123,7 @@ const STEP_DEFS = [
     attachTo: { element: '[data-tutorial="chatbot-input"]', on: 'top' },
     title: 'Ask TRACE anything',
     text: "Grounded in this case and IOM HTCDS protocol. The chatbot is live — watch it answer a real question about this case.",
-    beforeShowPromise: ensureCaseView,
+    beforeShowPromise: openChatbotBubble,
     customButtons: (tour) => [
       { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
       { text: 'End Tour', action: () => tour.cancel(), classes: 'trace-shepherd-btn-ghost' },
@@ -139,16 +140,16 @@ const STEP_DEFS = [
   },
   {
     id: 'supervisor-tab',
-    attachTo: { element: '[data-tutorial="supervisor-tab"]', on: 'bottom' },
-    title: 'Supervisor dashboard',
-    text: 'Everything so far is what one caseworker sees. The supervisor tab reveals what no individual can — patterns across the entire caseload. Click Next to open it.'
+    attachTo: { element: '[data-tutorial="documents-tab"]', on: 'bottom' },
+    title: 'Case documents',
+    text: "Everything TRACE generates lives here — referral letters, case summaries, IOM monthly return entries, and follow-up plans. One tab, every output, all editable before it leaves the caseworker's hands."
   },
   {
     id: 'supervisor-view',
-    attachTo: { element: '[data-tutorial="supervisor-stats"]', on: 'top' },
-    title: 'Cross-caseload intelligence',
-    text: 'Risk distribution across your full caseload, a geographic heat map of flagged cases, and recurring broker names appearing across unconnected files — like the same employer in three separate cases this week. All de-identified. All requiring supervisor review before any action. None of this is visible to individual caseworkers.',
-    beforeShowPromise: openSupervisorView
+    attachTo: { element: '[data-tutorial="documents-panel"]', on: 'top' },
+    title: 'AI-generated, caseworker-owned',
+    text: 'Each document is a draft. The caseworker reads it, edits it, and downloads it. The AI writes; the caseworker decides what goes out.',
+    beforeShowPromise: openDocumentsPanel
   },
   {
     id: 'closing',

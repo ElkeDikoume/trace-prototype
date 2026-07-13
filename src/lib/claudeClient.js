@@ -125,6 +125,106 @@ Output format: wrap ONLY the translated English text in <translation></translati
   return (match ? match[1] : text).trim();
 }
 
+function fieldSummary(form, caseData) {
+  return form.fields.map((f) => `${f.label}: ${caseData?.[f.key] || '(not recorded)'}`).join('\n');
+}
+
+function riskSummaryText(riskResult) {
+  return riskResult
+    ? `Risk level: ${riskResult.level.toUpperCase()} (score ${riskResult.score}). Matched indicators: ${
+        riskResult.matched.length ? riskResult.matched.map((m) => m.label).join(', ') : 'none'
+      }`
+    : 'Risk assessment not applicable to this form type.';
+}
+
+/**
+ * Documents tab — AI draft generators. Each produces plain text (no markdown
+ * fences/headers) that renders directly into an editable textarea (or, for
+ * the missing-info report, a read-only list) so the caseworker can revise
+ * before downloading.
+ */
+export async function generateReferralLetter({ caseData, form, riskResult, services }) {
+  const serviceSummary = (services || []).map((s) => `- ${s.name} (${s.org}, ${s.country})`).join('\n') || 'No matched services yet.';
+
+  const system = `You are TRACE, an AI assistant helping frontline anti-trafficking and protection caseworkers draft field documents. Draft a short, formally structured referral letter from the caseworker to a receiving service provider, based on the case data below.
+
+Include: a date placeholder, a recipient agency placeholder (use the most relevant candidate service below if one fits), a brief case summary that preserves confidentiality (use the survivor's identifier/pseudonym only — never invent a real name), the reason for referral, requested services, and a caseworker sign-off placeholder. Do not invent details not present in the case data.
+
+Output plain text only, ready to paste into a letter template — no markdown headers, no commentary.
+
+Case data:
+${fieldSummary(form, caseData)}
+
+Risk assessment:
+${riskSummaryText(riskResult)}
+
+Candidate services:
+${serviceSummary}`;
+
+  return callClaude({ system, messages: [{ role: 'user', content: 'Draft the referral letter.' }], max_tokens: 1024 });
+}
+
+export async function generateCaseSummary({ caseData, form, riskResult }) {
+  const system = `You are TRACE, an AI assistant helping frontline anti-trafficking and protection caseworkers draft field documents. Write a 3-paragraph narrative case summary suitable for supervision review, case handoff, or file notes, based on the case data below.
+
+Paragraph 1: who the survivor is and how the case came to attention. Paragraph 2: the trafficking/protection concern and risk assessment. Paragraph 3: current status and recommended next steps. Do not invent details not present in the case data.
+
+Output plain text only — no markdown headers, no commentary.
+
+Case data:
+${fieldSummary(form, caseData)}
+
+Risk assessment:
+${riskSummaryText(riskResult)}`;
+
+  return callClaude({ system, messages: [{ role: 'user', content: 'Write the case summary.' }], max_tokens: 1024 });
+}
+
+export async function generateIomMonthlyReturnEntry({ caseData, form }) {
+  const system = `You are TRACE, an AI assistant helping frontline anti-trafficking and protection caseworkers draft field documents. Format the case data below as a single entry for an IOM Counter-Trafficking monthly caseload return.
+
+Use these standard IOM monthly return fields, one per line, as a clean labeled list: Case reference, Reporting month/year (use a placeholder), Country/location, Age, Gender, Nationality, Type of exploitation, Referral pathway, Case status. Write "Not recorded" for any field with no data in the case. Do not invent data not present in the case.
+
+Output plain text only — no markdown headers, no commentary.
+
+Case data:
+${fieldSummary(form, caseData)}`;
+
+  return callClaude({ system, messages: [{ role: 'user', content: 'Format the monthly return entry.' }], max_tokens: 768 });
+}
+
+export async function generateMissingInfoReport({ caseData, form, riskResult }) {
+  const system = `You are TRACE, an AI assistant helping frontline anti-trafficking and protection caseworkers assess case completeness. Identify which fields in the case data below are empty, "Unknown", or unclear, focusing specifically on fields that are CTDC (Counter-Trafficking Data Collaborative) risk indicator fields — for example documents confiscated, debt/economic coercion, movement restriction, physical abuse, sexual abuse, recruitment method, and type of exploitation.
+
+For each missing or unclear field, name the field and explain in one sentence why documenting it would matter for a complete CTDC risk assessment. If every relevant field is already documented, say so plainly.
+
+Output as a plain-text list, one item per line prefixed with "- ", no markdown headers, no other commentary.
+
+Case data:
+${fieldSummary(form, caseData)}
+
+Risk assessment:
+${riskSummaryText(riskResult)}`;
+
+  return callClaude({ system, messages: [{ role: 'user', content: 'Identify the missing information.' }], max_tokens: 1024 });
+}
+
+export async function generateFollowUpPlan({ caseData, form, riskResult }) {
+  const system = `You are TRACE, an AI assistant helping frontline anti-trafficking and protection caseworkers plan next steps. Recommend concrete next steps for the next 7-14 days, based on the case's current risk level and data below.
+
+Structure the plan as a short numbered list (3-6 items), each item actionable and specific to this case (e.g. which service to follow up with, what to re-assess, who to check in with). Do not invent details not present in the case data.
+
+Output plain text only — no markdown headers, no commentary.
+
+Case data:
+${fieldSummary(form, caseData)}
+
+Risk assessment:
+${riskSummaryText(riskResult)}`;
+
+  return callClaude({ system, messages: [{ role: 'user', content: 'Draft the follow-up plan.' }], max_tokens: 768 });
+}
+
 /**
  * Chatbot: answers caseworker questions grounded in IOM HTCDS protocol and the
  * current case's structured data, risk flag, and service directory.

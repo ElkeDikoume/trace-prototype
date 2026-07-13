@@ -24,6 +24,7 @@ export default function PortableRecordSetup({ portableRecord, onSave, onDelete }
   const [qrDataUrl, setQrDataUrl] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [open, setOpen] = useState(true);
 
   useEffect(() => {
     if (portableRecord?.locatorCode) {
@@ -79,8 +80,15 @@ export default function PortableRecordSetup({ portableRecord, onSave, onDelete }
 
   return (
     <div className="bg-trace-800 border border-trace-700 rounded-lg p-3 mb-4">
-      <h3 className="text-sm font-semibold text-slate-200 mb-2">🔗 {t('Portable case record')}</h3>
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="text-sm font-semibold text-slate-200">🔗 {t('Portable case record')}</h3>
+        <button onClick={() => setOpen(!open)} className="text-slate-400 hover:text-slate-200 text-xs flex-shrink-0">
+          {open ? '▲' : '▼'}
+        </button>
+      </div>
 
+      {open && (
+      <>
       {!editing && portableRecord && (
         <div>
           <div className="flex items-center gap-3 mb-3">
@@ -155,6 +163,8 @@ export default function PortableRecordSetup({ portableRecord, onSave, onDelete }
           </div>
           {error && <p className="text-xs text-red-400 mt-2">{error}</p>}
         </div>
+      )}
+      </>
       )}
     </div>
   );

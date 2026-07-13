@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useI18n } from '../lib/i18n.jsx';
 
 const LEVEL_STYLES = {
@@ -14,6 +15,7 @@ function formatEvidence(e, t) {
 
 export default function RiskFlag({ riskResult, onAskWhy }) {
   const { t } = useI18n();
+  const [open, setOpen] = useState(true);
   if (!riskResult) return null;
   const style = LEVEL_STYLES[riskResult.level];
 
@@ -24,29 +26,39 @@ export default function RiskFlag({ riskResult, onAskWhy }) {
           <span className={`text-sm font-bold tracking-wide ${style.text}`}>{t(style.label)} {t('RISK')}</span>
           <span className="text-xs text-slate-400 ml-2">{t('score')} {riskResult.score.toFixed(1)}</span>
         </div>
-        <button
-          onClick={onAskWhy}
-          className="text-xs px-2 py-1 rounded bg-trace-800 border border-trace-700 hover:bg-trace-700 text-slate-200"
-        >
-          {t('Ask AI why →')}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={onAskWhy}
+            className="text-xs px-2 py-1 rounded bg-trace-800 border border-trace-700 hover:bg-trace-700 text-slate-200"
+          >
+            {t('Ask AI why →')}
+          </button>
+          <button onClick={() => setOpen(!open)} className="text-slate-400 hover:text-slate-200 text-xs flex-shrink-0">
+            {open ? '▲' : '▼'}
+          </button>
+        </div>
       </div>
-      <p className="text-[10px] text-slate-500 mt-1">Decision support only — caseworker review required before any action.</p>
 
-      <div className="mt-2">
-        {riskResult.matched.length === 0 ? (
-          <p className="text-xs text-slate-400">{t('No trafficking indicators detected in the current case data.')}</p>
-        ) : (
-          <ul className="space-y-1">
-            {riskResult.matched.map((m) => (
-              <li key={m.id} className="text-xs text-slate-200">
-                <span className="font-medium">{t(m.label)}</span>
-                <span className="text-slate-400"> — {m.evidence.map((e) => formatEvidence(e, t)).join('; ')}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+      {open && (
+        <>
+          <p className="text-[10px] text-slate-500 mt-1">Decision support only — caseworker review required before any action.</p>
+
+          <div className="mt-2">
+            {riskResult.matched.length === 0 ? (
+              <p className="text-xs text-slate-400">{t('No trafficking indicators detected in the current case data.')}</p>
+            ) : (
+              <ul className="space-y-1">
+                {riskResult.matched.map((m) => (
+                  <li key={m.id} className="text-xs text-slate-200">
+                    <span className="font-medium">{t(m.label)}</span>
+                    <span className="text-slate-400"> — {m.evidence.map((e) => formatEvidence(e, t)).join('; ')}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }
