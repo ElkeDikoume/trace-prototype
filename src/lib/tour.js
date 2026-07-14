@@ -207,12 +207,12 @@ const STEP_DEFS = [
     id: 'structure-cta',
     attachTo: { element: '[data-tutorial="structure-button"]', on: 'bottom' },
     title: 'Structure with AI',
-    text: "Click 'Structure with AI' now to continue. TRACE will map the interpreted notes into the correct IOM HTCDS form fields. This takes about 30 seconds, you'll see the fields populate as TRACE works.",
+    text: "Click '✨ Structure with AI' now to continue. TRACE will map the interpreted notes into the correct IOM HTCDS form fields. This takes about 30 seconds, you'll see the fields populate as TRACE works.",
     customButtons: (tour) => [
       { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
       { text: 'End Tour', action: () => tour.cancel(), classes: 'trace-shepherd-btn-ghost' },
       {
-        text: 'Structure with AI →',
+        text: '✨ Structure with AI',
         action: async () => {
           await window.__traceStructureNow?.();
           tour.next();
