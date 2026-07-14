@@ -34,6 +34,16 @@ function clearNotesIfSeededByTour() {
   });
 }
 
+// Clears a stale translation from a previous pass through this step, so
+// re-entering it (via Previous) always starts from the un-translated state
+// rather than showing an answer the judge hasn't actually triggered yet.
+function clearTranslationIfSeededByTour() {
+  return new Promise((resolve) => {
+    window.__traceClearTranslation?.();
+    resolve();
+  });
+}
+
 // Small paint/reflow buffer after the structuring promise has already
 // resolved (see the 'structure-cta' step's customButtons), so the
 // now-populated fields have settled before Shepherd measures them. Also
@@ -69,7 +79,7 @@ function ensureOnlineForConnectivityIntro() {
   });
 }
 
-const HANDOFF_NOTE_PROMPT = "Draft a supervisor handoff note for Amina K., who has been assessed HIGH RISK for labor trafficking and needs urgent shelter referral.";
+const HANDOFF_NOTE_PROMPT = "Draft a supervisor handoff note for Falmata K., who has been assessed HIGH RISK for labor trafficking and needs urgent shelter referral.";
 
 // Opens the floating chat bubble programmatically before the chatbot step's
 // spotlight renders, since the panel is a toggled overlay now rather than an
@@ -163,7 +173,7 @@ const STEP_DEFS = [
     id: 'intake-notes',
     attachTo: { element: '[data-tutorial="voice-intake"]', on: 'top' },
     title: 'Enter intake notes',
-    text: "Caseworkers can speak intake notes directly in their language, no typing needed. For this demo, Amina's notes are pre-recorded in Hausa. Click 'Load sample intake notes' to hear what TRACE receives in the field.",
+    text: "Caseworkers can speak intake notes directly in their language, no typing needed. For this demo, Falmata's notes are pre-recorded in Hausa. Click 'Load sample intake notes' to hear what TRACE receives in the field.",
     beforeShowPromise: clearNotesIfSeededByTour,
     customButtons: (tour) => [
       { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
@@ -183,7 +193,8 @@ const STEP_DEFS = [
     id: 'interpret-prompt',
     attachTo: { element: '[data-tutorial="interpret-button"]', on: 'right' },
     title: 'Verify meaning before structuring',
-    text: "Amina spoke her intake notes in Hausa. TRACE interpreted them into English so the caseworker can verify meaning before structuring. This preserves the survivor's voice and avoids double translation.",
+    text: "Falmata spoke her intake in Hausa. TRACE will translate it into English so the caseworker can verify meaning before structuring, preserving the survivor's voice and avoiding double translation. Click '✨ Translate' now. This takes a few seconds.",
+    beforeShowPromise: clearTranslationIfSeededByTour,
     customButtons: (tour) => [
       { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
       { text: 'End Tour', action: () => tour.cancel(), classes: 'trace-shepherd-btn-ghost' },
@@ -201,7 +212,7 @@ const STEP_DEFS = [
     id: 'interpretation',
     attachTo: { element: '[data-tutorial="online-interpretation"]', on: 'top' },
     title: 'Hausa → English translation',
-    text: "TRACE interpreted Hausa into English in real time. Hausa has 50+ million speakers across the Sahel, yet very few widely adopted humanitarian tools serve them. In production: Meta SeamlessM4T handles Hausa, Fulfulde, and Zarma. For this pilot, Sub-Saharan African languages were prioritized: Hausa, Fulfulde, and Zarma. Additional language packs can be added in production."
+    text: "TRACE translated Hausa field notes into English in seconds. Hausa has 50+ million speakers across the Sahel, yet very few widely adopted humanitarian tools serve them. In production: Meta SeamlessM4T handles Hausa, Fulfulde, and Zarma. For this pilot, Sub-Saharan African languages were prioritized: Hausa, Fulfulde, and Zarma. Additional language packs can be added in production."
   },
   {
     id: 'structure-cta',
@@ -260,7 +271,7 @@ const STEP_DEFS = [
     id: 'chatbot',
     attachTo: { element: '[data-tutorial="chatbot-input"]', on: 'top' },
     title: 'Ask TRACE anything',
-    text: "The TRACE Assistant is grounded in Amina's case. A supervisor handoff note is already typed in above, use the quick-action chips for other common questions, or type your own. Any response updates the Case Summary in the Insights tab, watch it flip to 'Draft ready'. Press Send to try it.",
+    text: "The TRACE Assistant is grounded in this case's structured data. A supervisor handoff note is already typed in above, use the quick-action chips for other common questions, or type your own. Any response updates the Case Summary in the Insights tab, watch it flip to 'Draft ready'. Press Send to try it.",
     beforeShowPromise: openChatbotWithPrefill,
     customButtons: (tour) => [
       { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },

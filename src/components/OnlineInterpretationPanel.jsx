@@ -6,7 +6,7 @@ import { useI18n } from '../lib/i18n.jsx';
 // Kept in sync with DEMO_INTAKE_NOTES in data/demoCase.js, the guided
 // tour's Step 3 loads that exact text into the intake form, and Step 4
 // spotlights this panel, so both must show identical testimony.
-const HAUSA_DEMO_TEXT = "Amina ta ce mai daukar ma'aikata ya karɓi takardar shaidar ta, ba za ta iya tafiya ba. An kawo ta daga Kano, ana cewa za a ba ta aiki a gidan yara, amma an tilasta ta yin aiki ba tare da kuɗi ba. Ta ce an gaya mata cewa tana bin bashin daukar ma'aikata, kuma ana cire kuɗi daga albashinta kafin ta karɓi kome. Tana da shekaru 28, kuma a yanzu ana tsare da ita a N'Djamena.";
+const HAUSA_DEMO_TEXT = "Falmata ta ce mai daukar ma'aikata ya karɓi takardar shaidar ta, ba za ta iya tafiya ba. An kawo ta daga Kano, ana cewa za a ba ta aiki a gidan yara, amma an tilasta ta yin aiki ba tare da kuɗi ba. Ta ce an gaya mata cewa tana bin bashin daukar ma'aikata, kuma ana cire kuɗi daga albashinta kafin ta karɓi kome. Tana da shekaru 28, kuma a yanzu ana tsare da ita a N'Djamena.";
 
 export default function OnlineInterpretationPanel({ onlineMode, onUseAsNotes }) {
   const { t } = useI18n();
@@ -66,6 +66,15 @@ export default function OnlineInterpretationPanel({ onlineMode, onUseAsNotes }) 
     window.__traceInterpretNow = handleInterpret;
     return () => {
       delete window.__traceInterpretNow;
+    };
+  });
+
+  // Lets the tour clear a stale translation when the judge navigates back
+  // to the intake-notes step (mirrors __traceClearSampleNotes's rationale).
+  useEffect(() => {
+    window.__traceClearTranslation = () => setTranslation('');
+    return () => {
+      delete window.__traceClearTranslation;
     };
   });
 
@@ -175,7 +184,7 @@ export default function OnlineInterpretationPanel({ onlineMode, onUseAsNotes }) 
 
           {translation && (
             <div className="bg-trace-800 border border-trace-700 rounded-md p-2">
-              <div className="text-[10px] uppercase tracking-wide text-slate-500 mb-1">{t('Interpreted output (English)')}</div>
+              <div className="text-[10px] uppercase tracking-wide text-slate-500 mb-1">{t('Translated output (English)')}</div>
               <p className="text-sm text-slate-200 whitespace-pre-wrap">{translation}</p>
               {onUseAsNotes && (
                 <button
