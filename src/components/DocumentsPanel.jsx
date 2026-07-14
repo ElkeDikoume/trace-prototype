@@ -3,6 +3,7 @@ import { Document, Packer, Paragraph, TextRun, Header, Footer, AlignmentType } f
 import { useI18n } from '../lib/i18n.jsx';
 import { stripMarkdownBold } from '../lib/textFormat.js';
 import PatternAlertsBanner from './PatternAlertsBanner.jsx';
+import TemplatesPanel from './TemplatesPanel.jsx';
 import {
   generateReferralLetter,
   generateCaseSummary,
@@ -298,6 +299,9 @@ export default function DocumentsPanel({ caseRecord, form, riskResult, services,
           </div>
         )}
       </div>
+
+      {/* SECTION 1b, Custom Templates */}
+      <TemplatesPanel caseRecord={caseRecord} form={form} riskResult={riskResult} services={services} />
 
       {/* SECTION 2, Caseload Patterns */}
       <div className="px-4 py-4 border-b border-trace-700">
