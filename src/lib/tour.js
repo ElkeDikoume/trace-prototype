@@ -339,23 +339,40 @@ export function startGuidedTour({ onEnd } = {}) {
   // mounted at a time, but overlapping beforeShowPromise/customButton timers
   // (this tour uses several) can occasionally let a new step show before the
   // previous one has torn down, stacking dialogs and breaking Previous/Next.
-  // Force-destroy every step that isn't the one currently showing.
-  tour.on('show', () => {
-    const current = tour.getCurrentStep();
+  // Force-hide (synchronously, via aria-hidden + display:none, before the
+  // async destroy) then fully destroy every step that isn't the one
+  // currently showing, so an inactive step's popup is never reachable by
+  // Tab or exposed to a screen reader even for one tick.
+  function hideInactiveSteps(current) {
     tour.steps.forEach((step) => {
-      if (step !== current && step.el && document.body.contains(step.el)) {
-        step.destroy();
+      if (step !== current && step.el) {
+        step.el.setAttribute('aria-hidden', 'true');
+        step.el.style.display = 'none';
+        if (document.body.contains(step.el)) {
+          step.destroy();
+        }
       }
     });
-    // Fade the new step in (paired with the CSS opacity transition on
-    // .trace-shepherd) rather than having it appear instantly.
+  }
+
+  tour.on('show', () => {
+    const current = tour.getCurrentStep();
+    hideInactiveSteps(current);
     if (current?.el) {
+      current.el.removeAttribute('aria-hidden');
+      current.el.style.display = '';
+      // Fade the new step in (paired with the CSS opacity transition on
+      // .trace-shepherd) rather than having it appear instantly.
       current.el.style.opacity = '0';
       requestAnimationFrame(() => {
         current.el.style.opacity = '1';
       });
     }
   });
+
+  // On any tour exit, no step should remain in the DOM at all.
+  tour.on('cancel', () => hideInactiveSteps(null));
+  tour.on('complete', () => hideInactiveSteps(null));
 
   STEP_DEFS.forEach((def, i) => {
     const isFirst = i === 0;

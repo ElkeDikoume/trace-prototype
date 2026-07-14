@@ -33,11 +33,12 @@ textarea, input, select {
 }
 
 /* ---- Guided tour (Shepherd.js) ----
-   Light popup so it reads as a distinct, high-contrast layer over the
-   app's dark near-black background. */
+   Dark navy popup matching the app's own visual system (trace-900/trace-700)
+   rather than a separate light layer. */
 .shepherd-element.trace-shepherd {
-  background: #f1f5f9 !important;
-  color: #0f172a;
+  background: #0f172a !important;
+  color: #f8fafc;
+  border: 1px solid #334155;
   border-radius: 0.75rem;
   max-width: 380px;
   font-family: inherit;
@@ -59,7 +60,7 @@ textarea, input, select {
   transition: opacity 0.15s ease;
 }
 .trace-shepherd .shepherd-arrow:before {
-  background: #f1f5f9 !important;
+  background: #0f172a !important;
 }
 .trace-shepherd .shepherd-header {
   background: transparent !important;
@@ -68,7 +69,7 @@ textarea, input, select {
   text-align: center;
 }
 .trace-shepherd .shepherd-title {
-  color: #0f172a;
+  color: #f8fafc;
   font-size: 0.95rem;
   font-weight: 700;
   text-align: center;
@@ -77,7 +78,7 @@ textarea, input, select {
   overflow-wrap: break-word;
 }
 .trace-shepherd .shepherd-text {
-  color: #334155;
+  color: #cbd5e1;
   font-size: 0.85rem;
   line-height: 1.5;
   padding: 0.6rem 1.25rem 1.1rem;
@@ -93,10 +94,10 @@ textarea, input, select {
   transform: translateY(-50%);
 }
 .trace-shepherd .shepherd-cancel-icon span {
-  color: #64748b;
+  color: #94a3b8;
 }
 .trace-shepherd .shepherd-cancel-icon:hover span {
-  color: #0f172a;
+  color: #f8fafc;
 }
 .trace-shepherd .shepherd-button {
   border-radius: 0.375rem;
@@ -115,28 +116,35 @@ textarea, input, select {
 }
 .trace-shepherd .shepherd-button.trace-shepherd-btn-secondary {
   background: transparent;
-  color: #64748b;
-  border: 1px solid #cbd5e1;
+  color: #94a3b8;
+  border: 1px solid #475569;
 }
 .trace-shepherd .shepherd-button.trace-shepherd-btn-secondary:hover {
-  background: #e2e8f0;
-  color: #475569;
+  background: #1e293b;
+  color: #e2e8f0;
 }
 .trace-shepherd .shepherd-button.trace-shepherd-btn-ghost {
   background: transparent;
-  color: #94a3b8;
+  color: #64748b;
 }
 .trace-shepherd .shepherd-button.trace-shepherd-btn-ghost:hover {
-  color: #64748b;
+  color: #94a3b8;
   background: transparent;
 }
 /* Step-progress dots, if a future version of the tour adds them. */
 .trace-shepherd .shepherd-progress-dot {
-  background: #94a3b8;
+  background: #475569;
 }
 .trace-shepherd .shepherd-progress-dot.shepherd-progress-dot-active {
   background: #38bdf8;
 }
 .shepherd-modal-overlay-container {
   opacity: 0.6;
+}
+/* Accessibility: any Shepherd step that isn't the currently active one must
+   never be reachable by Tab or exposed to assistive tech, even briefly
+   during a transition. tour.js also destroys these nodes outright on
+   'show', this is the synchronous first line of defense before that. */
+.shepherd-element:not(.shepherd-enabled) {
+  display: none !important;
 }
