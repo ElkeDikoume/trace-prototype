@@ -201,18 +201,18 @@ const STEP_DEFS = [
     id: 'interpretation',
     attachTo: { element: '[data-tutorial="online-interpretation"]', on: 'top' },
     title: 'Hausa → English interpretation',
-    text: "TRACE interpreted Hausa into English in real time. Hausa has 50+ million speakers across the Sahel, yet almost no humanitarian tools serve them. In production: Meta SeamlessM4T handles Hausa, Fulfulde, and Zarma. For this pilot, Sub-Saharan African languages were prioritized: Hausa, Fulfulde, and Zarma. Additional language packs can be added in production."
+    text: "TRACE interpreted Hausa into English in real time. Hausa has 50+ million speakers across the Sahel, yet very few widely adopted humanitarian tools serve them. In production: Meta SeamlessM4T handles Hausa, Fulfulde, and Zarma. For this pilot, Sub-Saharan African languages were prioritized: Hausa, Fulfulde, and Zarma. Additional language packs can be added in production."
   },
   {
     id: 'structure-cta',
     attachTo: { element: '[data-tutorial="structure-button"]', on: 'bottom' },
     title: 'Structure with AI',
-    text: "Click the 'Structure notes with AI →' button now to continue. TRACE will map the interpreted notes into the correct IOM HTCDS form fields. This takes about 30 seconds, you'll see the fields populate as TRACE works.",
+    text: "Click 'Structure with AI' now to continue. TRACE will map the interpreted notes into the correct IOM HTCDS form fields. This takes about 30 seconds, you'll see the fields populate as TRACE works.",
     customButtons: (tour) => [
       { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
       { text: 'End Tour', action: () => tour.cancel(), classes: 'trace-shepherd-btn-ghost' },
       {
-        text: 'Structure notes with AI →',
+        text: 'Structure with AI →',
         action: async () => {
           await window.__traceStructureNow?.();
           tour.next();
@@ -225,7 +225,10 @@ const STEP_DEFS = [
     id: 'form-fields',
     attachTo: { element: '[data-tutorial="form-fields-heading"]', on: 'bottom' },
     title: 'Notes in. Fields out.',
-    text: 'Every field was populated from the spoken notes in about 5 seconds. Key fields like Age and Current Location were extracted directly from the spoken notes, the caseworker can edit any field before saving.',
+    // The Hausa demo notes never actually state a name, only origin, age,
+    // and location, so claiming "every field" overclaims and Full Name
+    // legitimately stays blank, matching TRACE's "don't invent data" ethos.
+    text: 'Key demographic fields were populated from the spoken notes in about 5 seconds. Age and Current Location were extracted directly from what was said, the caseworker can edit any field, including adding a name, before saving.',
     beforeShowPromise: waitForStructuring
   },
   {
@@ -377,6 +380,13 @@ export function startGuidedTour({ onEnd } = {}) {
   // not stay stuck looking offline, force it back online on any tour exit.
   tour.on('cancel', () => window.__traceSetOnline?.());
   tour.on('complete', () => window.__traceSetOnline?.());
+
+  // Hides the chatbot FAB for the duration of the tour (see the
+  // .trace-tour-active CSS rule) so it can never overlap a popup positioned
+  // near the bottom-right corner.
+  document.body.classList.add('trace-tour-active');
+  tour.on('cancel', () => document.body.classList.remove('trace-tour-active'));
+  tour.on('complete', () => document.body.classList.remove('trace-tour-active'));
 
   if (onEnd) {
     tour.on('complete', onEnd);

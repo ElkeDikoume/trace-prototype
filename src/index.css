@@ -43,6 +43,20 @@ textarea, input, select {
   font-family: inherit;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
   transition: opacity 0.2s ease;
+  /* Defensive: the chatbot FAB sits at z-[200], well below Shepherd's own
+     default z-index (9999), but pin this explicitly so a tour popup can
+     never render underneath it regardless of stacking-context surprises. */
+  z-index: 10000 !important;
+}
+/* Hides the floating chat button while a guided tour is running, so it can
+   never visually collide with a popup positioned near the bottom-right
+   corner (e.g. the "ask-ai-why" and "chatbot" steps). The tour opens/closes
+   the chat panel itself via window.__traceOpenChatbot/__traceCloseChatbot,
+   so the FAB isn't needed for tour navigation. */
+.trace-tour-active .trace-chatbot-fab {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
 }
 .trace-shepherd .shepherd-arrow:before {
   background: #f1f5f9 !important;

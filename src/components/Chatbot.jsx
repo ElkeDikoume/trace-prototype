@@ -77,7 +77,7 @@ export default function Chatbot({ messages, onSend, busy, hasCase, pendingQuesti
         onClick={onToggle}
         title={t('Ask TRACE')}
         aria-label={t('Ask TRACE')}
-        className="fixed bottom-5 right-5 z-[200] w-14 h-14 rounded-full bg-trace-accent text-white shadow-lg flex items-center justify-center hover:bg-sky-500 transition-colors"
+        className="trace-chatbot-fab fixed bottom-5 right-5 z-[200] w-14 h-14 rounded-full bg-trace-accent text-white shadow-lg flex items-center justify-center hover:bg-sky-500 transition-colors"
       >
         <span className="text-2xl leading-none">💬</span>
         {hasCase && (
