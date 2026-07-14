@@ -301,38 +301,32 @@ export default function App() {
     return () => clearTimeout(id);
   }, [pendingTourStart, activeCase]);
 
+  // VoiceTextIntake's freeform notes textarea (what its own "Structure with
+  // AI" button actually reads from) is local component state, not wired to
+  // caseData, set it directly via the native input setter so React's
+  // controlled-input tracking picks up the change alongside caseData itself.
+  function setCaseworkerNotes(value) {
+    handleFieldChange('caseworkerNotes', value);
+    const textarea = document.querySelector('[data-tutorial="voice-intake"] textarea');
+    if (textarea) {
+      const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value').set;
+      nativeSetter.call(textarea, value);
+      textarea.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  }
+
   // Lets the guided tour (a plain DOM/Shepherd script, outside React) drive
   // two interactive moments without duplicating React state logic: loading
   // the sample notes text, and running the same AI structuring call
   // VoiceTextIntake's "Structure with AI" button makes. Re-created whenever
   // activeCase/activeForm change so the closures never see stale data.
   useEffect(() => {
-    window.__traceLoadSampleNotes = () => {
-      handleFieldChange('caseworkerNotes', DEMO_INTAKE_NOTES);
-      // VoiceTextIntake's freeform notes textarea (what its own "Structure
-      // with AI" button actually reads from) is local component state, not
-      // wired to caseData, set it directly via the native input setter so
-      // React's controlled-input tracking picks up the change.
-      const textarea = document.querySelector('[data-tutorial="voice-intake"] textarea');
-      if (textarea) {
-        const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value').set;
-        nativeSetter.call(textarea, DEMO_INTAKE_NOTES);
-        textarea.dispatchEvent(new Event('input', { bubbles: true }));
-      }
-    };
+    window.__traceLoadSampleNotes = () => setCaseworkerNotes(DEMO_INTAKE_NOTES);
     // Mirrors __traceLoadSampleNotes above but clears both representations of
     // the notes field, so the tour can undo its own sample-notes load if the
     // judge navigates back to the intake-notes step (see tour.js's
     // clearNotesIfSeededByTour beforeShowPromise).
-    window.__traceClearSampleNotes = () => {
-      handleFieldChange('caseworkerNotes', '');
-      const textarea = document.querySelector('[data-tutorial="voice-intake"] textarea');
-      if (textarea) {
-        const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value').set;
-        nativeSetter.call(textarea, '');
-        textarea.dispatchEvent(new Event('input', { bubbles: true }));
-      }
-    };
+    window.__traceClearSampleNotes = () => setCaseworkerNotes('');
     window.__traceStructureNow = async () => {
       if (!activeCase) return;
       const notes = activeCase.data?.caseworkerNotes || '';
@@ -651,7 +645,10 @@ export default function App() {
             onStartDemo={handleStartDemo}
           />
 
-          <OnlineInterpretationPanel onlineMode={onlineMode} />
+          <OnlineInterpretationPanel
+            onlineMode={onlineMode}
+            onUseAsNotes={setCaseworkerNotes}
+          />
         </div>
       )}
 

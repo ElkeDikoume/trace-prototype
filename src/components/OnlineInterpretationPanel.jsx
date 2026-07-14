@@ -8,7 +8,7 @@ import { useI18n } from '../lib/i18n.jsx';
 // spotlights this panel, so both must show identical testimony.
 const HAUSA_DEMO_TEXT = "Amina ta ce mai daukar ma'aikata ya karɓi takardar shaidar ta, ba za ta iya tafiya ba. An kawo ta daga Kano, ana cewa za a ba ta aiki a gidan yara, amma an tilasta ta yin aiki ba tare da kuɗi ba. Ta ce an gaya mata cewa tana bin bashin daukar ma'aikata, kuma ana cire kuɗi daga albashinta kafin ta karɓi kome. Tana da shekaru 28, kuma a yanzu ana tsare da ita a N'Djamena.";
 
-export default function OnlineInterpretationPanel({ onlineMode }) {
+export default function OnlineInterpretationPanel({ onlineMode, onUseAsNotes }) {
   const { t } = useI18n();
   const [text, setText] = useState(HAUSA_DEMO_TEXT);
   // Starts empty (rather than a canned translation) so the interpreted
@@ -177,6 +177,14 @@ export default function OnlineInterpretationPanel({ onlineMode }) {
             <div className="bg-trace-800 border border-trace-700 rounded-md p-2">
               <div className="text-[10px] uppercase tracking-wide text-slate-500 mb-1">{t('Interpreted output (English)')}</div>
               <p className="text-sm text-slate-200 whitespace-pre-wrap">{translation}</p>
+              {onUseAsNotes && (
+                <button
+                  onClick={() => onUseAsNotes(translation)}
+                  className="mt-2 w-full px-3 py-1.5 rounded-md text-sm font-medium bg-trace-accent text-white hover:bg-sky-500"
+                >
+                  {t('Use as intake notes →')}
+                </button>
+              )}
               <p className="text-[11px] text-slate-500 mt-1">{t('Powered by Claude API in this prototype · Meta SeamlessM4T in full deployment.')}</p>
             </div>
           )}
