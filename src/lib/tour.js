@@ -293,7 +293,7 @@ const STEP_DEFS = [
     id: 'supervisor-tab',
     attachTo: { element: '[data-tutorial="documents-tab"]', on: 'bottom' },
     title: 'Insights tab, where TRACE works for you.',
-    text: "The Case Summary TRACE just drafted in chat is waiting here, already marked 'Draft ready'. Every other document (referral letter, IOM monthly return entry, missing information report, follow-up plan) generates the same way, with one click, using the structured fields, risk flags, and survivor details from this case. You review and edit before anything is sent.<br /><br />Each is editable and downloadable before any action is taken. The Missing Information Report shows exactly what data gaps remain for a complete CTDC risk assessment, distinct from the risk score itself.",
+    text: "This is where TRACE works for you. The Case Summary you just drafted in chat is already waiting here, marked 'Draft ready', ready to edit for a supervisor handoff or file note. Generate a referral letter, an IOM monthly return entry, or a follow-up plan the same way, with one click, using the structured fields, risk flags, and survivor details from this case.<br /><br />The Missing Information Report shows exactly what gaps remain in the assessment, distinct from the risk score itself. Every document is editable and downloadable, you review and edit before anything is sent.",
     beforeShowPromise: closeChatbotThenSwitchToInsights
   },
   {
