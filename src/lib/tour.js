@@ -188,7 +188,7 @@ const STEP_DEFS = [
       { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
       { text: 'End Tour', action: () => tour.cancel(), classes: 'trace-shepherd-btn-ghost' },
       {
-        text: "I've clicked Interpret →",
+        text: "I've clicked Translate →",
         action: async () => {
           await window.__traceInterpretNow?.();
           tour.next();

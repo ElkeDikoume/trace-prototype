@@ -168,7 +168,7 @@ export default function OnlineInterpretationPanel({ onlineMode, onUseAsNotes }) 
               disabled={busy}
               className="px-3 py-1.5 rounded-md text-sm font-medium bg-trace-accent text-white hover:bg-sky-500 disabled:opacity-50"
             >
-              {busy ? t('Interpreting…') : `✨ ${t('Interpret')}`}
+              {busy ? t('Translating…') : `✨ ${t('Translate')}`}
             </button>
           </div>
           {error && <p className="text-xs text-red-400 mb-2">{error}</p>}
