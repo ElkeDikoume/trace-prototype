@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Document, Packer, Paragraph, TextRun, Header, Footer, AlignmentType } from 'docx';
 import { useI18n } from '../lib/i18n.jsx';
+import { stripMarkdownBold } from '../lib/textFormat.js';
 import PatternAlertsBanner from './PatternAlertsBanner.jsx';
 import {
   generateReferralLetter,
@@ -163,7 +164,7 @@ export default function DocumentsPanel({ caseRecord, form, riskResult, services,
     setErrors((e) => ({ ...e, [docDef.key]: '' }));
     try {
       const content = await docDef.generate({ caseData: caseRecord.data, form, riskResult, services });
-      onSaveDocument(docDef.key, content, docDef.editable ? 'draft' : 'ready');
+      onSaveDocument(docDef.key, stripMarkdownBold(content), docDef.editable ? 'draft' : 'ready');
     } catch (err) {
       setErrors((e) => ({ ...e, [docDef.key]: err.message || 'Failed to generate document.' }));
     } finally {

@@ -13,6 +13,7 @@ import { computeFollowUpReminder, isReminderDue } from './lib/followUp.js';
 import { DEMO_CASE_FORM_ID, DEMO_CASE_DATA, DEMO_INTAKE_NOTES, EXAMPLE_CASE_IBRAHIM, EXAMPLE_CASE_MARIECLAIRE } from './data/demoCase.js';
 import { I18nContext, getStoredLanguage, storeLanguage, getLanguageMeta, translate } from './lib/i18n.jsx';
 import { startGuidedTour } from './lib/tour.js';
+import { stripMarkdownBold } from './lib/textFormat.js';
 import traceLogo from './assets/trace-logo.png';
 
 import FormSelector from './components/FormSelector.jsx';
@@ -461,7 +462,8 @@ export default function App() {
         // Insights still reflects "something was generated" without being
         // overwritten by unrelated chat replies.
         const isHandoffNote = /handoff/i.test(question);
-        const content = isHandoffNote ? answer : firstTwoSentences(answer);
+        const cleanAnswer = stripMarkdownBold(answer);
+        const content = isHandoffNote ? cleanAnswer : firstTwoSentences(cleanAnswer);
         updated.documents = { ...(activeCase.documents || {}), [saveAsDocument]: { content, status: 'draft' } };
       }
       persist(updated);
