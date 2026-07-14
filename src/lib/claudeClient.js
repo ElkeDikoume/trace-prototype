@@ -45,6 +45,7 @@ ${fieldList}
 
 Rules:
 - Only include information actually present or clearly implied in the notes. Do not invent details.
+- If the survivor's full name, or any name used to refer to them, is stated anywhere in the notes, extract it into the name/identifier field (e.g. fullName). If no name is mentioned anywhere in the notes, leave that field as an empty string, do not invent one.
 - For fields with fixed options, choose the closest matching option, or leave the value as an empty string "" if unclear.
 - Translate extracted values into English for the form fields, but preserve names, places, and quotes as given.
 - If a field has no information available, use an empty string "".
@@ -90,6 +91,7 @@ Rules:
 - For fields with fixed options (type: select), output one of the exact option strings listed, these are controlled values and stay in English, do not translate them.
 - For free-text fields (type: text/textarea), write the value in French, translated from the source language.
 - Only include information actually present or clearly implied in the note. Do not invent details.
+- If the survivor's full name, or any name used to refer to them, is stated anywhere in the note, extract it into the name/identifier field (e.g. fullName). If no name is mentioned anywhere in the note, leave that field as an empty string, do not invent one.
 - If a field has no information available, use an empty string "".
 - Output must be a single JSON object with exactly the "translation" and "fields" keys, nothing else.`;
 

@@ -35,8 +35,11 @@ export const DEMO_CASE_DATA = {
 // current location explicitly, since neither was clearly stated before,
 // only her origin (Kano) was mentioned, so the tour's "form-fields" step
 // can honestly point at Age and Current Location as fields the AI actually
-// extracted from the notes, not fields that happened to stay empty.
-export const DEMO_INTAKE_NOTES = "Ta ce mai daukar ma'aikata ya karɓi takardar shaidar ta, ba za ta iya tafiya ba. An kawo ta daga Kano, ana cewa za a ba ta aiki a gidan yara, amma an tilasta ta yin aiki ba tare da kuɗi ba. Ta ce an gaya mata cewa tana bin bashin daukar ma'aikata, kuma ana cire kuɗi daga albashinta kafin ta karɓi kome. Tana da shekaru 28, kuma a yanzu ana tsare da ita a N'Djamena.";
+// extracted from the notes, not fields that happened to stay empty. The
+// opening clause names her ("Amina ta ce...", "Amina said...") so the
+// structuring step can genuinely extract a Full Name too, rather than the
+// AI needing to invent one that was never actually spoken.
+export const DEMO_INTAKE_NOTES = "Amina ta ce mai daukar ma'aikata ya karɓi takardar shaidar ta, ba za ta iya tafiya ba. An kawo ta daga Kano, ana cewa za a ba ta aiki a gidan yara, amma an tilasta ta yin aiki ba tare da kuɗi ba. Ta ce an gaya mata cewa tana bin bashin daukar ma'aikata, kuma ana cire kuɗi daga albashinta kafin ta karɓi kome. Tana da shekaru 28, kuma a yanzu ana tsare da ita a N'Djamena.";
 
 // Two additional seeded examples so first-time visitors see varied case
 // types (form type, geography, profile) without running the demo first.
