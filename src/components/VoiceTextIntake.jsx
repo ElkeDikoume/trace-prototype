@@ -225,13 +225,16 @@ export default function VoiceTextIntake({ form, onStructured, onlineMode }) {
         <button
           data-tutorial="structure-button"
           onClick={handleStructure}
-          disabled={busy || interpreting}
+          disabled={busy || interpreting || !onlineMode}
           className="px-3 py-1.5 rounded-md text-sm font-medium bg-trace-accent text-white hover:bg-sky-500 disabled:opacity-50"
         >
           {interpreting ? t('Interpreting…') : busy ? t('Structuring…') : isLocalLanguage ? `✨ ${t('Interpret & structure')}` : `✨ ${t('Structure with AI')}`}
         </button>
         {!speechSupported && (
           <span className="text-xs text-slate-500">{t('Voice input unsupported here, typing still works.')}</span>
+        )}
+        {!onlineMode && (
+          <span className="text-xs text-slate-500">{t('AI structuring requires connectivity.')}</span>
         )}
       </div>
 

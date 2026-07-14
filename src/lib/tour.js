@@ -125,7 +125,7 @@ const STEP_DEFS = [
       { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
       { text: 'End Tour', action: () => tour.cancel(), classes: 'trace-shepherd-btn-ghost' },
       {
-        text: 'Switch to Offline →',
+        text: 'Go offline →',
         action: () => {
           window.__traceSetOffline?.();
           setTimeout(() => tour.next(), 300);
@@ -371,6 +371,12 @@ export function startGuidedTour({ onEnd } = {}) {
       buttons
     });
   });
+
+  // If the judge exits mid-tour while sitting in the simulated offline beat
+  // (or navigates away without clicking "Restore connection"), the app must
+  // not stay stuck looking offline, force it back online on any tour exit.
+  tour.on('cancel', () => window.__traceSetOnline?.());
+  tour.on('complete', () => window.__traceSetOnline?.());
 
   if (onEnd) {
     tour.on('complete', onEnd);

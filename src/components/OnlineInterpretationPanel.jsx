@@ -71,14 +71,18 @@ export default function OnlineInterpretationPanel({ onlineMode }) {
 
   if (!onlineMode) {
     return (
-      <div data-tutorial="online-interpretation" className="flex-shrink-0 bg-trace-900 border-b border-trace-700 px-4 py-3">
+      <div
+        data-tutorial="online-interpretation"
+        title={t('Interpretation requires connectivity.')}
+        className="flex-shrink-0 bg-trace-900 border-b border-trace-700 px-4 py-3 opacity-60"
+      >
         <div className="flex items-center justify-between mb-1">
-          <h2 className="text-sm font-semibold text-slate-100">🌐 {t('Online Interpretation (Live Mode)')}</h2>
+          <h2 className="text-sm font-semibold text-slate-400">🌐 {t('Online Interpretation (Live Mode)')}</h2>
           <button onClick={() => setOpen(!open)} className="text-slate-500 hover:text-slate-300 text-xs flex-shrink-0">
             {open ? '▲' : '▼'}
           </button>
         </div>
-        {open && <p className="text-[11px] text-slate-500">{t('Local language interpretation requires connectivity.')}</p>}
+        {open && <p className="text-[11px] text-slate-500">{t('Interpretation requires connectivity.')}</p>}
       </div>
     );
   }
