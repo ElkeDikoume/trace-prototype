@@ -113,13 +113,13 @@ const STEP_DEFS = [
     id: 'language-selector',
     attachTo: { element: '[data-tutorial="language-selector"]', on: 'bottom' },
     title: 'Choose your language',
-    text: 'TRACE supports 5 interface languages: French, English, Arabic, Spanish, and Portuguese. Click the language selector now to see the full list. In production, this switches the entire interface. Real-time local language interpretation (Hausa, Fulfulde, Zarma) is available when connected.'
+    text: 'TRACE supports 5 interface languages: French, English, Arabic, Spanish, and Portuguese. Click the language selector now to see the full list. In production, this switches the entire interface. Real-time local language translation (Hausa, Fulfulde, Zarma) is available when connected.'
   },
   {
     id: 'offline-indicator',
     attachTo: { element: '[data-tutorial="offline-indicator"]', on: 'bottom' },
     title: 'Full capabilities, online',
-    text: 'When connected, TRACE has full capabilities: voice intake, local language interpretation, AI structuring, risk flagging, and document generation.',
+    text: 'When connected, TRACE has full capabilities: voice intake, local language translation, AI structuring, risk flagging, and document generation.',
     beforeShowPromise: ensureOnlineForConnectivityIntro,
     customButtons: (tour) => [
       { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
@@ -138,7 +138,7 @@ const STEP_DEFS = [
     id: 'offline-indicator-offline',
     attachTo: { element: '[data-tutorial="offline-indicator"]', on: 'bottom' },
     title: 'Still fully functional, offline',
-    text: "In offline mode, in Diffa, Bangui, or the Lake Chad Basin, caseworkers can still capture intake notes, run local risk checks, and prepare referral-ready records. Local language interpretation requires a connection and is unavailable offline. Everything syncs automatically when connectivity returns.",
+    text: "In offline mode, in Diffa, Bangui, or the Lake Chad Basin, caseworkers can still capture intake notes, run local risk checks, and prepare referral-ready records. Local language translation requires a connection and is unavailable offline. Everything syncs automatically when connectivity returns.",
     customButtons: (tour) => [
       { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
       { text: 'End Tour', action: () => tour.cancel(), classes: 'trace-shepherd-btn-ghost' },
@@ -200,7 +200,7 @@ const STEP_DEFS = [
   {
     id: 'interpretation',
     attachTo: { element: '[data-tutorial="online-interpretation"]', on: 'top' },
-    title: 'Hausa → English interpretation',
+    title: 'Hausa → English translation',
     text: "TRACE interpreted Hausa into English in real time. Hausa has 50+ million speakers across the Sahel, yet very few widely adopted humanitarian tools serve them. In production: Meta SeamlessM4T handles Hausa, Fulfulde, and Zarma. For this pilot, Sub-Saharan African languages were prioritized: Hausa, Fulfulde, and Zarma. Additional language packs can be added in production."
   },
   {
@@ -312,7 +312,15 @@ const STEP_DEFS = [
     customButtons: (tour) => [
       { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
       { text: 'End Tour', action: () => tour.cancel(), classes: 'trace-shepherd-btn-ghost' },
-      { text: 'Explore TRACE →', action: () => tour.complete(), classes: 'trace-shepherd-btn-primary' }
+      { text: 'Explore TRACE →', action: () => tour.next(), classes: 'trace-shepherd-btn-primary' }
+    ]
+  },
+  {
+    id: 'free-explore-hint',
+    title: 'Explore on your own',
+    text: 'Edit any field and re-run Structure with AI, or type any question in the chat.',
+    customButtons: (tour) => [
+      { text: 'Done', action: () => tour.complete(), classes: 'trace-shepherd-btn-primary' }
     ]
   }
 ];

@@ -524,7 +524,8 @@ export default function App() {
   return (
     <I18nContext.Provider value={{ lang, t, setLang }}>
     <div className="flex flex-col h-screen overflow-hidden">
-      <header data-tutorial="header" className="flex-shrink-0 px-4 py-3 border-b border-trace-700 bg-trace-950 flex items-center justify-between">
+      <header data-tutorial="header" className="flex-shrink-0 px-4 py-3 border-b border-trace-700 bg-trace-950">
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
         <div>
           <button
             onClick={() => { setView('case'); setActiveCase(null); }}
@@ -585,6 +586,7 @@ export default function App() {
             ↺ {t('Restart')}
           </button>
           <HeaderOverflowMenu onOpenLookup={() => setShowLookup(true)} />
+        </div>
         </div>
       </header>
 

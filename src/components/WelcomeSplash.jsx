@@ -13,7 +13,7 @@ function MicrosoftLogo() {
 }
 
 const FEATURE_PILLS = [
-  '🌐 5 languages + local language interpretation',
+  '🌐 5 languages + local language translation',
   '⚡ AI risk flagging · CTDC standards',
   '📄 AI-generated case insights'
 ];

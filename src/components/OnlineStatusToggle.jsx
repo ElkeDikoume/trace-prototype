@@ -4,7 +4,7 @@ import { useI18n } from '../lib/i18n.jsx';
 const ONLINE_FEATURES = [
   'AI form structuring',
   'TRACE Assistant chatbot',
-  'Hausa/Fulfulde/Zarma interpretation',
+  'Hausa/Fulfulde/Zarma translation',
   'Document & referral generation',
   'Pattern intelligence',
   'Live DTM/ACLED context'

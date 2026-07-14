@@ -153,7 +153,7 @@ export default function VoiceTextIntake({ form, onStructured, onlineMode }) {
       </div>
 
       {!onlineMode && (
-        <p className="text-[11px] text-slate-500 mb-2">{t('Local language interpretation requires connectivity.')}</p>
+        <p className="text-[11px] text-slate-500 mb-2">{t('Local language translation requires connectivity.')}</p>
       )}
 
       {onlineMode && isLocalLanguage && (
@@ -162,7 +162,7 @@ export default function VoiceTextIntake({ form, onStructured, onlineMode }) {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-trace-accent opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-trace-accent"></span>
           </span>
-          {t('Online mode, real-time interpretation active (powered by SeamlessM4T)')}
+          {t('Online mode, real-time translation active (powered by SeamlessM4T)')}
         </div>
       )}
 
