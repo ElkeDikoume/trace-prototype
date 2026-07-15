@@ -265,6 +265,7 @@ export default function App() {
   function handleExploreOnMyOwn() {
     localStorage.setItem(WELCOME_SEEN_KEY, '1');
     setShowWelcome(false);
+    handleStartDemo({ suppressHighRiskPrompt: true });
   }
 
   // Mock Microsoft SSO, no real auth, just a localStorage-backed "session"

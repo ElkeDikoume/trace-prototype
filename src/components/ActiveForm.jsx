@@ -87,10 +87,10 @@ export default function ActiveForm({
   followUpReminder, onToggleFollowUp, onStartDemo
 }) {
   const { t } = useI18n();
-  const [fieldsOpen, setFieldsOpen] = useState(true);
-  const [ctdcOpen, setCtdcOpen] = useState(true);
-  const [dtmOpen, setDtmOpen] = useState(true);
-  const [acledOpen, setAcledOpen] = useState(true);
+  const [fieldsOpen, setFieldsOpen] = useState(false);
+  const [ctdcOpen, setCtdcOpen] = useState(false);
+  const [dtmOpen, setDtmOpen] = useState(false);
+  const [acledOpen, setAcledOpen] = useState(false);
 
   if (!form) {
     return (
