@@ -27,10 +27,27 @@ export const RISK_LABEL = {
 };
 
 // Muted status chip styling (kept understated so it never competes with the
-// risk colour on the left border of a card).
+// risk colour on the left border of a card). Covers both the display statuses
+// used by the mock caseload and the logical statuses used by new/saved cases.
 export const STATUS_STYLE = {
   Urgent: 'text-tracev2-risk-high/90 bg-tracev2-risk-high/10',
   'In progress': 'text-sky-300/90 bg-sky-400/10',
   Active: 'text-tracev2-risk-low/90 bg-tracev2-risk-low/10',
-  Pending: 'text-tracev2-text/90 bg-slate-400/10'
+  active: 'text-tracev2-risk-low/90 bg-tracev2-risk-low/10',
+  Pending: 'text-tracev2-text/90 bg-slate-400/10',
+  pending_referral: 'text-tracev2-risk-medium/90 bg-tracev2-risk-medium/10'
+};
+
+// Human-readable label for a (possibly logical) status value.
+export const STATUS_LABEL = {
+  active: 'Active',
+  pending_referral: 'Pending referral'
+};
+export const statusLabel = (s) => STATUS_LABEL[s] || s;
+
+// Full-width risk banner styling for the case Overview header.
+export const RISK_BANNER = {
+  high: 'bg-tracev2-risk-high/15 text-tracev2-risk-high border border-tracev2-risk-high/30',
+  medium: 'bg-tracev2-risk-medium/15 text-tracev2-risk-medium border border-tracev2-risk-medium/30',
+  low: 'bg-tracev2-risk-low/15 text-tracev2-risk-low border border-tracev2-risk-low/30'
 };

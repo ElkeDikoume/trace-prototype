@@ -10,6 +10,8 @@ import StructuredPreviewModal from '../components/StructuredPreviewModal.jsx';
 import { useToast } from '../lib/ToastContext.jsx';
 import { structureIntake, structuredToFields } from '../lib/structure.js';
 import { saveCase } from '../lib/cases.js';
+import { generateFollowUpTasks } from '../lib/followups.js';
+import { upsertCase } from '../lib/caseStore.js';
 import { mockRiskIndicators } from '../mockData.js';
 
 // Auto-detect + the UN languages relevant to intake + regional languages the
@@ -32,7 +34,7 @@ const INTAKE_LANGUAGES = [
   'Bambara'
 ];
 
-export default function ActiveIntakeScreen({ caseId, initialNotes = '', riskLevel = 'medium', ageRange = '', sex = '', onBack, onSaved }) {
+export default function ActiveIntakeScreen({ caseId, initialNotes = '', riskLevel = 'medium', ageRange = '', sex = '', supervisorMode = false, onBack, onSaved }) {
   const { t } = useTranslation();
   const { show } = useToast();
 
@@ -136,21 +138,46 @@ export default function ActiveIntakeScreen({ caseId, initialNotes = '', riskLeve
   async function handleSaveStructured(editedFields) {
     setSaving(true);
     const s = structured || {};
+    const finalRisk = s.risk_level || riskLevel;
+    const structuredData = { ...s, reviewed_fields: editedFields };
+
+    // Approval gate: a high-risk case with no active supervisor session is held
+    // for supervisor approval rather than going straight to 'active'.
+    const status = finalRisk === 'high' && !supervisorMode ? 'pending_referral' : 'active';
+
+    // Best-effort persistence to Supabase / offline queue.
     const result = await saveCase({
       caseNumber: caseId,
       rawNotes: notes,
-      structuredData: { ...s, reviewed_fields: editedFields },
+      structuredData,
       ctdcIndicators: s.ctdc_indicators || [],
-      riskLevel: s.risk_level || riskLevel,
+      riskLevel: finalRisk,
       ageRange: s.age_range || ageRange,
       sex: s.sex || sex,
-      status: 'active'
+      status
     });
+
+    // Build the case object the UI reads, generate its follow-up task list, and
+    // record it in the local overlay so the Dashboard reflects it immediately.
+    const caseObj = {
+      id: caseId,
+      ageRange: s.age_range || ageRange || '—',
+      sex: s.sex || sex || '',
+      riskLevel: finalRisk,
+      status,
+      lastUpdated: 'just now',
+      notes,
+      structuredData,
+      ctdcIndicators: s.ctdc_indicators || []
+    };
+    caseObj.follow_up_tasks = await generateFollowUpTasks({ caseData: caseObj });
+    upsertCase(caseObj);
+
     setSaving(false);
     setShowPreview(false);
 
-    if (result.status === 'synced') show(`Case ${caseId} saved.`, 'success');
-    else if (!navigator.onLine) show(t('save_offline'), 'amber');
+    if (status === 'pending_referral') show(`Case ${caseId} submitted for supervisor approval.`, 'amber');
+    else if (result.status === 'synced') show(`Case ${caseId} saved.`, 'success');
     else show('Saved locally (demo mode).', 'info');
 
     onSaved?.();

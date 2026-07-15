@@ -1,10 +1,10 @@
-// Root of the Phase 2/3 (v2-demo) mobile shell. Reached via the ?v2 URL flag
+// Root of the Phase 2-4 (v2-demo) mobile shell. Reached via the ?v2 URL flag
 // from main.jsx; the existing desktop app remains the default experience.
 // Providers (theme, toast, i18n) wrap the Shell, which owns auth, the case
-// list, and screen routing.
+// list, supervisor mode, and screen routing.
 import './theme.css';
 import './lib/i18n.js'; // side-effect: initialise i18next
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import PhoneFrame from './components/PhoneFrame.jsx';
@@ -16,12 +16,14 @@ import WelcomeScreen from './screens/WelcomeScreen.jsx';
 import DashboardScreen from './screens/DashboardScreen.jsx';
 import IntakeStartScreen from './screens/IntakeStartScreen.jsx';
 import ActiveIntakeScreen from './screens/ActiveIntakeScreen.jsx';
+import CaseViewScreen from './screens/CaseViewScreen.jsx';
 import DocsScreen from './screens/DocsScreen.jsx';
 
 import { ThemeProvider, useTheme } from './lib/ThemeContext.jsx';
 import { ToastProvider, useToast } from './lib/ToastContext.jsx';
 import { isRtl } from './lib/i18n.js';
 import { fetchCases, flushQueue } from './lib/cases.js';
+import { mergeCases, setStatus } from './lib/caseStore.js';
 import {
   getSessionProfile,
   isDemo,
@@ -42,7 +44,7 @@ export default function TraceV2App() {
   );
 }
 
-// Screens once authed: 'dashboard' | 'intakeStart' | 'activeIntake' | 'docs'
+// Screens once authed: 'dashboard' | 'intakeStart' | 'activeIntake' | 'caseView' | 'docs'
 function Shell() {
   const { theme } = useTheme();
   const { i18n } = useTranslation();
@@ -55,12 +57,13 @@ function Shell() {
 
   const [screen, setScreen] = useState('dashboard');
   const [activeIntake, setActiveIntake] = useState(null);
+  const [selectedCaseId, setSelectedCaseId] = useState(null);
+  const [supervisorMode, setSupervisorMode] = useState(false);
   const [aiOpen, setAiOpen] = useState(false);
   const [cases, setCases] = useState([]);
   const resetRan = useRef(false);
 
-  // ?reset — clear service workers + local state, then hard-reload to a clean
-  // URL. Behaviour unchanged from Phase 2. Guarded so it runs once.
+  // ?reset — unchanged from earlier phases. Guarded so it runs once.
   useEffect(() => {
     if (resetRan.current) return;
     resetRan.current = true;
@@ -71,14 +74,12 @@ function Shell() {
     }
   }, []);
 
-  // Bootstrap the current caseworker: a real Supabase session, else a demo
-  // session flag, else nobody (show the Welcome sign-in).
+  // Bootstrap the caseworker: real Supabase session, else demo flag, else none.
   useEffect(() => {
     (async () => {
       try {
-        if (isDemo()) {
-          setProfile(demoProfile());
-        } else {
+        if (isDemo()) setProfile(demoProfile());
+        else {
           const p = await getSessionProfile();
           if (p) setProfile(p);
         }
@@ -88,7 +89,6 @@ function Shell() {
     })();
   }, []);
 
-  // Flush any intakes queued while offline, once per load.
   useEffect(() => {
     flushQueue()
       .then((r) => {
@@ -97,12 +97,14 @@ function Shell() {
       .catch(() => {});
   }, []);
 
-  // Load the caseworker's cases once we know who they are.
+  // Load base cases (Supabase or mock) merged with the local Phase 4 overlay.
+  const loadCases = useCallback(() => fetchCases().then((base) => setCases(mergeCases(base))), []);
+
   useEffect(() => {
     if (!profile) return;
     let cancelled = false;
-    fetchCases().then((rows) => {
-      if (!cancelled) setCases(rows);
+    fetchCases().then((base) => {
+      if (!cancelled) setCases(mergeCases(base));
     });
     return () => {
       cancelled = true;
@@ -131,14 +133,20 @@ function Shell() {
     setScreen('dashboard');
   }
 
-  function openExistingCase(caseId) {
-    const found = cases.find((c) => c.id === caseId) || mockCases.find((c) => c.id === caseId);
+  // Tapping a case card opens the 3-tab case view.
+  function openCaseView(caseId) {
+    setSelectedCaseId(caseId);
+    setScreen('caseView');
+  }
+
+  // "Add session note" from the case view opens intake pre-loaded with the case.
+  function addSessionNote(caseData) {
     setActiveIntake({
-      caseId,
-      notes: found?.notes || '',
-      riskLevel: found?.riskLevel || 'medium',
-      ageRange: found?.ageRange || '',
-      sex: found?.sex || ''
+      caseId: caseData.id,
+      notes: caseData.notes || '',
+      riskLevel: caseData.riskLevel || 'medium',
+      ageRange: caseData.ageRange || '',
+      sex: caseData.sex || ''
     });
     setScreen('activeIntake');
   }
@@ -148,9 +156,26 @@ function Shell() {
     setScreen('activeIntake');
   }
 
-  // Refresh the case list after a save (e.g. when synced to Supabase).
   function handleSavedCase() {
-    fetchCases().then(setCases);
+    loadCases();
+  }
+
+  // Supervisor mode + approval queue.
+  function enableSupervisor() {
+    if (!supervisorMode) {
+      setSupervisorMode(true);
+      show('Supervisor view enabled', 'success', 2500);
+    }
+  }
+  function approveReferral(id) {
+    setStatus(id, 'active');
+    loadCases();
+    show('Referral approved', 'success');
+  }
+  function flagReferral(id, note) {
+    setStatus(id, 'active', { flag_note: note || '' });
+    loadCases();
+    show('Case flagged and returned to caseworker.', 'amber');
   }
 
   function handleNav(tab) {
@@ -160,33 +185,37 @@ function Shell() {
     else if (tab === 'docs') setScreen('docs');
   }
 
-  // Case grounding the AI chat: the active intake if any, else the most recent.
-  const contextCase = activeIntake
-    ? {
-        ...(cases.find((c) => c.id === activeIntake.caseId) || {}),
-        id: activeIntake.caseId,
-        notes: activeIntake.notes,
-        riskLevel: activeIntake.riskLevel
-      }
-    : cases[0] || mockCases[0];
+  const selectedCase = cases.find((c) => c.id === selectedCaseId) || null;
+
+  // Case grounding the AI chat.
+  const contextCase =
+    screen === 'caseView' && selectedCase
+      ? selectedCase
+      : activeIntake
+        ? {
+            ...(cases.find((c) => c.id === activeIntake.caseId) || {}),
+            id: activeIntake.caseId,
+            notes: activeIntake.notes,
+            riskLevel: activeIntake.riskLevel
+          }
+        : cases[0] || mockCases[0];
   const aiContext = {
     caseRecord: contextCase,
-    structuredFields: mockStructuredFields,
-    riskIndicators: mockRiskIndicators
+    structuredFields: contextCase?.structuredData
+      ? Object.entries(contextCase.structuredData)
+          .filter(([, v]) => v && typeof v !== 'object')
+          .map(([k, v]) => ({ label: k, value: String(v) }))
+      : mockStructuredFields,
+    riskIndicators: contextCase?.ctdcIndicators?.length ? contextCase.ctdcIndicators : mockRiskIndicators
   };
 
   const activeTab =
-    screen === 'dashboard'
-      ? 'cases'
-      : screen === 'intakeStart' || screen === 'activeIntake'
-        ? 'intake'
-        : screen === 'docs'
-          ? 'docs'
-          : 'cases';
+    screen === 'intakeStart' || screen === 'activeIntake'
+      ? 'intake'
+      : screen === 'docs'
+        ? 'docs'
+        : 'cases';
 
-  // Not signed in yet -> Welcome (splash + sign-in). While the async auth check
-  // is still running we also show Welcome; it resolves to the shell if a
-  // session is found.
   if (!profile) {
     return (
       <PhoneFrame theme={theme} dir={dir}>
@@ -203,12 +232,16 @@ function Shell() {
         <DashboardScreen
           profile={profile}
           cases={cases}
-          onOpenCase={openExistingCase}
+          supervisorMode={supervisorMode}
+          onOpenCase={openCaseView}
           onSeeAll={() => setScreen('intakeStart')}
+          onEnableSupervisor={enableSupervisor}
+          onApprove={approveReferral}
+          onFlag={flagReferral}
         />
       )}
       {screen === 'intakeStart' && (
-        <IntakeStartScreen cases={cases} onOpenCase={openExistingCase} onNewCase={startNewCase} />
+        <IntakeStartScreen cases={cases} onOpenCase={openCaseView} onNewCase={startNewCase} />
       )}
       {screen === 'activeIntake' && activeIntake && (
         <ActiveIntakeScreen
@@ -217,8 +250,17 @@ function Shell() {
           riskLevel={activeIntake.riskLevel}
           ageRange={activeIntake.ageRange}
           sex={activeIntake.sex}
+          supervisorMode={supervisorMode}
           onBack={() => setScreen('dashboard')}
           onSaved={handleSavedCase}
+        />
+      )}
+      {screen === 'caseView' && selectedCase && (
+        <CaseViewScreen
+          caseData={selectedCase}
+          onBack={() => setScreen('dashboard')}
+          onAddSessionNote={addSessionNote}
+          onTasksChanged={() => loadCases()}
         />
       )}
       {screen === 'docs' && <DocsScreen />}
