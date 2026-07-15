@@ -23,7 +23,11 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}']
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        // The v2 shell pulls in Supabase + MSAL + i18next, pushing the main
+        // bundle just past Workbox's default 2 MiB precache ceiling. Raise the
+        // limit so the service worker can precache it (build otherwise fails).
+        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024
       }
     })
   ],
