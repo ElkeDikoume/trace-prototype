@@ -88,6 +88,9 @@ export default function ActiveForm({
 }) {
   const { t } = useI18n();
   const [fieldsOpen, setFieldsOpen] = useState(true);
+  const [ctdcOpen, setCtdcOpen] = useState(true);
+  const [dtmOpen, setDtmOpen] = useState(true);
+  const [acledOpen, setAcledOpen] = useState(true);
 
   if (!form) {
     return (
@@ -110,7 +113,9 @@ export default function ActiveForm({
         <h2 className="text-lg font-semibold text-slate-100">{t(form.name)}</h2>
       </div>
 
-      <VoiceTextIntake form={form} onStructured={onStructured} onlineMode={onlineMode} />
+      {!form.riskEligible && (
+        <VoiceTextIntake form={form} onStructured={onStructured} onlineMode={onlineMode} />
+      )}
 
       {form.riskEligible && <RiskFlag riskResult={riskResult} onAskWhy={onAskWhy} caseId={caseId} />}
 
@@ -121,16 +126,6 @@ export default function ActiveForm({
       {form.riskEligible && (
         <MissingInfoPrompts missingFields={getMissingIndicatorFields(caseData, form)} />
       )}
-
-      {form.riskEligible && (
-        <>
-          <CtdcPanel records={ctdcMatches} />
-          <DtmPanel context={dtmContext} />
-          <AcledPanel events={acledEvents} />
-        </>
-      )}
-
-      <ServiceSuggestions services={services} />
 
       <div data-tutorial="form-fields-heading" className="flex items-center justify-between mb-2">
         <h3 className="text-sm font-semibold text-slate-200">{t('Case fields')}</h3>
@@ -151,6 +146,49 @@ export default function ActiveForm({
           ))}
         </div>
       )}
+
+      {form.riskEligible && (
+        <VoiceTextIntake form={form} onStructured={onStructured} onlineMode={onlineMode} />
+      )}
+
+      {form.riskEligible && (
+        <>
+          <div className="mb-2">
+            <button
+              onClick={() => setCtdcOpen((o) => !o)}
+              className="w-full flex items-center justify-between text-sm font-semibold text-slate-200 py-1"
+            >
+              <span>{t('CTDC Indicators')}</span>
+              <span className="text-slate-500 text-xs">{ctdcOpen ? '▲' : '▼'}</span>
+            </button>
+            {ctdcOpen && <CtdcPanel records={ctdcMatches} />}
+          </div>
+
+          <div className="mb-2">
+            <button
+              onClick={() => setDtmOpen((o) => !o)}
+              className="w-full flex items-center justify-between text-sm font-semibold text-slate-200 py-1"
+            >
+              <span>{t('Displacement context')}</span>
+              <span className="text-slate-500 text-xs">{dtmOpen ? '▲' : '▼'}</span>
+            </button>
+            {dtmOpen && <DtmPanel context={dtmContext} />}
+          </div>
+
+          <div className="mb-2">
+            <button
+              onClick={() => setAcledOpen((o) => !o)}
+              className="w-full flex items-center justify-between text-sm font-semibold text-slate-200 py-1"
+            >
+              <span>{t('Nearby conflict events')}</span>
+              <span className="text-slate-500 text-xs">{acledOpen ? '▲' : '▼'}</span>
+            </button>
+            {acledOpen && <AcledPanel events={acledEvents} />}
+          </div>
+        </>
+      )}
+
+      <ServiceSuggestions services={services} />
 
       <PortableRecordSetup
         portableRecord={portableRecord}
