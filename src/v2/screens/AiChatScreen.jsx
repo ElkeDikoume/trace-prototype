@@ -103,16 +103,16 @@ export default function AiChatScreen({ caseContext, onClose }) {
             </svg>
           </span>
           <div>
-            <h1 className="text-sm font-semibold text-slate-100">Ask TRACE AI</h1>
-            <p className="text-[11px] text-slate-500">
-              Context: <span className="tabular-nums text-slate-400">{contextId}</span>
+            <h1 className="text-sm font-semibold text-tracev2-text">Ask TRACE AI</h1>
+            <p className="text-[11px] text-tracev2-subtle">
+              Context: <span className="tabular-nums text-tracev2-muted">{contextId}</span>
             </p>
           </div>
         </div>
         <button
           onClick={onClose}
           aria-label="Close"
-          className="text-slate-500 transition-colors duration-150 hover:text-slate-200"
+          className="text-tracev2-subtle transition-colors duration-150 hover:text-tracev2-text"
         >
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
             <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -127,7 +127,7 @@ export default function AiChatScreen({ caseContext, onClose }) {
             key={q}
             onClick={() => send(q)}
             disabled={busy}
-            className="whitespace-nowrap rounded-full border border-tracev2-border bg-tracev2-card px-3 py-1.5 text-[12px] text-slate-300 transition-colors duration-150 hover:border-tracev2-accent/60 hover:text-white disabled:opacity-40"
+            className="whitespace-nowrap rounded-full border border-tracev2-border bg-tracev2-card px-3 py-1.5 text-[12px] text-tracev2-text transition-colors duration-150 hover:border-tracev2-accent/60 hover:text-white disabled:opacity-40"
           >
             {q}
           </button>
@@ -138,8 +138,8 @@ export default function AiChatScreen({ caseContext, onClose }) {
       <div ref={scrollRef} className="flex-1 overflow-y-auto scrollbar-thin px-4 py-3">
         {messages.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center px-6 text-center">
-            <p className="text-sm font-medium text-slate-300">Ask about case {contextId}</p>
-            <p className="mt-1.5 text-xs leading-relaxed text-slate-500">
+            <p className="text-sm font-medium text-tracev2-text">Ask about case {contextId}</p>
+            <p className="mt-1.5 text-xs leading-relaxed text-tracev2-subtle">
               Grounded in the case&apos;s structured data and CTDC indicators. Tap a suggestion above or type a question.
             </p>
           </div>
@@ -153,7 +153,7 @@ export default function AiChatScreen({ caseContext, onClose }) {
                       ? 'rounded-br-md bg-tracev2-accent text-white'
                       : m.error
                         ? 'rounded-bl-md border border-tracev2-risk-high/40 bg-tracev2-risk-high/10 text-tracev2-risk-high'
-                        : 'rounded-bl-md border border-tracev2-border bg-tracev2-card text-slate-100'
+                        : 'rounded-bl-md border border-tracev2-border bg-tracev2-card text-tracev2-text'
                   }`}
                 >
                   {clean(m.content)}
@@ -161,7 +161,7 @@ export default function AiChatScreen({ caseContext, onClose }) {
                     <span className="ml-0.5 inline-block h-3.5 w-[2px] translate-y-0.5 animate-pulse bg-current align-middle" />
                   )}
                   {m.streaming && !m.content && (
-                    <span className="text-slate-500">TRACE AI is thinking…</span>
+                    <span className="text-tracev2-subtle">TRACE AI is thinking…</span>
                   )}
                 </div>
               </div>
@@ -184,7 +184,7 @@ export default function AiChatScreen({ caseContext, onClose }) {
             }}
             rows={1}
             placeholder="Ask TRACE AI…"
-            className="max-h-28 flex-1 resize-none rounded-xl border border-tracev2-border bg-tracev2-card px-3.5 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 focus:border-tracev2-accent/70 focus:outline-none"
+            className="max-h-28 flex-1 resize-none rounded-xl border border-tracev2-border bg-tracev2-card px-3.5 py-2.5 text-sm text-tracev2-text placeholder:text-tracev2-subtle focus:border-tracev2-accent/70 focus:outline-none"
           />
           <button
             onClick={() => send()}
@@ -197,7 +197,7 @@ export default function AiChatScreen({ caseContext, onClose }) {
             </svg>
           </button>
         </div>
-        <p className="mt-1.5 text-center text-[10px] text-slate-600">
+        <p className="mt-1.5 text-center text-[10px] text-tracev2-subtle">
           Demo prototype · outputs reviewed by a trained caseworker.
         </p>
       </div>

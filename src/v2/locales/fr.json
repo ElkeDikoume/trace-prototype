@@ -1,0 +1,13 @@
+{
+  "app_name": "TRACE",
+  "dashboard": "Tableau de bord",
+  "new_case": "Nouveau dossier",
+  "ask_ai": "Demander à TRACE IA",
+  "documents": "Documents",
+  "settings": "Paramètres",
+  "risk_high": "Risque élevé",
+  "risk_medium": "Risque moyen",
+  "risk_low": "Risque faible",
+  "save_offline": "Enregistré hors ligne — se synchronisera une fois connecté",
+  "translate_structure": "Traduire et structurer"
+}

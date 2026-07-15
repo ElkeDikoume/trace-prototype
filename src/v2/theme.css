@@ -1,0 +1,36 @@
+/* v2 mobile-shell theme tokens. Consumed by the tracev2-* Tailwind colours
+   (see tailwind.config.js). Values are space-separated RGB channels so they
+   compose with Tailwind's <alpha-value> opacity modifiers.
+
+   Dark is the default (.trace-v2-theme-dark or no class); .trace-v2-theme-light
+   inverts the surfaces + text. Scoped to .trace-v2-root so it never leaks into
+   the existing v1 app. */
+
+.trace-v2-root,
+.trace-v2-root.trace-v2-theme-dark {
+  --tv2-bg: 15 17 23; /* #0f1117 */
+  --tv2-card: 26 32 53; /* #1a2035 */
+  --tv2-border: 42 51 80; /* #2a3350 */
+  --tv2-accent: 59 79 216; /* #3b4fd8 — same in both themes */
+  --tv2-text: 241 245 249; /* slate-100 */
+  --tv2-muted: 148 163 184; /* slate-400 */
+  --tv2-subtle: 100 116 139; /* slate-500 */
+  --tv2-risk-high: 239 68 68; /* #ef4444 */
+  --tv2-risk-medium: 245 158 11; /* #f59e0b */
+  --tv2-risk-low: 16 185 129; /* #10b981 */
+  color-scheme: dark;
+}
+
+.trace-v2-root.trace-v2-theme-light {
+  --tv2-bg: 248 250 252; /* #f8fafc */
+  --tv2-card: 255 255 255; /* #ffffff */
+  --tv2-border: 226 232 240; /* #e2e8f0 */
+  --tv2-accent: 59 79 216; /* #3b4fd8 */
+  --tv2-text: 15 23 42; /* slate-900 */
+  --tv2-muted: 71 85 105; /* slate-600 */
+  --tv2-subtle: 100 116 139; /* slate-500 */
+  --tv2-risk-high: 220 38 38; /* red-600 — a touch darker for light-bg contrast */
+  --tv2-risk-medium: 217 119 6; /* amber-600 */
+  --tv2-risk-low: 5 150 105; /* emerald-600 */
+  color-scheme: light;
+}

@@ -1,0 +1,13 @@
+{
+  "app_name": "TRACE",
+  "dashboard": "Панель",
+  "new_case": "Новое дело",
+  "ask_ai": "Спросить TRACE AI",
+  "documents": "Документы",
+  "settings": "Настройки",
+  "risk_high": "Высокий риск",
+  "risk_medium": "Средний риск",
+  "risk_low": "Низкий риск",
+  "save_offline": "Сохранено офлайн — синхронизируется при подключении",
+  "translate_structure": "Перевести и структурировать"
+}

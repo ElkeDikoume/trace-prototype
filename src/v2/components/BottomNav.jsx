@@ -34,7 +34,7 @@ function Tab({ label, active, onClick, children }) {
     <button
       onClick={onClick}
       className={`flex flex-1 flex-col items-center gap-0.5 py-2 transition-colors duration-150 ${
-        active ? 'text-tracev2-accent' : 'text-slate-500 hover:text-slate-300'
+        active ? 'text-tracev2-accent' : 'text-tracev2-subtle hover:text-tracev2-text'
       }`}
     >
       {children}
@@ -64,7 +64,7 @@ export default function BottomNav({ active, onNavigate }) {
         >
           +
         </span>
-        <span className={`text-[10px] font-medium ${active === 'intake' ? 'text-tracev2-accent' : 'text-slate-400'}`}>
+        <span className={`text-[10px] font-medium ${active === 'intake' ? 'text-tracev2-accent' : 'text-tracev2-muted'}`}>
           Intake
         </span>
       </button>

@@ -16,20 +16,20 @@ export default function CaseCard({ c, onOpen, showArrow = false }) {
             <span className="font-semibold text-sm tabular-nums">{c.id}</span>
             <span
               className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                STATUS_STYLE[c.status] || 'text-slate-300 bg-slate-400/10'
+                STATUS_STYLE[c.status] || 'text-tracev2-text bg-slate-400/10'
               }`}
             >
               {c.status}
             </span>
           </div>
-          <p className="mt-1 text-xs text-slate-400">
+          <p className="mt-1 text-xs text-tracev2-muted">
             {c.ageRange} · {c.sex === 'F' ? 'Female' : c.sex === 'M' ? 'Male' : c.sex}
           </p>
         </div>
         <div className="flex flex-col items-end gap-1 flex-shrink-0">
-          <span className="text-[10px] text-slate-500 whitespace-nowrap">{c.lastUpdated}</span>
+          <span className="text-[10px] text-tracev2-subtle whitespace-nowrap">{c.lastUpdated}</span>
           {showArrow && (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="text-slate-500">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="text-tracev2-subtle">
               <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           )}

@@ -15,7 +15,7 @@ export default function StatusBar() {
   }, []);
 
   return (
-    <div className="flex-shrink-0 flex items-center justify-between px-5 pt-2.5 pb-1 text-[11px] font-medium text-slate-300 select-none">
+    <div className="flex-shrink-0 flex items-center justify-between px-5 pt-2.5 pb-1 text-[11px] font-medium text-tracev2-text select-none">
       <span className="tabular-nums">{time}</span>
       <div className="flex items-center gap-1.5">
         {/* signal */}

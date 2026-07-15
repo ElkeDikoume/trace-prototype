@@ -32,5 +32,5 @@ export const STATUS_STYLE = {
   Urgent: 'text-tracev2-risk-high/90 bg-tracev2-risk-high/10',
   'In progress': 'text-sky-300/90 bg-sky-400/10',
   Active: 'text-tracev2-risk-low/90 bg-tracev2-risk-low/10',
-  Pending: 'text-slate-300/90 bg-slate-400/10'
+  Pending: 'text-tracev2-text/90 bg-slate-400/10'
 };

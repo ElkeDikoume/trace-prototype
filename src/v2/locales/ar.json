@@ -1,0 +1,13 @@
+{
+  "app_name": "TRACE",
+  "dashboard": "لوحة التحكم",
+  "new_case": "حالة جديدة",
+  "ask_ai": "اسأل TRACE AI",
+  "documents": "المستندات",
+  "settings": "الإعدادات",
+  "risk_high": "خطر مرتفع",
+  "risk_medium": "خطر متوسط",
+  "risk_low": "خطر منخفض",
+  "save_offline": "تم الحفظ دون اتصال — ستتم المزامنة عند الاتصال",
+  "translate_structure": "ترجمة وهيكلة"
+}

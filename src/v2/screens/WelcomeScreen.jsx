@@ -1,39 +1,37 @@
-// Screen 1 — Welcome / Splash.
-// Premium feel: the logo fades in and breathes, a halo pulses behind it, a
-// progress bar tracks the 1.5s hold, then the whole screen gracefully fades
-// out before the Dashboard appears. If a mock session already exists the parent
-// skips this screen entirely.
+// Screen 1 — Welcome / Splash + sign-in.
+// Premium splash (fade-in logo, breathing halo, pulse, progress bar) for ~1.5s,
+// then a graceful crossfade into the auth options: Sign in with Microsoft
+// (real MSAL when VITE_AZURE_CLIENT_ID is set, otherwise a "not configured"
+// toast) and a "Continue as demo user" link.
 import { useEffect, useState } from 'react';
 import traceLogo from '../../assets/trace-logo.png';
 
 const HOLD_MS = 1500;
-const FADE_MS = 450; // must match .tracev2-screen transition in index.css
 
-export default function WelcomeScreen({ onDone }) {
-  const [leaving, setLeaving] = useState(false);
+function MicrosoftLogo() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect x="0" y="0" width="8" height="8" fill="#F25022" />
+      <rect x="10" y="0" width="8" height="8" fill="#7FBA00" />
+      <rect x="0" y="10" width="8" height="8" fill="#00A4EF" />
+      <rect x="10" y="10" width="8" height="8" fill="#FFB900" />
+    </svg>
+  );
+}
+
+export default function WelcomeScreen({ onMicrosoft, onDemo, signingIn }) {
+  const [phase, setPhase] = useState('splash'); // 'splash' | 'auth'
 
   useEffect(() => {
-    // Begin the fade-out at the end of the hold, then hand off once it settles.
-    const leave = setTimeout(() => setLeaving(true), HOLD_MS);
-    const done = setTimeout(onDone, HOLD_MS + FADE_MS);
-    return () => {
-      clearTimeout(leave);
-      clearTimeout(done);
-    };
-  }, [onDone]);
+    const id = setTimeout(() => setPhase('auth'), HOLD_MS);
+    return () => clearTimeout(id);
+  }, []);
 
   return (
-    <div
-      className={`tracev2-screen flex flex-1 flex-col items-center justify-center bg-tracev2-bg px-8 text-center ${
-        leaving ? 'tracev2-screen-leaving' : ''
-      }`}
-    >
+    <div className="flex flex-1 flex-col items-center justify-center bg-tracev2-bg px-8 text-center">
       {/* Logo with breathing halo */}
       <div className="relative flex items-center justify-center">
-        <span
-          className="tracev2-halo absolute h-28 w-28 rounded-full bg-tracev2-accent blur-2xl"
-          aria-hidden="true"
-        />
+        <span className="tracev2-halo absolute h-28 w-28 rounded-full bg-tracev2-accent blur-2xl" aria-hidden="true" />
         <div className="tracev2-fade-in relative flex h-20 w-20 items-center justify-center rounded-2xl bg-white p-3 shadow-xl shadow-tracev2-accent/20">
           <img
             src={traceLogo}
@@ -46,17 +44,45 @@ export default function WelcomeScreen({ onDone }) {
         </div>
       </div>
 
-      <h1 className="tracev2-fade-up mt-6 text-4xl font-bold tracking-tight text-white" style={{ animationDelay: '0.15s' }}>
+      <h1 className="tracev2-fade-up mt-6 text-4xl font-bold tracking-tight text-tracev2-text" style={{ animationDelay: '0.15s' }}>
         TRACE
       </h1>
-      <p className="tracev2-fade-up mt-2 text-sm text-slate-400" style={{ animationDelay: '0.28s' }}>
+      <p className="tracev2-fade-up mt-2 text-sm text-tracev2-muted" style={{ animationDelay: '0.28s' }}>
         Caseworker AI · Confidential
       </p>
 
-      {/* Progress bar tracking the hold */}
-      <div className="tracev2-fade-up mt-10 h-1 w-40 overflow-hidden rounded-full bg-tracev2-card" style={{ animationDelay: '0.4s' }}>
-        <div className="tracev2-progress-bar h-full rounded-full bg-tracev2-accent" />
-      </div>
+      {phase === 'splash' ? (
+        <div className="tracev2-fade-up mt-10 h-1 w-40 overflow-hidden rounded-full bg-tracev2-card" style={{ animationDelay: '0.4s' }}>
+          <div className="tracev2-progress-bar h-full rounded-full bg-tracev2-accent" />
+        </div>
+      ) : (
+        <div className="tracev2-fade-in mt-9 flex w-full max-w-xs flex-col items-center gap-3">
+          <button
+            onClick={onMicrosoft}
+            disabled={signingIn}
+            className="flex w-full items-center justify-center gap-2.5 rounded-lg py-2.5 text-sm font-semibold text-white transition-opacity duration-150 hover:opacity-90 disabled:opacity-60"
+            style={{ backgroundColor: '#0078D4' }}
+          >
+            {signingIn ? (
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+            ) : (
+              <MicrosoftLogo />
+            )}
+            Sign in with Microsoft
+          </button>
+
+          <button
+            onClick={onDemo}
+            className="text-xs text-tracev2-muted underline-offset-2 transition-colors duration-150 hover:text-tracev2-text hover:underline"
+          >
+            Continue as demo user →
+          </button>
+
+          <p className="mt-3 text-[10px] leading-snug text-tracev2-subtle">
+            Survivors never interact with TRACE directly. All outputs are reviewed by a trained caseworker.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

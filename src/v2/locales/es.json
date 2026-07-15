@@ -1,0 +1,13 @@
+{
+  "app_name": "TRACE",
+  "dashboard": "Panel",
+  "new_case": "Nuevo caso",
+  "ask_ai": "Preguntar a TRACE IA",
+  "documents": "Documentos",
+  "settings": "Ajustes",
+  "risk_high": "Riesgo alto",
+  "risk_medium": "Riesgo medio",
+  "risk_low": "Riesgo bajo",
+  "save_offline": "Guardado sin conexión — se sincronizará al conectarse",
+  "translate_structure": "Traducir y estructurar"
+}

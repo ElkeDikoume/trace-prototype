@@ -1,0 +1,13 @@
+{
+  "app_name": "TRACE",
+  "dashboard": "仪表板",
+  "new_case": "新案例",
+  "ask_ai": "询问 TRACE AI",
+  "documents": "文档",
+  "settings": "设置",
+  "risk_high": "高风险",
+  "risk_medium": "中风险",
+  "risk_low": "低风险",
+  "save_offline": "已离线保存 — 连接后将同步",
+  "translate_structure": "翻译并结构化"
+}

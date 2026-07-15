@@ -17,18 +17,23 @@ export default {
             high: '#dc2626'
           }
         },
-        // Phase 2 (v2-demo) mobile shell palette. Kept as its own namespace so
-        // the new mobile-first screens can use their exact spec colors without
-        // disturbing the existing trace-* design system.
+        // Phase 2/3 (v2-demo) mobile shell palette. CSS-variable-backed so the
+        // light/dark toggle can swap surface + text colours at runtime (values
+        // defined in src/v2/theme.css). Own namespace so it never disturbs the
+        // existing trace-* design system. The rgb(... / <alpha-value>) form
+        // preserves Tailwind opacity modifiers (e.g. bg-tracev2-card/60).
         tracev2: {
-          bg: '#0f1117',
-          card: '#1a2035',
-          border: '#2a3350',
-          accent: '#3b4fd8',
+          bg: 'rgb(var(--tv2-bg) / <alpha-value>)',
+          card: 'rgb(var(--tv2-card) / <alpha-value>)',
+          border: 'rgb(var(--tv2-border) / <alpha-value>)',
+          accent: 'rgb(var(--tv2-accent) / <alpha-value>)',
+          text: 'rgb(var(--tv2-text) / <alpha-value>)',
+          muted: 'rgb(var(--tv2-muted) / <alpha-value>)',
+          subtle: 'rgb(var(--tv2-subtle) / <alpha-value>)',
           risk: {
-            high: '#ef4444',
-            medium: '#f59e0b',
-            low: '#10b981'
+            high: 'rgb(var(--tv2-risk-high) / <alpha-value>)',
+            medium: 'rgb(var(--tv2-risk-medium) / <alpha-value>)',
+            low: 'rgb(var(--tv2-risk-low) / <alpha-value>)'
           }
         }
       }

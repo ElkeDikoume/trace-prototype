@@ -17,7 +17,7 @@ export default function AiStrip({ onOpen }) {
           />
         </svg>
       </span>
-      <span className="text-sm text-slate-400">Ask TRACE AI…</span>
+      <span className="text-sm text-tracev2-muted">Ask TRACE AI…</span>
     </button>
   );
 }

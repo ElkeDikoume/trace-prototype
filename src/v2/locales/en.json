@@ -1,0 +1,13 @@
+{
+  "app_name": "TRACE",
+  "dashboard": "Dashboard",
+  "new_case": "New case",
+  "ask_ai": "Ask TRACE AI",
+  "documents": "Documents",
+  "settings": "Settings",
+  "risk_high": "High risk",
+  "risk_medium": "Medium risk",
+  "risk_low": "Low risk",
+  "save_offline": "Saved offline — will sync when connected",
+  "translate_structure": "Translate & Structure"
+}
