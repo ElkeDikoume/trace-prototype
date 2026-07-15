@@ -2,7 +2,7 @@ import express from 'express';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { callClaude } from '../api/_lib/anthropic.js';
+import { callClaude, streamClaude } from '../api/_lib/anthropic.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const KEY_FILE = path.resolve(__dirname, '..', 'API_KEY.txt');
@@ -44,6 +44,41 @@ app.post('/api/claude', async (req, res) => {
   } catch (err) {
     console.error('[TRACE server] Anthropic API error:', err.data || err.message);
     res.status(err.status || 500).json({ error: err.data?.error?.message || err.message || 'Failed to reach Anthropic API.' });
+  }
+});
+
+// Streaming variant used by the v2 "Ask TRACE AI" tab. Same proxy pattern as
+// /api/claude (key stays server-side), but forwards Anthropic's token deltas to
+// the client as Server-Sent Events so the chat can render as it generates.
+app.post('/api/claude/stream', async (req, res) => {
+  if (!apiKey) {
+    return res.status(500).json({ error: 'Server has no Anthropic API key configured. Check API_KEY.txt.' });
+  }
+  const { system, messages, max_tokens } = req.body || {};
+  if (!Array.isArray(messages) || messages.length === 0) {
+    return res.status(400).json({ error: 'Request must include a non-empty messages array.' });
+  }
+
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache, no-transform');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders?.();
+
+  try {
+    await streamClaude({
+      apiKey,
+      system,
+      messages,
+      max_tokens,
+      onText: (chunk) => res.write(`data: ${JSON.stringify({ text: chunk })}\n\n`)
+    });
+    res.write('data: [DONE]\n\n');
+    res.end();
+  } catch (err) {
+    console.error('[TRACE server] Anthropic stream error:', err.data || err.message);
+    // Headers are already sent, so surface the error inside the SSE channel.
+    res.write(`data: ${JSON.stringify({ error: err.data?.error?.message || err.message || 'Streaming failed.' })}\n\n`);
+    res.end();
   }
 });
 
