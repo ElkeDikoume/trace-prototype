@@ -27,9 +27,9 @@ export const DEMO_CASE_DATA = {
 
 // Raw Hausa-language intake note the guided tour loads into a blank case's
 // notes field to demonstrate live AI structuring (see App.jsx's
-// window.__traceLoadSampleNotes). Kept identical to the source text in
-// OnlineInterpretationPanel.jsx's interpretation example, so Step 3
-// (load notes) and Step 4 (interpretation panel) show the same testimony.
+// window.__traceLoadSampleNotes). Also what VoiceTextIntake.jsx's
+// collapsible translate section translates, since that section now reads
+// from the same intake textarea rather than a separate copy.
 // The debt-bondage sentence states that indicator explicitly (see prior
 // commit) so HIGH risk fires reliably. The final sentence adds her age and
 // current location explicitly, since neither was clearly stated before,
@@ -55,13 +55,17 @@ export const EXAMPLE_CASE_IBRAHIM = {
     fullName: 'Ibrahim S. (pseudonym)',
     age: '16',
     gender: 'Male',
-    nationality: 'Nigerien',
-    currentLocation: 'Diffa, Niger',
     location: 'Diffa, Niger',
-    vulnerabilityIndicators: 'Unaccompanied minor, separated from family during displacement from Lake Chad area, no documentation',
-    protectionConcerns: 'At risk of recruitment by armed actors; no guardian present; no shelter arrangement',
-    immediateNeeds: 'Emergency shelter, legal documentation, family tracing',
-    caseworkerNotes: 'Referred by UNICEF partner at Diffa transit point. No family contact established.'
+    householdSize: '1 (unaccompanied minor)',
+    displacementStatus: 'IDP',
+    protectionConcerns: 'Unaccompanied minor, separated from family during displacement from Lake Chad basin area. No documentation. At elevated risk of recruitment by non-state armed actors active in Diffa region. No guardian or responsible adult present. No shelter arrangement secured at time of referral.',
+    movementRestricted: 'Unknown',
+    documentsConfiscated: 'Yes',
+    debtOwed: 'None reported.',
+    physicalAbuse: 'Unknown',
+    sexualAbuse: 'Unknown',
+    accessToServices: 'No access to health, legal, or education services confirmed. Family tracing request initiated with ICRC. Emergency shelter referral pending.',
+    monitorNotes: 'Referred by UNICEF partner at Diffa transit point. Interviewed through Arabic interpreter. No family contact established. UASC protection referral initiated. Follow-up scheduled in 72 hours.'
   },
   chatHistory: []
 };
@@ -70,16 +74,18 @@ export const EXAMPLE_CASE_MARIECLAIRE = {
   id: 'example-marieclaire',
   formId: 'gbv_incident',
   data: {
-    fullName: 'Marie-Claire T. (pseudonym)',
-    survivorIdentifier: 'Marie-Claire T. (pseudonym)',
+    survivorIdentifier: 'MCT-2026-047',
     age: '34',
     gender: 'Female',
-    nationality: 'Congolese',
-    currentLocation: 'Bangui, CAR',
+    incidentDate: '2026-06-28',
+    incidentLocation: 'Transit route, DRC–CAR border crossing',
     incidentType: 'Sexual assault',
-    incidentLocation: 'Transit shelter, Bangui',
-    immediateNeeds: 'Medical care, psychosocial support, legal aid',
-    caseworkerNotes: 'Survivor arrived at partner shelter in Bangui after displacement from DRC. Incident occurred during transit. Has two children, ages 4 and 7, currently with her.'
+    perpetratorRelationship: 'Unknown',
+    incidentDescription: 'Survivor reports sexual assault during transit from DRC to CAR, perpetrated by an unknown individual at an informal border crossing point. Incident occurred approximately two weeks prior to arrival at partner shelter in Bangui. Survivor was traveling with her two children (ages 4 and 7), who were present but physically unharmed. Survivor did not report the incident at the time due to fear of authorities and lack of access to services.',
+    medicalAttention: 'Referred',
+    safetyRisk: 'No',
+    referralsMade: 'Medical referral to Bangui General Hospital, reproductive health unit. Psychosocial support referral to IRC Bangui. Legal aid referral initiated with AFJB. Children referred to UNICEF child protection partner for wellbeing assessment.',
+    caseworkerNotes: 'Survivor arrived at partner shelter in Bangui following displacement from eastern DRC. Presents as stable but distressed. Children are with her and appear physically well. Survivor expressed reluctance to pursue formal legal process; decision documented and respected. Consent obtained for data sharing with referral agencies.'
   },
   chatHistory: []
 };

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { LANGUAGES, isSpeechRecognitionSupported, createRecognizer } from '../lib/speech.js';
-import { structureNotesIntoForm, interpretAndStructureNotes } from '../lib/claudeClient.js';
+import { structureNotesIntoForm, interpretAndStructureNotes, interpretToEnglish } from '../lib/claudeClient.js';
 import { DEMO_INTAKE_NOTES } from '../data/demoCase.js';
 import { useI18n } from '../lib/i18n.jsx';
 
@@ -27,6 +27,9 @@ export default function VoiceTextIntake({ form, onStructured, onlineMode }) {
   const [speaking, setSpeaking] = useState(false);
   const recognizerRef = useRef(null);
   const speechSupported = isSpeechRecognitionSupported();
+  const [showTranslate, setShowTranslate] = useState(false);
+  const [translateBusy, setTranslateBusy] = useState(false);
+  const [translateOutput, setTranslateOutput] = useState('');
 
   const availableLanguages = onlineMode ? LANGUAGES : LANGUAGES.filter((l) => !l.local);
   const selectedLanguage = LANGUAGES.find((l) => l.code === language);
@@ -137,6 +140,37 @@ export default function VoiceTextIntake({ form, onStructured, onlineMode }) {
     }
   }
 
+  async function handleTranslate() {
+    if (!text.trim()) return;
+    setTranslateBusy(true);
+    setTranslateOutput('');
+    try {
+      const result = await interpretToEnglish({ freeText: text, languageLabel: 'Hausa' });
+      setTranslateOutput(result);
+    } catch (err) {
+      setError(err.message || t('Failed to translate.'));
+    } finally {
+      setTranslateBusy(false);
+    }
+  }
+
+  // Lets the guided tour trigger the same standalone translate call as the
+  // real button below, and force the collapsible section open before
+  // Shepherd's 'interpret-prompt' step attaches to it (it's collapsed by
+  // default, so the real button doesn't exist in the DOM until expanded).
+  // Re-registered every render so the tour always calls the closure with
+  // the current text, not a stale one from mount.
+  useEffect(() => {
+    window.__traceInterpretNow = handleTranslate;
+    window.__traceClearTranslation = () => setTranslateOutput('');
+    window.__traceShowTranslate = () => setShowTranslate(true);
+    return () => {
+      delete window.__traceInterpretNow;
+      delete window.__traceClearTranslation;
+      delete window.__traceShowTranslate;
+    };
+  });
+
   return (
     <div data-tutorial="voice-intake" className="bg-trace-800 border border-trace-700 rounded-lg p-3 mb-4">
       <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
@@ -237,6 +271,48 @@ export default function VoiceTextIntake({ form, onStructured, onlineMode }) {
           <span className="text-xs text-slate-500">{t('AI structuring requires connectivity.')}</span>
         )}
       </div>
+
+      {onlineMode && (
+        <div data-tutorial="online-interpretation" className="mt-2 border-t border-trace-700 pt-2">
+          <button
+            onClick={() => { setShowTranslate((o) => !o); setTranslateOutput(''); }}
+            className="text-xs text-slate-400 hover:text-slate-200 flex items-center gap-1.5"
+          >
+            🌐 {showTranslate ? t('Hide translation') : t('Translate intake notes')}
+          </button>
+          {showTranslate && (
+            <div className="mt-2">
+              <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-1 rounded-full bg-trace-800 border border-trace-700 text-trace-accent mb-2">
+                Hausa <span aria-hidden="true">⇄</span> English
+              </div>
+              <div className="flex items-center gap-2 mb-2">
+                <button
+                  data-tutorial="interpret-button"
+                  onClick={handleTranslate}
+                  disabled={translateBusy}
+                  className="px-3 py-1.5 rounded-md text-sm font-medium bg-trace-accent text-white hover:bg-sky-500 disabled:opacity-50"
+                >
+                  {translateBusy ? t('Translating…') : `✨ ${t('Translate')}`}
+                </button>
+                {translateBusy && <span className="text-xs text-slate-400">{t('This takes a few seconds.')}</span>}
+              </div>
+              {translateOutput && (
+                <div className="bg-trace-900 border border-trace-700 rounded-md p-2">
+                  <div className="text-[10px] uppercase tracking-wide text-slate-500 mb-1">{t('Translated output (English)')}</div>
+                  <p className="text-sm text-slate-200 whitespace-pre-wrap">{translateOutput}</p>
+                  <button
+                    onClick={() => setText(translateOutput)}
+                    className="mt-2 w-full px-3 py-1.5 rounded-md text-sm font-medium bg-trace-accent text-white hover:bg-sky-500"
+                  >
+                    {t('Use as intake notes →')}
+                  </button>
+                  <p className="text-[11px] text-slate-500 mt-1">{t('Powered by Claude API in this prototype · Meta SeamlessM4T in full deployment.')}</p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       {error && <p className="text-xs text-red-400 mt-2">{error}</p>}
     </div>

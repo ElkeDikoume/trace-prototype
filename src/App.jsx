@@ -27,7 +27,6 @@ import FollowUpBanner from './components/FollowUpBanner.jsx';
 import TutorialOverlay from './components/TutorialOverlay.jsx';
 import DocumentsPanel from './components/DocumentsPanel.jsx';
 import LanguageSelector from './components/LanguageSelector.jsx';
-import OnlineInterpretationPanel from './components/OnlineInterpretationPanel.jsx';
 import WelcomeSplash from './components/WelcomeSplash.jsx';
 
 const TUTORIAL_SEEN_KEY = 'trace_tutorial_seen';
@@ -643,11 +642,6 @@ export default function App() {
             followUpReminder={activeCase?.followUpReminder}
             onToggleFollowUp={handleToggleFollowUp}
             onStartDemo={handleStartDemo}
-          />
-
-          <OnlineInterpretationPanel
-            onlineMode={onlineMode}
-            onUseAsNotes={setCaseworkerNotes}
           />
         </div>
       )}

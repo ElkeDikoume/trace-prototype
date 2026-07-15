@@ -37,10 +37,16 @@ function clearNotesIfSeededByTour() {
 // Clears a stale translation from a previous pass through this step, so
 // re-entering it (via Previous) always starts from the un-translated state
 // rather than showing an answer the judge hasn't actually triggered yet.
+// Also force-expands the translate section, since it's collapsed by
+// default, so the '[data-tutorial="interpret-button"]' this step attaches
+// to doesn't exist in the DOM until the judge (or the tour) opens it.
 function clearTranslationIfSeededByTour() {
   return new Promise((resolve) => {
     window.__traceClearTranslation?.();
-    resolve();
+    window.__traceShowTranslate?.();
+    // Give the browser a full paint cycle to render the now-expanded
+    // section before Shepherd measures the button to attach to.
+    setTimeout(resolve, 150);
   });
 }
 
@@ -190,35 +196,10 @@ const STEP_DEFS = [
     ]
   },
   {
-    id: 'interpret-prompt',
-    attachTo: { element: '[data-tutorial="interpret-button"]', on: 'right' },
-    title: 'Verify meaning before structuring',
-    text: "Falmata spoke her intake in Hausa. TRACE will translate it into English so the caseworker can verify meaning before structuring, preserving the survivor's voice and avoiding double translation. Click '✨ Translate' now. This takes a few seconds.",
-    beforeShowPromise: clearTranslationIfSeededByTour,
-    customButtons: (tour) => [
-      { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
-      { text: 'End Tour', action: () => tour.cancel(), classes: 'trace-shepherd-btn-ghost' },
-      {
-        text: "I've clicked Translate →",
-        action: async () => {
-          await window.__traceInterpretNow?.();
-          tour.next();
-        },
-        classes: 'trace-shepherd-btn-primary'
-      }
-    ]
-  },
-  {
-    id: 'interpretation',
-    attachTo: { element: '[data-tutorial="online-interpretation"]', on: 'top' },
-    title: 'Hausa → English translation',
-    text: "TRACE translated Hausa field notes into English in seconds. Hausa has 50+ million speakers across the Sahel, yet very few widely adopted humanitarian tools serve them. In production: Meta SeamlessM4T handles Hausa, Fulfulde, and Zarma. For this pilot, Sub-Saharan African languages were prioritized: Hausa, Fulfulde, and Zarma. Additional language packs can be added in production."
-  },
-  {
     id: 'structure-cta',
     attachTo: { element: '[data-tutorial="structure-button"]', on: 'bottom' },
     title: 'Structure with AI',
-    text: "Click '✨ Structure with AI' now to continue. TRACE will map the interpreted notes into the correct IOM HTCDS form fields. This takes about 30 seconds, you'll see the fields populate as TRACE works.",
+    text: "Click '✨ Structure with AI' now. TRACE maps the spoken notes directly into the correct IOM HTCDS form fields. For local-language notes like Hausa, it translates and structures in a single step. This takes about 30 seconds.",
     customButtons: (tour) => [
       { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
       { text: 'End Tour', action: () => tour.cancel(), classes: 'trace-shepherd-btn-ghost' },
@@ -239,8 +220,33 @@ const STEP_DEFS = [
     // The Hausa demo notes never actually state a name, only origin, age,
     // and location, so claiming "every field" overclaims and Full Name
     // legitimately stays blank, matching TRACE's "don't invent data" ethos.
-    text: 'Key demographic fields were populated from the spoken notes in about 5 seconds. Age and Current Location were extracted directly from what was said, the caseworker can edit any field, including adding a name, before saving.',
+    text: 'Key demographic fields were populated from the spoken notes in about 5 seconds. Age and Current Location were extracted directly from what was said. The caseworker can edit any field, including adding a name, before saving.',
     beforeShowPromise: waitForStructuring
+  },
+  {
+    id: 'interpret-prompt',
+    attachTo: { element: '[data-tutorial="interpret-button"]', on: 'right' },
+    title: 'Standalone translation',
+    text: "TRACE can also translate local-language notes independently, without restructuring the form. Useful when a caseworker needs to share Falmata's Hausa notes in English or verify meaning. Click '✨ Translate' to see it in seconds.",
+    beforeShowPromise: clearTranslationIfSeededByTour,
+    customButtons: (tour) => [
+      { text: 'Previous', action: () => tour.back(), classes: 'trace-shepherd-btn-secondary' },
+      { text: 'End Tour', action: () => tour.cancel(), classes: 'trace-shepherd-btn-ghost' },
+      {
+        text: "I've clicked Translate →",
+        action: async () => {
+          await window.__traceInterpretNow?.();
+          tour.next();
+        },
+        classes: 'trace-shepherd-btn-primary'
+      }
+    ]
+  },
+  {
+    id: 'interpretation',
+    attachTo: { element: '[data-tutorial="online-interpretation"]', on: 'top' },
+    title: 'Hausa → English translation',
+    text: "TRACE translated Hausa field notes into English in seconds. Hausa has 50+ million speakers across the Sahel, yet very few widely adopted humanitarian tools serve them. In production, Meta SeamlessM4T handles Hausa, Fulfulde, and Zarma. Additional language packs can be added without changing the core system."
   },
   {
     id: 'risk-flag',
