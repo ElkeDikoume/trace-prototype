@@ -15,10 +15,10 @@ function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export default function VoiceTextIntake({ form, onStructured, onlineMode }) {
+export default function VoiceTextIntake({ form, onStructured, onlineMode, initialText }) {
   const { t, lang } = useI18n();
   const [language, setLanguage] = useState(() => UI_LANG_TO_SPEECH_CODE[lang] || 'en-US');
-  const [text, setText] = useState('');
+  const [text, setText] = useState(initialText || '');
   const [listening, setListening] = useState(false);
   const [busy, setBusy] = useState(false);
   const [interpreting, setInterpreting] = useState(false);

@@ -9,6 +9,7 @@ import MissingInfoPrompts from './MissingInfoPrompts.jsx';
 import PortableRecordSetup from './PortableRecordSetup.jsx';
 import FollowUpReminder from './FollowUpReminder.jsx';
 import { getMissingIndicatorFields } from '../data/riskIndicators.js';
+import { DEMO_INTAKE_NOTES } from '../data/demoCase.js';
 import { useI18n } from '../lib/i18n.jsx';
 
 function Field({ field, value, onChange }) {
@@ -114,7 +115,7 @@ export default function ActiveForm({
       </div>
 
       {!form.riskEligible && (
-        <VoiceTextIntake form={form} onStructured={onStructured} onlineMode={onlineMode} />
+        <VoiceTextIntake key={caseId} form={form} onStructured={onStructured} onlineMode={onlineMode} initialText={caseId === 'AK-001' ? DEMO_INTAKE_NOTES : ''} />
       )}
 
       {form.riskEligible && <RiskFlag riskResult={riskResult} onAskWhy={onAskWhy} caseId={caseId} />}
@@ -148,7 +149,7 @@ export default function ActiveForm({
       )}
 
       {form.riskEligible && (
-        <VoiceTextIntake form={form} onStructured={onStructured} onlineMode={onlineMode} />
+        <VoiceTextIntake key={caseId} form={form} onStructured={onStructured} onlineMode={onlineMode} initialText={caseId === 'AK-001' ? DEMO_INTAKE_NOTES : ''} />
       )}
 
       {form.riskEligible && (
