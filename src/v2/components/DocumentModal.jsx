@@ -41,28 +41,22 @@ export default function DocumentModal({ open, docType, caseData, targetService, 
 
   if (!open) return null;
 
-  const caseNumber = (caseData?.id || caseData?.caseNumber || 'case').replace(/^#/, '');
-  const fileName = `${caseNumber}_${docType}.txt`;
-
-  async function handleCopy() {
-    try {
-      await navigator.clipboard.writeText(text);
+  function handleCopy() {
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => {
       setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    } catch {
-      /* clipboard may be blocked; ignore */
-    }
+      setTimeout(() => setCopied(false), 1800);
+    });
   }
 
   function handleDownload() {
-    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    if (!text) return;
+    const blob = new Blob([text], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
+    a.download = `TRACE_${caseData?.id || 'case'}_${docType}_${new Date().toISOString().slice(0, 10)}.txt`;
     a.click();
-    a.remove();
     URL.revokeObjectURL(url);
   }
 
@@ -106,20 +100,31 @@ export default function DocumentModal({ open, docType, caseData, targetService, 
 
       {/* Actions */}
       <div className="flex-shrink-0 border-t border-tracev2-border px-3 py-3 pb-[max(env(safe-area-inset-bottom),12px)]">
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
           <button
             onClick={handleCopy}
             disabled={!text || streaming}
-            className="flex-1 rounded-xl border border-tracev2-border py-2.5 text-sm font-medium text-tracev2-text transition-colors duration-150 hover:border-tracev2-muted disabled:opacity-40"
+            className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2.5 text-sm font-semibold transition-colors duration-150 ${copied ? 'bg-tracev2-risk-low text-white' : 'bg-tracev2-card border border-tracev2-border text-tracev2-text hover:border-tracev2-muted disabled:opacity-40'}`}
           >
-            {copied ? 'Copied ✓' : 'Copy'}
+            {copied ? (
+              <>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                Copied
+              </>
+            ) : (
+              <>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+                Copy
+              </>
+            )}
           </button>
           <button
             onClick={handleDownload}
             disabled={!text || streaming}
-            className="flex-1 rounded-xl bg-tracev2-accent py-2.5 text-sm font-semibold text-white transition-colors duration-150 hover:bg-tracev2-accent/90 disabled:opacity-40"
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-tracev2-border bg-tracev2-card py-2.5 text-sm font-semibold text-tracev2-text hover:border-tracev2-muted disabled:opacity-40"
           >
-            Download .txt
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            Download
           </button>
         </div>
         <p className="mt-2 text-center text-[10px] text-tracev2-subtle">Review all AI-generated content before sending.</p>
