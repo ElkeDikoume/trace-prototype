@@ -61,6 +61,7 @@ function Shell() {
   const [supervisorMode, setSupervisorMode] = useState(false);
   const [aiOpen, setAiOpen] = useState(false);
   const [cases, setCases] = useState([]);
+  const [privacyMode, setPrivacyMode] = useState(false);
   const resetRan = useRef(false);
 
   // ?reset — unchanged from earlier phases. Guarded so it runs once.
@@ -226,7 +227,10 @@ function Shell() {
 
   return (
     <PhoneFrame theme={theme} dir={dir}>
-      <StatusBar />
+      <StatusBar privacyMode={privacyMode} onPrivacyToggle={() => setPrivacyMode((p) => !p)} />
+
+      {/* Privacy overlay — blurs all case content when active */}
+      <div className={`flex flex-1 flex-col overflow-hidden transition-all duration-200 ${privacyMode ? 'blur-xl select-none pointer-events-none' : ''}`}>
 
       {screen === 'dashboard' && (
         <DashboardScreen
@@ -265,7 +269,9 @@ function Shell() {
       )}
       {screen === 'docs' && <DocsScreen />}
 
-      {/* Persistent chrome */}
+      </div>{/* end privacy wrapper */}
+
+      {/* Persistent chrome — intentionally outside privacy wrapper */}
       <AiStrip onOpen={() => setAiOpen(true)} />
       <BottomNav active={activeTab} onNavigate={handleNav} />
 

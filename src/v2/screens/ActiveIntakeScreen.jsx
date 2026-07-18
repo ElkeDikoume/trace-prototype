@@ -6,6 +6,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import RiskBadge from '../components/RiskBadge.jsx';
+import GapDetector from '../components/GapDetector.jsx';
 import StructuredPreviewModal from '../components/StructuredPreviewModal.jsx';
 import { useToast } from '../lib/ToastContext.jsx';
 import { structureIntake, structuredToFields } from '../lib/structure.js';
@@ -252,6 +253,9 @@ export default function ActiveIntakeScreen({ caseId, initialNotes = '', riskLeve
             Voice input isn&apos;t supported in this browser. Try Chrome, or type the note above.
           </p>
         )}
+
+        {/* Live CTDC gap detection */}
+        <GapDetector notes={notes} />
 
         {/* Action buttons */}
         <div className="mt-3 flex gap-2">

@@ -4,7 +4,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { streamDocument, docLabel } from '../lib/documents.js';
 
-export default function DocumentModal({ open, docType, caseData, onClose }) {
+export default function DocumentModal({ open, docType, caseData, targetService, onClose }) {
   const [text, setText] = useState('');
   const [streaming, setStreaming] = useState(false);
   const [error, setError] = useState('');
@@ -24,6 +24,7 @@ export default function DocumentModal({ open, docType, caseData, onClose }) {
     streamDocument({
       docType,
       caseData,
+      targetService,
       signal: controller.signal,
       onToken: (chunk) => setText((prev) => prev + chunk)
     })
@@ -33,7 +34,8 @@ export default function DocumentModal({ open, docType, caseData, onClose }) {
       .finally(() => setStreaming(false));
 
     return () => controller.abort();
-  }, [open, docType, caseData]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, docType, caseData, targetService]);
 
   if (!open) return null;
 

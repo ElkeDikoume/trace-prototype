@@ -7,7 +7,8 @@ import { streamCaseChat } from './claudeStream.js';
 export const DOC_TYPES = [
   { id: 'referral', label: 'Referral Letter' },
   { id: 'summary', label: 'Case Summary' },
-  { id: 'htcds', label: 'IOM HTCDS Form' }
+  { id: 'htcds', label: 'IOM HTCDS Form' },
+  { id: 'service_finder', label: 'Find a Service', isMeta: true }
 ];
 
 export const docLabel = (id) => DOC_TYPES.find((d) => d.id === id)?.label || id;
@@ -24,10 +25,26 @@ ${caseData?.notes || '(none)'}`;
 
 const BASE_RULES = `Rules: use the case ID only, never a real personal name. Do not invent facts not present in the case data. Output plain text only (no markdown headers, no code fences), suitable for a monospace document view.`;
 
-function systemFor(docType, caseData) {
+function serviceBlock(service) {
+  if (!service) return '';
+  return `\nTarget referral agency:
+Name: ${service.name}
+Type: ${service.type}${service.secondaryType ? ' / ' + service.secondaryType : ''}
+Location: ${service.location}
+Address: ${service.address || 'N/A'}
+Phone: ${service.contact || 'N/A'}
+Email: ${service.email || 'N/A'}
+Description: ${service.description}`;
+}
+
+function systemFor(docType, caseData, targetService) {
   const ctx = caseContextBlock(caseData);
   if (docType === 'referral') {
-    return `You are TRACE, drafting a formal service referral letter for a frontline anti-trafficking caseworker. Produce a short, formally structured referral letter: date placeholder, recipient agency placeholder, a confidential case summary, the reason for referral, requested services, and a caseworker sign-off placeholder. ${BASE_RULES}\n\n${ctx}`;
+    const svc = serviceBlock(targetService);
+    const recipientNote = targetService
+      ? `Address the letter to ${targetService.shortName} (${targetService.type}) at ${targetService.location}.`
+      : 'Use a placeholder for the recipient agency.';
+    return `You are TRACE, drafting a formal service referral letter for a frontline anti-trafficking caseworker. ${recipientNote} Produce a short, formally structured referral letter: today's date, recipient agency name and address, a confidential case summary, the reason for referral, specific services requested, and a caseworker sign-off placeholder. ${BASE_RULES}\n\n${ctx}${svc}`;
   }
   if (docType === 'summary') {
     return `You are TRACE, writing a narrative case summary for supervision review / case handoff. Three short paragraphs: (1) who the survivor is and how the case came to attention, (2) the trafficking/protection concern and risk assessment, (3) current status and recommended next steps. ${BASE_RULES}\n\n${ctx}`;
@@ -36,9 +53,9 @@ function systemFor(docType, caseData) {
   return `You are TRACE, formatting this case as an IOM Human Trafficking Case Data Standards (HTCDS) intake form. Output a clean labelled field list, one field per line (Case reference, Date, Age, Sex, Nationality, Location, Recruitment method, Control method, Type of exploitation, Risk level, CTDC indicators, Presenting needs, Case status). Write "Not recorded" for any field without data. ${BASE_RULES}\n\n${ctx}`;
 }
 
-export function streamDocument({ docType, caseData, onToken, signal }) {
+export function streamDocument({ docType, caseData, targetService, onToken, signal }) {
   return streamCaseChat({
-    system: systemFor(docType, caseData),
+    system: systemFor(docType, caseData, targetService),
     history: [],
     question: 'Generate the document now.',
     max_tokens: 1500,

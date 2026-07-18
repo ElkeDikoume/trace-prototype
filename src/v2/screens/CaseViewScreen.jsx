@@ -5,6 +5,7 @@
 import { useState } from 'react';
 import RiskBadge from '../components/RiskBadge.jsx';
 import DocumentModal from '../components/DocumentModal.jsx';
+import ServiceFinderModal from '../components/ServiceFinderModal.jsx';
 import { RISK_BANNER, RISK_LABEL } from '../theme.js';
 import { DOC_TYPES } from '../lib/documents.js';
 import { toggleTask } from '../lib/caseStore.js';
@@ -37,6 +38,8 @@ export default function CaseViewScreen({ caseData, onBack, onAddSessionNote, onT
   const [expandedSession, setExpandedSession] = useState(0);
   const [doc, setDoc] = useState({ open: false, type: null });
   const [riskOpen, setRiskOpen] = useState(false);
+  const [serviceFinder, setServiceFinder] = useState(false);
+  const [selectedService, setSelectedService] = useState(null);
 
   const s = caseData?.structuredData || {};
   const risk = caseData?.riskLevel || s.risk_level || 'medium';
@@ -189,21 +192,65 @@ export default function CaseViewScreen({ caseData, onBack, onAddSessionNote, onT
 
         {tab === 'documents' && (
           <div>
-            <div className="space-y-2">
-              {DOC_TYPES.map((d) => (
-                <button
-                  key={d.id}
-                  onClick={() => setDoc({ open: true, type: d.id })}
-                  className="flex w-full items-center justify-between rounded-xl border border-tracev2-border bg-tracev2-card px-3.5 py-3 text-start transition-colors duration-150 hover:border-tracev2-accent/60"
-                >
-                  <span className="text-sm font-medium text-tracev2-text">{d.label}</span>
-                  <span className="text-tracev2-accent">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                      <path d="M12 4v12m0 0l-4-4m4 4l4-4M5 20h14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </span>
+            {/* Selected service banner */}
+            {selectedService && (
+              <div className="mb-3 flex items-center justify-between rounded-xl border border-tracev2-accent/40 bg-tracev2-accent/10 px-3 py-2">
+                <div>
+                  <div className="text-[10px] uppercase tracking-wide text-tracev2-accent">Referral to</div>
+                  <div className="text-sm font-semibold text-tracev2-text">{selectedService.shortName}</div>
+                  <div className="text-[11px] text-tracev2-muted">{selectedService.type} · {selectedService.location}</div>
+                </div>
+                <button onClick={() => setSelectedService(null)} className="text-tracev2-subtle hover:text-tracev2-muted">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  </svg>
                 </button>
-              ))}
+              </div>
+            )}
+
+            <div className="space-y-2">
+              {DOC_TYPES.map((d) => {
+                if (d.isMeta) {
+                  // "Find a Service" opens the service finder
+                  return (
+                    <button
+                      key={d.id}
+                      onClick={() => setServiceFinder(true)}
+                      className="flex w-full items-center justify-between rounded-xl border border-tracev2-border bg-tracev2-card px-3.5 py-3 text-start transition-colors duration-150 hover:border-tracev2-accent/60"
+                    >
+                      <div>
+                        <span className="text-sm font-medium text-tracev2-text">{d.label}</span>
+                        {!selectedService && (
+                          <span className="ml-2 text-[10px] text-tracev2-subtle">Pre-fill referral with partner details</span>
+                        )}
+                      </div>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="text-tracev2-accent">
+                        <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="1.8" />
+                        <path d="m21 21-4.35-4.35" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                      </svg>
+                    </button>
+                  );
+                }
+                return (
+                  <button
+                    key={d.id}
+                    onClick={() => setDoc({ open: true, type: d.id })}
+                    className="flex w-full items-center justify-between rounded-xl border border-tracev2-border bg-tracev2-card px-3.5 py-3 text-start transition-colors duration-150 hover:border-tracev2-accent/60"
+                  >
+                    <div>
+                      <span className="text-sm font-medium text-tracev2-text">{d.label}</span>
+                      {d.id === 'referral' && selectedService && (
+                        <span className="ml-2 text-[10px] text-tracev2-accent">→ {selectedService.shortName}</span>
+                      )}
+                    </div>
+                    <span className="text-tracev2-accent">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 4v12m0 0l-4-4m4 4l4-4M5 20h14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </span>
+                  </button>
+                );
+              })}
             </div>
             <p className="mt-3 text-center text-[11px] text-tracev2-subtle">Review all AI-generated content before sending.</p>
           </div>
@@ -214,7 +261,18 @@ export default function CaseViewScreen({ caseData, onBack, onAddSessionNote, onT
         open={doc.open}
         docType={doc.type}
         caseData={caseData}
+        targetService={selectedService}
         onClose={() => setDoc({ open: false, type: null })}
+      />
+
+      <ServiceFinderModal
+        open={serviceFinder}
+        caseData={caseData}
+        onClose={() => setServiceFinder(false)}
+        onSelect={(svc) => {
+          setSelectedService(svc);
+          setServiceFinder(false);
+        }}
       />
     </div>
   );
