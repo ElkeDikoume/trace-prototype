@@ -217,9 +217,17 @@ export default function DashboardScreen({
       </div>
       <div className="mt-2 space-y-2">
         {cases.length === 0 ? (
-          <p className="rounded-xl border border-dashed border-tracev2-border px-3 py-6 text-center text-xs text-tracev2-subtle">
-            No cases yet. Start a new intake to add one.
-          </p>
+          <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-tracev2-border px-3 py-8 text-center">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="text-tracev2-border">
+              <path
+                d="M3 7a2 2 0 0 1 2-2h3.6l2 2H19a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <p className="text-xs text-tracev2-subtle">No cases yet. Start a new intake.</p>
+          </div>
         ) : (
           cases.slice(0, 3).map((c) => <CaseCard key={c.id} c={c} onOpen={onOpenCase} />)
         )}

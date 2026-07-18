@@ -45,6 +45,7 @@ export default function ActiveIntakeScreen({ caseId, initialNotes = '', riskLeve
   const [speechUnsupported, setSpeechUnsupported] = useState(false);
   const [structuring, setStructuring] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [fields, setFields] = useState([]);
   const [structured, setStructured] = useState(null);
@@ -114,7 +115,7 @@ export default function ActiveIntakeScreen({ caseId, initialNotes = '', riskLeve
   }
 
   async function handleStructure() {
-    if (!notes.trim() || structuring) return;
+    if (!notes.trim() || structuring || saved) return;
 
     // Offline: don't attempt Claude — queue the raw notes for later.
     if (!navigator.onLine) {
@@ -182,7 +183,13 @@ export default function ActiveIntakeScreen({ caseId, initialNotes = '', riskLeve
     else show('Saved locally (demo mode).', 'info');
 
     onSaved?.();
-    onBack?.();
+
+    // Brief green "✓ Saved" success state on the action button, then return.
+    setSaved(true);
+    setTimeout(() => {
+      setSaved(false);
+      onBack?.();
+    }, 1500);
   }
 
   return (
@@ -272,10 +279,14 @@ export default function ActiveIntakeScreen({ caseId, initialNotes = '', riskLeve
           </button>
           <button
             onClick={handleStructure}
-            disabled={!notes.trim() || structuring}
-            className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-tracev2-accent py-3 text-sm font-semibold text-white transition-colors duration-150 hover:bg-tracev2-accent/90 disabled:opacity-40"
+            disabled={!notes.trim() || structuring || saved}
+            className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-3 text-sm font-semibold text-white transition-colors duration-150 disabled:opacity-40 ${
+              saved ? 'bg-tracev2-risk-low disabled:opacity-100' : 'bg-tracev2-accent hover:bg-tracev2-accent/90'
+            }`}
           >
-            {structuring ? (
+            {saved ? (
+              <>✓ Saved</>
+            ) : structuring ? (
               <>
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
                 Structuring…

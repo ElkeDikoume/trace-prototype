@@ -84,7 +84,7 @@ export default function CaseViewScreen({ caseData, onBack, onAddSessionNote, onT
         ))}
       </div>
 
-      <div className="flex-1 overflow-y-auto scrollbar-thin px-4 py-3">
+      <div key={tab} className="flex-1 overflow-y-auto scrollbar-thin px-4 py-3 animate-tracev2-fadeIn">
         {tab === 'overview' && (
           <div>
             {/* Risk banner */}

@@ -34,3 +34,18 @@
   --tv2-risk-low: 5 150 105; /* emerald-600 */
   color-scheme: light;
 }
+
+/* Subtle content fade-in (used on case-view tab switches). */
+@keyframes tracev2-fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-tracev2-fadeIn {
+  animation: tracev2-fadeIn 0.18s ease-out both;
+}
