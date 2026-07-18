@@ -3,14 +3,12 @@
 // Overview tab shows structured data + a follow-up task checklist, Notes lists
 // sessions, Documents streams AI-generated documents.
 import { useState } from 'react';
-import RiskBadge from '../components/RiskBadge.jsx';
 import DocumentModal from '../components/DocumentModal.jsx';
 import ServiceFinderModal from '../components/ServiceFinderModal.jsx';
-import { RISK_BANNER, RISK_LABEL } from '../theme.js';
+import { RISK_BANNER, RISK_LABEL, RISK_TEXT, RISK_DOT } from '../theme.js';
 import { DOC_TYPES } from '../lib/documents.js';
 import { toggleTask, getSessions } from '../lib/caseStore.js';
 import { streamCaseChat } from '../lib/claudeStream.js';
-import { mockRiskIndicators } from '../mockData.js';
 
 const TABS = [
   { id: 'overview', label: 'Overview' },
@@ -22,6 +20,16 @@ function sexLabel(s) {
   if (s === 'F') return 'Female';
   if (s === 'M') return 'Male';
   return s || 'Not recorded';
+}
+
+function riskIndicators(caseData) {
+  const indicators = caseData?.ctdcIndicators || [];
+  const s = caseData?.structuredData || {};
+  const extra = [];
+  if (s.control_method) extra.push(`Control method: ${s.control_method}`);
+  if (s.recruitment_method) extra.push(`Recruitment: ${s.recruitment_method}`);
+  if (s.exploitation_type) extra.push(`Exploitation type: ${s.exploitation_type}`);
+  return [...indicators, ...extra].slice(0, 8);
 }
 
 function Row({ label, value }) {
@@ -101,14 +109,45 @@ export default function CaseViewScreen({ caseData, onBack, onAddSessionNote, onT
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       {/* Header */}
-      <div className="flex flex-shrink-0 items-center justify-between px-4 py-2">
-        <button onClick={onBack} aria-label="Back" className="text-tracev2-muted transition-colors duration-150 hover:text-tracev2-text">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" className="rtl:-scale-x-100">
-            <path d="M15 6l-6 6 6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
-        <div className="text-sm font-semibold tabular-nums text-tracev2-text">{caseData?.id}</div>
-        <RiskBadge open={riskOpen} onToggle={() => setRiskOpen((o) => !o)} onClose={() => setRiskOpen(false)} level={risk} indicators={indicators.length ? indicators : mockRiskIndicators} />
+      <div className="flex-shrink-0 px-4 py-2">
+        <div className="flex items-center justify-between">
+          <button onClick={onBack} aria-label="Back" className="text-tracev2-muted transition-colors duration-150 hover:text-tracev2-text">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" className="rtl:-scale-x-100">
+              <path d="M15 6l-6 6 6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+          <div className="text-sm font-semibold tabular-nums text-tracev2-text">{caseData?.id}</div>
+          <button onClick={() => setRiskOpen((o) => !o)} className="flex items-center gap-1" aria-label="Risk indicators">
+            <span className={`flex items-center gap-1 rounded-full border border-tracev2-border bg-tracev2-card px-2 py-0.5 text-[10px] font-semibold ${RISK_TEXT[risk]}`}>
+              <span className={`h-1.5 w-1.5 rounded-full ${RISK_DOT[risk]}`} />
+              {RISK_LABEL[risk]}
+            </span>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" className={`text-tracev2-subtle transition-transform duration-150 ${riskOpen ? 'rotate-180' : ''}`}>
+              <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+        </div>
+
+        {riskOpen && (
+          <div className="mt-2 rounded-xl border border-tracev2-border bg-tracev2-card p-3">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-tracev2-subtle mb-2">Risk indicators</p>
+            {riskIndicators(caseData).length === 0 ? (
+              <p className="text-xs text-tracev2-subtle">No CTDC indicators recorded.</p>
+            ) : (
+              <div className="space-y-1.5">
+                {riskIndicators(caseData).map((ind, i) => (
+                  <div key={i} className="flex items-start gap-2">
+                    <span className={`mt-0.5 h-2 w-2 flex-shrink-0 rounded-full ${caseData.riskLevel === 'high' ? 'bg-tracev2-risk-high' : caseData.riskLevel === 'medium' ? 'bg-tracev2-risk-medium' : 'bg-tracev2-risk-low'}`} />
+                    <span className="text-xs leading-snug text-tracev2-muted">{ind}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            <p className="mt-2.5 text-[10px] text-tracev2-subtle border-t border-tracev2-border pt-2">
+              Risk level assigned by TRACE based on CTDC indicator framework. Requires caseworker verification.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Tab bar */}
