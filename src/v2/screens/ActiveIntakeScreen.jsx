@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import RiskBadge from '../components/RiskBadge.jsx';
 import GapDetector from '../components/GapDetector.jsx';
+import InterviewModePanel from '../components/InterviewModePanel.jsx';
 import StructuredPreviewModal from '../components/StructuredPreviewModal.jsx';
 import { useToast } from '../lib/ToastContext.jsx';
 import { structureIntake, structuredToFields } from '../lib/structure.js';
@@ -46,6 +47,7 @@ export default function ActiveIntakeScreen({ caseId, initialNotes = '', riskLeve
   const [structuring, setStructuring] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [interviewMode, setInterviewMode] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [fields, setFields] = useState([]);
   const [structured, setStructured] = useState(null);
@@ -220,31 +222,40 @@ export default function ActiveIntakeScreen({ caseId, initialNotes = '', riskLeve
 
       {/* Notes area */}
       <div className="flex flex-1 flex-col overflow-hidden px-4 pb-2">
-        <div className="relative flex-1">
-          <textarea
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            placeholder="Type or dictate the intake note here…"
-            className="h-full w-full resize-none rounded-xl border border-tracev2-border bg-tracev2-card p-3.5 pt-10 text-sm leading-relaxed text-tracev2-text placeholder:text-tracev2-subtle focus:border-tracev2-accent/70 focus:outline-none"
+        {interviewMode ? (
+          <InterviewModePanel
+            notes={notes}
+            onNotesUpdate={setNotes}
+            intakeLang={intakeLang}
+            onExit={() => setInterviewMode(false)}
           />
-          {/* Language auto-detect badge */}
-          <span className="pointer-events-none absolute right-2.5 top-2.5 rounded-full border border-tracev2-border bg-tracev2-bg/80 px-2 py-0.5 text-[10px] text-tracev2-muted rtl:right-auto rtl:left-2.5">
-            🌐 Auto-detect
-          </span>
-          {recording && (
-            <span className="absolute left-2.5 top-2.5 flex items-center gap-1.5 rounded-full bg-tracev2-risk-high/15 px-2 py-0.5 text-[10px] font-medium text-tracev2-risk-high rtl:left-auto rtl:right-2.5">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-tracev2-risk-high" />
-              Listening…
+        ) : (
+          <div className="relative flex-1">
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Type or dictate the intake note here…"
+              className="h-full w-full resize-none rounded-xl border border-tracev2-border bg-tracev2-card p-3.5 pt-10 text-sm leading-relaxed text-tracev2-text placeholder:text-tracev2-subtle focus:border-tracev2-accent/70 focus:outline-none"
+            />
+            {/* Language auto-detect badge */}
+            <span className="pointer-events-none absolute right-2.5 top-2.5 rounded-full border border-tracev2-border bg-tracev2-bg/80 px-2 py-0.5 text-[10px] text-tracev2-muted rtl:right-auto rtl:left-2.5">
+              🌐 Auto-detect
             </span>
-          )}
-        </div>
+            {recording && (
+              <span className="absolute left-2.5 top-2.5 flex items-center gap-1.5 rounded-full bg-tracev2-risk-high/15 px-2 py-0.5 text-[10px] font-medium text-tracev2-risk-high rtl:left-auto rtl:right-2.5">
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-tracev2-risk-high" />
+                Listening…
+              </span>
+            )}
+          </div>
+        )}
 
-        {/* Intake language selector */}
+        {/* Intake language selector + interview-mode toggle */}
         <div className="mt-2 flex items-center gap-2">
-          <span className="text-[11px] text-tracev2-subtle">Intake language</span>
           <select
             value={intakeLang}
             onChange={(e) => setIntakeLang(e.target.value)}
+            aria-label="Intake language"
             className="flex-1 rounded-lg border border-tracev2-border bg-tracev2-card px-2.5 py-1.5 text-xs text-tracev2-text focus:border-tracev2-accent/70 focus:outline-none"
           >
             {INTAKE_LANGUAGES.map((l) => (
@@ -253,6 +264,16 @@ export default function ActiveIntakeScreen({ caseId, initialNotes = '', riskLeve
               </option>
             ))}
           </select>
+          <button
+            onClick={() => setInterviewMode(true)}
+            className={`flex-shrink-0 rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors duration-150 ${
+              interviewMode
+                ? 'border-tracev2-accent bg-tracev2-accent/10 text-tracev2-accent'
+                : 'border-tracev2-border bg-tracev2-card text-tracev2-text hover:border-tracev2-muted'
+            }`}
+          >
+            ✦ Interview
+          </button>
         </div>
 
         {speechUnsupported && (
