@@ -41,7 +41,7 @@ function Row({ label, value }) {
   );
 }
 
-export default function CaseViewScreen({ caseData, onBack, onAddSessionNote, onTasksChanged }) {
+export default function CaseViewScreen({ caseData, supervisorMode = false, onBack, onAddSessionNote, onTasksChanged }) {
   const [tab, setTab] = useState('overview');
   const [tasks, setTasks] = useState(caseData?.follow_up_tasks || []);
   const [expandedSession, setExpandedSession] = useState(0);
@@ -350,48 +350,50 @@ export default function CaseViewScreen({ caseData, onBack, onAddSessionNote, onT
             )}
 
             <div className="space-y-2">
-              {DOC_TYPES.map((d) => {
-                if (d.isMeta) {
-                  // "Find a Service" opens the service finder
-                  return (
-                    <button
-                      key={d.id}
-                      onClick={() => setServiceFinder(true)}
-                      className="flex w-full items-center justify-between rounded-xl border border-tracev2-border bg-tracev2-card px-3.5 py-3 text-start transition-colors duration-150 hover:border-tracev2-accent/60"
-                    >
-                      <div>
-                        <span className="text-sm font-medium text-tracev2-text">{d.label}</span>
-                        {!selectedService && (
-                          <span className="ml-2 text-[10px] text-tracev2-subtle">Pre-fill referral with partner details</span>
-                        )}
-                      </div>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="text-tracev2-accent">
-                        <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="1.8" />
-                        <path d="m21 21-4.35-4.35" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-                      </svg>
-                    </button>
-                  );
-                }
-                return (
-                  <button
-                    key={d.id}
-                    onClick={() => setDoc({ open: true, type: d.id })}
-                    className="flex w-full items-center justify-between rounded-xl border border-tracev2-border bg-tracev2-card px-3.5 py-3 text-start transition-colors duration-150 hover:border-tracev2-accent/60"
-                  >
-                    <div>
-                      <span className="text-sm font-medium text-tracev2-text">{d.label}</span>
-                      {d.id === 'referral' && selectedService && (
-                        <span className="ml-2 text-[10px] text-tracev2-accent">→ {selectedService.shortName}</span>
-                      )}
-                    </div>
-                    <span className="text-tracev2-accent">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 4v12m0 0l-4-4m4 4l4-4M5 20h14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </span>
-                  </button>
-                );
-              })}
+              {DOC_TYPES.filter((d) => !d.isMeta && (!d.supervisorOnly || supervisorMode)).map((d) => (
+                <button
+                  key={d.id}
+                  onClick={() => setDoc({ open: true, type: d.id })}
+                  className="flex w-full items-center justify-between rounded-xl border border-tracev2-border bg-tracev2-card px-3.5 py-3 text-start transition-colors duration-150 hover:border-tracev2-accent/60"
+                >
+                  <div>
+                    <span className="text-sm font-medium text-tracev2-text">{d.label}</span>
+                    {d.supervisorOnly && (
+                      <span className="ml-1 text-[9px] font-semibold text-tracev2-accent bg-tracev2-accent/10 px-1.5 py-0.5 rounded-full">
+                        Supervisor
+                      </span>
+                    )}
+                    {d.id === 'referral' && selectedService && (
+                      <span className="ml-2 text-[10px] text-tracev2-accent">→ {selectedService.shortName}</span>
+                    )}
+                  </div>
+                  <span className="text-tracev2-accent">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                      <path d="M12 4v12m0 0l-4-4m4 4l4-4M5 20h14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </span>
+                </button>
+              ))}
+
+              {/* Find a Service (meta action) */}
+              {DOC_TYPES.filter((d) => d.isMeta).map((d) => (
+                <button
+                  key={d.id}
+                  onClick={() => setServiceFinder(true)}
+                  className="flex w-full items-center justify-between rounded-xl border border-tracev2-border bg-tracev2-card px-3.5 py-3 text-start transition-colors duration-150 hover:border-tracev2-accent/60"
+                >
+                  <div>
+                    <span className="text-sm font-medium text-tracev2-text">{d.label}</span>
+                    {!selectedService && (
+                      <span className="ml-2 text-[10px] text-tracev2-subtle">Pre-fill referral with partner details</span>
+                    )}
+                  </div>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="text-tracev2-accent">
+                    <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="1.8" />
+                    <path d="m21 21-4.35-4.35" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                  </svg>
+                </button>
+              ))}
             </div>
             <p className="mt-3 text-center text-[11px] text-tracev2-subtle">Review all AI-generated content before sending.</p>
           </div>

@@ -12,6 +12,7 @@ export const DOC_TYPES = [
   { id: 'family_tracing', label: 'Family Tracing Request' },
   { id: 'reintegration', label: 'Reintegration Plan' },
   { id: 'safe_card', label: 'Safe Info Card', isAudio: true },
+  { id: 'handoff', label: 'Case Handoff Brief', supervisorOnly: true },
   { id: 'service_finder', label: 'Find a Service', isMeta: true }
 ];
 
@@ -69,6 +70,9 @@ function systemFor(docType, caseData, targetService, outputLang = 'EN') {
   }
   if (docType === 'reintegration') {
     return `You are TRACE, writing a Reintegration Plan for a survivor moving into the recovery phase. Structure: (1) Current situation and stability assessment, (2) Identified strengths and protective factors, (3) Short-term goals (next 30 days) — housing, medical, psychosocial, (4) Medium-term goals (3 months) — livelihood, documentation, social support, (5) Referrals to activate, (6) Review date placeholder. Tone: strengths-based, survivor-centred. ${BASE_RULES}\n\n${ctx}${langInstruction}`;
+  }
+  if (docType === 'handoff') {
+    return `You are TRACE, generating a structured case handoff brief for an incoming caseworker. This document transfers case knowledge between caseworkers within the same organisation. Use case ID only — no survivor name, no identifying physical description, no home location. Structure: (1) Case reference and handoff date, (2) Risk level and justification in 2 sentences, (3) CTDC indicators confirmed, (4) Current status and last action taken, (5) Open follow-up tasks — list each with priority, (6) Pending referrals — what has been initiated and what response is awaited, (7) Recommended immediate next actions for the incoming caseworker, (8) Notes on survivor communication preferences or sensitivities (without identifying detail). Tone: factual, structured, caseworker-to-caseworker. ${BASE_RULES}\n\n${ctx}${langInstruction}`;
   }
   // htcds
   return `You are TRACE, formatting this case as an IOM Human Trafficking Case Data Standards (HTCDS) intake form. Output a clean labelled field list, one field per line (Case reference, Date, Age, Sex, Nationality, Location, Recruitment method, Control method, Type of exploitation, Risk level, CTDC indicators, Presenting needs, Case status). Write "Not recorded" for any field without data. ${BASE_RULES}\n\n${ctx}${langInstruction}`;

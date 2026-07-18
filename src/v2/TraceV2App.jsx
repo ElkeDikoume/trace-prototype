@@ -284,6 +284,7 @@ function Shell() {
       {screen === 'caseView' && selectedCase && (
         <CaseViewScreen
           caseData={selectedCase}
+          supervisorMode={supervisorMode}
           onBack={() => setScreen('dashboard')}
           onAddSessionNote={addSessionNote}
           onTasksChanged={() => loadCases()}
