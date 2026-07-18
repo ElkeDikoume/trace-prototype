@@ -11,6 +11,7 @@ export const DOC_TYPES = [
   { id: 'risk_assessment', label: 'Risk Assessment Report' },
   { id: 'family_tracing', label: 'Family Tracing Request' },
   { id: 'reintegration', label: 'Reintegration Plan' },
+  { id: 'safe_exit', label: 'Safe Exit Plan' },
   { id: 'safe_card', label: 'Safe Info Card', isAudio: true },
   { id: 'handoff', label: 'Case Handoff Brief', supervisorOnly: true },
   { id: 'service_finder', label: 'Find a Service', isMeta: true }
@@ -48,6 +49,10 @@ function systemFor(docType, caseData, targetService, outputLang = 'EN') {
     outputLang === 'FR'
       ? '\n\nIMPORTANT: Write the entire document in French. Translate all field labels, headings, prose, and placeholders into French. French is the official working language in Chad and the primary language of partner organisations.'
       : '';
+  if (docType === 'safe_exit') {
+    // Always French — a survivor-facing plan the caseworker delivers.
+    return `You are TRACE, drafting a Safe Exit Plan for a caseworker to share with a survivor. This document will be read aloud or delivered in person by a trained caseworker — it is NOT shown directly to the survivor on screen. Write in plain, warm, simple language. Use French (this region's working language). Structure: (1) Immediate safety — what the survivor should do and not do in the next 24 hours, (2) Their rights under Chadian law — right to protection, right to medical care, right to refuse return to a dangerous situation — in plain terms, (3) What the organisation will do next — next contact, next appointment, what to expect, (4) Who to call if they feel unsafe — IOM Chad +235 63 52 24 76, Police des Mineurs +235 22 52 46 57, (5) One encouraging closing sentence. Use case ID only. No medical diagnoses. No legal conclusions. Caseworker reviews before delivery. Under 200 words. ${BASE_RULES}\n\n${ctx}`;
+  }
   if (docType === 'safe_card') {
     // Always French — a spoken card the survivor receives; no langInstruction.
     return `You are TRACE, generating a Safe Information Card for a survivor to receive (read aloud by a caseworker or played by the device). Write in simple, spoken French — no complex words, no jargon, short sentences. Structure: (1) Opening reassurance: "You are safe. You have the right to help." (2) What happens next — 2 sentences on next steps in plain language. (3) Emergency contacts — list IOM Chad (+235 63 52 24 76), Police des Mineurs Chad (+235 22 52 46 57), UNHCR Chad (+235 22 52 47 57). (4) Closing: "You are not alone." Output only the spoken text — no headers, no bullet points. Keep it under 120 words total so it can be spoken in under 60 seconds. ${BASE_RULES}\n\n${ctx}`;
