@@ -11,48 +11,56 @@ const CATEGORIES = [
     id: 'recruitment',
     label: 'Recruitment method',
     hint: 'How were they approached / recruited?',
+    tip: "Avoid 'how did you get this job?' — try 'can you tell me about how you came to be here?'",
     keywords: ['recruit', 'promise', 'offer', 'job', 'hired', 'agency', 'broker', 'agent', 'neighbour', 'neighbor', 'stranger', 'contact', 'brought', 'taken', 'lured', 'deceiv', 'false']
   },
   {
     id: 'documents',
     label: 'Document control',
     hint: 'Were ID or travel documents taken?',
+    tip: "Avoid asking 'why did you give your documents away?' — ask 'what happened to your documents?'",
     keywords: ['passport', 'document', 'id ', 'id,', 'identity', 'confiscat', 'withheld', 'took', 'held', 'kept', 'retain', 'taken', 'removed', 'seized']
   },
   {
     id: 'movement',
     label: 'Freedom of movement',
     hint: 'Were they free to leave?',
+    tip: "Avoid 'why didn't you leave?' — ask 'were there things that made it difficult to move around freely?'",
     keywords: ['lock', 'leave', 'escape', 'free', 'move', 'confin', 'prison', "can't go", 'cannot go', 'not allowed', 'not permitted', 'restricted', 'guard', 'monitor', 'follow']
   },
   {
     id: 'wages',
     label: 'Wages / debt bondage',
     hint: 'Were wages paid? Any debt imposed?',
+    tip: "Use 'money owed to the employer' not 'debt' — the word debt can feel like an accusation.",
     keywords: ['paid', 'unpaid', 'wages', 'salary', 'debt', 'owe', 'fee', 'money', 'payment', 'compensat', 'earn', 'deduct', 'bond', 'credit', 'loan', 'advance']
   },
   {
     id: 'exploitation',
     label: 'Type of exploitation',
     hint: 'What work or service were they forced into?',
+    tip: 'Let the survivor describe the work in their words before using any category labels.',
     keywords: ['work', 'labour', 'labor', 'domestic', 'sexual', 'commercial', 'sex', 'harvest', 'farm', 'factory', 'cook', 'clean', 'service', 'exploit', 'forced', 'mine', 'beg', 'street']
   },
   {
     id: 'control',
     label: 'Control / coercion',
     hint: 'Threats, violence, or other control methods?',
+    tip: 'Pause before this topic. Control methods are often the most traumatic to recount.',
     keywords: ['threat', 'beat', 'hit', 'abuse', 'punish', 'scare', 'force', 'coerce', 'intimidat', 'violence', 'assault', 'harm', 'hurt', 'rape', 'threaten', 'warn']
   },
   {
     id: 'family',
     label: 'Family / support contact',
     hint: 'Contact with family or support network?',
+    tip: "Frame as 'were you able to be in contact with people you care about?' not 'did they isolate you?'",
     keywords: ['family', 'contact', 'phone', 'call', 'mother', 'father', 'child', 'home', 'relative', 'friend', 'support', 'isolated', 'alone', 'no one', 'sister', 'brother', 'parent']
   },
   {
     id: 'duration',
     label: 'Duration / timeline',
     hint: 'How long has this been happening?',
+    tip: "Don't push for exact dates — 'roughly how long' is less retraumatising than 'when exactly?'",
     keywords: ['month', 'week', 'year', 'day', 'since', 'ago', 'duration', 'period', 'how long', 'started', 'began', 'time']
   }
 ];
@@ -123,7 +131,10 @@ export default function GapDetector({ notes }) {
                   {cat.label}
                 </span>
                 {!cat.covered && (
-                  <span className="ml-1.5 text-[10px] text-tracev2-subtle">— {cat.hint}</span>
+                  <>
+                    <span className="ml-1.5 text-[10px] text-tracev2-subtle">— {cat.hint}</span>
+                    <p className="mt-0.5 text-[10px] leading-snug text-tracev2-subtle italic pl-4">{cat.tip}</p>
+                  </>
                 )}
               </div>
             </div>
