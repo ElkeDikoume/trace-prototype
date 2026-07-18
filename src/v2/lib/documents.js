@@ -8,6 +8,9 @@ export const DOC_TYPES = [
   { id: 'referral', label: 'Referral Letter' },
   { id: 'summary', label: 'Case Summary' },
   { id: 'htcds', label: 'IOM HTCDS Form' },
+  { id: 'risk_assessment', label: 'Risk Assessment Report' },
+  { id: 'family_tracing', label: 'Family Tracing Request' },
+  { id: 'reintegration', label: 'Reintegration Plan' },
   { id: 'service_finder', label: 'Find a Service', isMeta: true }
 ];
 
@@ -48,6 +51,15 @@ function systemFor(docType, caseData, targetService) {
   }
   if (docType === 'summary') {
     return `You are TRACE, writing a narrative case summary for supervision review / case handoff. Three short paragraphs: (1) who the survivor is and how the case came to attention, (2) the trafficking/protection concern and risk assessment, (3) current status and recommended next steps. ${BASE_RULES}\n\n${ctx}`;
+  }
+  if (docType === 'risk_assessment') {
+    return `You are TRACE, drafting a formal risk assessment report for supervisor review. Structure: (1) Case overview and referral pathway, (2) CTDC trafficking indicators identified with supporting evidence from notes, (3) Risk level justification — HIGH/MEDIUM/LOW — with reasoning, (4) Immediate protection concerns, (5) Recommended actions ranked by urgency. Be specific and evidence-based. ${BASE_RULES}\n\n${ctx}`;
+  }
+  if (docType === 'family_tracing') {
+    return `You are TRACE, drafting an ICRC-format Family Tracing Request for an unaccompanied or separated individual. Structure: Case reference, Date, Requestor organisation (placeholder), Subject demographics (age range, sex only — no name), Last known location, Circumstances of separation, Known family details (use 'not disclosed' if absent), Urgency level, Contact for response. Use only case ID. Output as a clean labeled field list. ${BASE_RULES}\n\n${ctx}`;
+  }
+  if (docType === 'reintegration') {
+    return `You are TRACE, writing a Reintegration Plan for a survivor moving into the recovery phase. Structure: (1) Current situation and stability assessment, (2) Identified strengths and protective factors, (3) Short-term goals (next 30 days) — housing, medical, psychosocial, (4) Medium-term goals (3 months) — livelihood, documentation, social support, (5) Referrals to activate, (6) Review date placeholder. Tone: strengths-based, survivor-centred. ${BASE_RULES}\n\n${ctx}`;
   }
   // htcds
   return `You are TRACE, formatting this case as an IOM Human Trafficking Case Data Standards (HTCDS) intake form. Output a clean labelled field list, one field per line (Case reference, Date, Age, Sex, Nationality, Location, Recruitment method, Control method, Type of exploitation, Risk level, CTDC indicators, Presenting needs, Case status). Write "Not recorded" for any field without data. ${BASE_RULES}\n\n${ctx}`;
