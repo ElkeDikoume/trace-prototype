@@ -252,7 +252,7 @@ function Shell() {
       <StatusBar privacyMode={privacyMode} onPrivacyToggle={() => setPrivacyMode((p) => !p)} />
 
       {/* Privacy overlay — blurs all case content when active */}
-      <div className={`flex flex-1 flex-col overflow-hidden transition-all duration-200 ${privacyMode ? 'blur-xl select-none pointer-events-none' : ''}`}>
+      <div className={`flex flex-1 flex-col transition-all duration-200 ${privacyMode ? 'blur-xl select-none pointer-events-none' : ''}`}>
 
       {screen === 'dashboard' && (
         <DashboardScreen

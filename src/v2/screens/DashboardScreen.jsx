@@ -136,7 +136,7 @@ export default function DashboardScreen({
   return (
     <div className="flex-1 overflow-y-auto scrollbar-thin px-4 pt-1 pb-4">
       {/* Header row */}
-      <div className="flex items-center justify-between">
+      <div className="relative z-10 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <button onClick={handleLogoTap} aria-label="TRACE" className="flex h-8 w-8 items-center justify-center rounded-lg bg-white p-1">
             <img
