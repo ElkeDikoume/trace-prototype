@@ -9,6 +9,7 @@ export default function DocumentModal({ open, docType, caseData, targetService, 
   const [streaming, setStreaming] = useState(false);
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
+  const [outputLang, setOutputLang] = useState('EN');
   const abortRef = useRef(null);
 
   useEffect(() => {
@@ -25,6 +26,7 @@ export default function DocumentModal({ open, docType, caseData, targetService, 
       docType,
       caseData,
       targetService,
+      outputLang,
       signal: controller.signal,
       onToken: (chunk) => setText((prev) => prev + chunk)
     })
@@ -35,7 +37,7 @@ export default function DocumentModal({ open, docType, caseData, targetService, 
 
     return () => controller.abort();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, docType, caseData, targetService]);
+  }, [open, docType, caseData, targetService, outputLang]);
 
   if (!open) return null;
 
@@ -69,6 +71,17 @@ export default function DocumentModal({ open, docType, caseData, targetService, 
       {/* Header */}
       <div className="flex-shrink-0 flex items-center justify-between border-b border-tracev2-border px-4 py-3">
         <h1 className="text-sm font-semibold text-tracev2-text">{docLabel(docType)}</h1>
+        <div className="flex items-center gap-1 rounded-lg border border-tracev2-border bg-tracev2-bg p-0.5">
+          {['EN', 'FR'].map((lang) => (
+            <button
+              key={lang}
+              onClick={() => setOutputLang(lang)}
+              className={`rounded-md px-2.5 py-0.5 text-[11px] font-semibold transition-colors duration-150 ${outputLang === lang ? 'bg-tracev2-accent text-white' : 'text-tracev2-subtle hover:text-tracev2-text'}`}
+            >
+              {lang}
+            </button>
+          ))}
+        </div>
         <button onClick={onClose} aria-label="Close" className="text-tracev2-subtle hover:text-tracev2-text">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
             <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />

@@ -40,34 +40,38 @@ Email: ${service.email || 'N/A'}
 Description: ${service.description}`;
 }
 
-function systemFor(docType, caseData, targetService) {
+function systemFor(docType, caseData, targetService, outputLang = 'EN') {
   const ctx = caseContextBlock(caseData);
+  const langInstruction =
+    outputLang === 'FR'
+      ? '\n\nIMPORTANT: Write the entire document in French. Translate all field labels, headings, prose, and placeholders into French. French is the official working language in Chad and the primary language of partner organisations.'
+      : '';
   if (docType === 'referral') {
     const svc = serviceBlock(targetService);
     const recipientNote = targetService
       ? `Address the letter to ${targetService.shortName} (${targetService.type}) at ${targetService.location}.`
       : 'Use a placeholder for the recipient agency.';
-    return `You are TRACE, drafting a formal service referral letter for a frontline anti-trafficking caseworker. ${recipientNote} Produce a short, formally structured referral letter: today's date, recipient agency name and address, a confidential case summary, the reason for referral, specific services requested, and a caseworker sign-off placeholder. ${BASE_RULES}\n\n${ctx}${svc}`;
+    return `You are TRACE, drafting a formal service referral letter for a frontline anti-trafficking caseworker. ${recipientNote} Produce a short, formally structured referral letter: today's date, recipient agency name and address, a confidential case summary, the reason for referral, specific services requested, and a caseworker sign-off placeholder. ${BASE_RULES}\n\n${ctx}${svc}${langInstruction}`;
   }
   if (docType === 'summary') {
-    return `You are TRACE, writing a narrative case summary for supervision review / case handoff. Three short paragraphs: (1) who the survivor is and how the case came to attention, (2) the trafficking/protection concern and risk assessment, (3) current status and recommended next steps. ${BASE_RULES}\n\n${ctx}`;
+    return `You are TRACE, writing a narrative case summary for supervision review / case handoff. Three short paragraphs: (1) who the survivor is and how the case came to attention, (2) the trafficking/protection concern and risk assessment, (3) current status and recommended next steps. ${BASE_RULES}\n\n${ctx}${langInstruction}`;
   }
   if (docType === 'risk_assessment') {
-    return `You are TRACE, drafting a formal risk assessment report for supervisor review. Structure: (1) Case overview and referral pathway, (2) CTDC trafficking indicators identified with supporting evidence from notes, (3) Risk level justification — HIGH/MEDIUM/LOW — with reasoning, (4) Immediate protection concerns, (5) Recommended actions ranked by urgency. Be specific and evidence-based. ${BASE_RULES}\n\n${ctx}`;
+    return `You are TRACE, drafting a formal risk assessment report for supervisor review. Structure: (1) Case overview and referral pathway, (2) CTDC trafficking indicators identified with supporting evidence from notes, (3) Risk level justification — HIGH/MEDIUM/LOW — with reasoning, (4) Immediate protection concerns, (5) Recommended actions ranked by urgency. Be specific and evidence-based. ${BASE_RULES}\n\n${ctx}${langInstruction}`;
   }
   if (docType === 'family_tracing') {
-    return `You are TRACE, drafting an ICRC-format Family Tracing Request for an unaccompanied or separated individual. Structure: Case reference, Date, Requestor organisation (placeholder), Subject demographics (age range, sex only — no name), Last known location, Circumstances of separation, Known family details (use 'not disclosed' if absent), Urgency level, Contact for response. Use only case ID. Output as a clean labeled field list. ${BASE_RULES}\n\n${ctx}`;
+    return `You are TRACE, drafting an ICRC-format Family Tracing Request for an unaccompanied or separated individual. Structure: Case reference, Date, Requestor organisation (placeholder), Subject demographics (age range, sex only — no name), Last known location, Circumstances of separation, Known family details (use 'not disclosed' if absent), Urgency level, Contact for response. Use only case ID. Output as a clean labeled field list. ${BASE_RULES}\n\n${ctx}${langInstruction}`;
   }
   if (docType === 'reintegration') {
-    return `You are TRACE, writing a Reintegration Plan for a survivor moving into the recovery phase. Structure: (1) Current situation and stability assessment, (2) Identified strengths and protective factors, (3) Short-term goals (next 30 days) — housing, medical, psychosocial, (4) Medium-term goals (3 months) — livelihood, documentation, social support, (5) Referrals to activate, (6) Review date placeholder. Tone: strengths-based, survivor-centred. ${BASE_RULES}\n\n${ctx}`;
+    return `You are TRACE, writing a Reintegration Plan for a survivor moving into the recovery phase. Structure: (1) Current situation and stability assessment, (2) Identified strengths and protective factors, (3) Short-term goals (next 30 days) — housing, medical, psychosocial, (4) Medium-term goals (3 months) — livelihood, documentation, social support, (5) Referrals to activate, (6) Review date placeholder. Tone: strengths-based, survivor-centred. ${BASE_RULES}\n\n${ctx}${langInstruction}`;
   }
   // htcds
-  return `You are TRACE, formatting this case as an IOM Human Trafficking Case Data Standards (HTCDS) intake form. Output a clean labelled field list, one field per line (Case reference, Date, Age, Sex, Nationality, Location, Recruitment method, Control method, Type of exploitation, Risk level, CTDC indicators, Presenting needs, Case status). Write "Not recorded" for any field without data. ${BASE_RULES}\n\n${ctx}`;
+  return `You are TRACE, formatting this case as an IOM Human Trafficking Case Data Standards (HTCDS) intake form. Output a clean labelled field list, one field per line (Case reference, Date, Age, Sex, Nationality, Location, Recruitment method, Control method, Type of exploitation, Risk level, CTDC indicators, Presenting needs, Case status). Write "Not recorded" for any field without data. ${BASE_RULES}\n\n${ctx}${langInstruction}`;
 }
 
-export function streamDocument({ docType, caseData, targetService, onToken, signal }) {
+export function streamDocument({ docType, caseData, targetService, outputLang = 'EN', onToken, signal }) {
   return streamCaseChat({
-    system: systemFor(docType, caseData, targetService),
+    system: systemFor(docType, caseData, targetService, outputLang),
     history: [],
     question: 'Generate the document now.',
     max_tokens: 1500,
