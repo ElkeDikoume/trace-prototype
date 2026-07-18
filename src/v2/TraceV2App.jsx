@@ -18,6 +18,7 @@ import IntakeStartScreen from './screens/IntakeStartScreen.jsx';
 import ActiveIntakeScreen from './screens/ActiveIntakeScreen.jsx';
 import CaseViewScreen from './screens/CaseViewScreen.jsx';
 import DocsScreen from './screens/DocsScreen.jsx';
+import WellnessCheckModal, { isWellnessDue } from './components/WellnessCheckModal.jsx';
 
 import { ThemeProvider, useTheme } from './lib/ThemeContext.jsx';
 import { ToastProvider, useToast } from './lib/ToastContext.jsx';
@@ -62,6 +63,7 @@ function Shell() {
   const [aiOpen, setAiOpen] = useState(false);
   const [cases, setCases] = useState([]);
   const [privacyMode, setPrivacyMode] = useState(false);
+  const [wellnessOpen, setWellnessOpen] = useState(false);
   const resetRan = useRef(false);
 
   // ?reset — unchanged from earlier phases. Guarded so it runs once.
@@ -110,6 +112,11 @@ function Shell() {
     return () => {
       cancelled = true;
     };
+  }, [profile]);
+
+  // Weekly caseworker wellness check-in — surfaced once per ISO week.
+  useEffect(() => {
+    if (profile && isWellnessDue()) setWellnessOpen(true);
   }, [profile]);
 
   async function handleMicrosoft() {
@@ -276,6 +283,12 @@ function Shell() {
       <BottomNav active={activeTab} onNavigate={handleNav} />
 
       {aiOpen && <AiChatScreen caseContext={aiContext} onClose={() => setAiOpen(false)} />}
+
+      <WellnessCheckModal
+        open={wellnessOpen}
+        onClose={() => setWellnessOpen(false)}
+        caseworkerName={profile?.full_name}
+      />
     </PhoneFrame>
   );
 }

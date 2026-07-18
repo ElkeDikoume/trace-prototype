@@ -10,6 +10,7 @@ import CaseCard from '../components/CaseCard.jsx';
 import HeaderControls from '../components/HeaderControls.jsx';
 import DailyBriefCard from '../components/DailyBriefCard.jsx';
 import PatternAlertBanner from '../components/PatternAlertBanner.jsx';
+import { getWellnessAlert } from '../components/WellnessCheckModal.jsx';
 import { RISK_LABEL } from '../theme.js';
 
 function greeting() {
@@ -130,6 +131,7 @@ export default function DashboardScreen({
   };
 
   const pending = cases.filter((c) => c.status === 'pending_referral');
+  const wellnessAlert = supervisorMode ? getWellnessAlert() : null;
 
   return (
     <div className="flex-1 overflow-y-auto scrollbar-thin px-4 pt-1 pb-4">
@@ -186,6 +188,15 @@ export default function DashboardScreen({
         <div className="mt-5">
           <h2 className="text-sm font-semibold text-tracev2-text">Pending Referrals</h2>
           <div className="mt-2 space-y-2">
+            {wellnessAlert && (
+              <div className="rounded-xl border border-tracev2-accent/40 bg-tracev2-accent/10 p-3">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-base leading-none">💚</span>
+                  <span className="text-xs font-semibold text-tracev2-accent">Caseworker wellness alert</span>
+                </div>
+                <p className="mt-1 text-xs leading-snug text-tracev2-muted">{wellnessAlert.message}</p>
+              </div>
+            )}
             {pending.length === 0 ? (
               <p className="rounded-xl border border-dashed border-tracev2-border px-3 py-5 text-center text-xs text-tracev2-subtle">
                 No referrals awaiting approval.
