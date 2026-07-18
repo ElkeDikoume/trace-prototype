@@ -66,10 +66,12 @@ export function setFollowUpTasks(id, tasks) {
 }
 
 // Toggle a single follow-up task's completion for a case, returning the new list.
-export function toggleTask(id, index) {
+// baseTasks is the task list from the base case object (mockData or Supabase)
+// used as fallback when the overlay has no entry yet for this case.
+export function toggleTask(id, index, baseTasks = []) {
   const state = read();
   const entry = state.cases[id] || {};
-  const tasks = (entry.follow_up_tasks || []).map((task, i) =>
+  const tasks = (entry.follow_up_tasks || baseTasks).map((task, i) =>
     i === index ? { ...task, done: !task.done } : task
   );
   state.cases[id] = { ...entry, follow_up_tasks: tasks };

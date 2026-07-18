@@ -43,7 +43,7 @@ export default function CaseViewScreen({ caseData, onBack, onAddSessionNote, onT
   const indicators = (s.ctdc_indicators?.length ? s.ctdc_indicators : caseData?.ctdcIndicators) || [];
 
   function handleToggleTask(i) {
-    const next = toggleTask(caseData.id, i);
+    const next = toggleTask(caseData.id, i, caseData.follow_up_tasks || []);
     setTasks(next);
     onTasksChanged?.(caseData.id, next);
   }
