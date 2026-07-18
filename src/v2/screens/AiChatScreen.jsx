@@ -1,19 +1,28 @@
-// "Ask TRACE AI" — a real, case-grounded chat backed by the streaming Claude
-// proxy. Full-height overlay inside the phone frame. Every request carries the
-// current case's structured data as context (see buildCaseSystemPrompt).
+// "Ask TRACE AI" — a case consultation tool: a second expert opinion for the
+// caseworker, grounded in the active case, IOM HTCDS standards, and the CTDC
+// framework. Streams from the Claude proxy, opens with a case-aware
+// acknowledgment, and offers contextual quick-tap prompt chips.
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { buildCaseSystemPrompt, streamCaseChat } from '../lib/claudeStream.js';
+import { buildCaseContextBlock, streamCaseChat } from '../lib/claudeStream.js';
 
-const QUICK_ACTIONS = [
-  'What services should I refer?',
-  'What am I missing?',
-  'Draft a referral letter',
-  'Explain the risk score'
-];
+const CONSULT_SYSTEM = `You are TRACE AI, a senior anti-trafficking case consultation assistant supporting frontline IOM caseworkers in the Lake Chad Basin. You have full context of the active case below.
+
+Your role: provide expert second opinions, not instructions. Ask clarifying questions when the caseworker is uncertain. Reference CTDC indicator definitions, IOM HTCDS standards, and trauma-informed interviewing principles when relevant. You are not a search engine — you are a thinking partner. When asked 'am I handling this correctly?', give honest, constructive feedback grounded in best practice.
+
+Rules: always refer to survivors by case ID only. Never make a determination that replaces caseworker judgment — frame all outputs as recommendations for the caseworker to review. Do not invent facts not present in the case data.`;
+
+const GREETING_SYSTEM = `You are TRACE AI, a senior anti-trafficking case consultation assistant. Using the case context below, write a single 1-2 sentence opening acknowledgment that shows you have read the case: mention the case ID, its risk level, and one specific thing that needs attention (for example an overdue follow-up task or an unresolved documentation gap). End with exactly: "What do you need?" Refer to the survivor by case ID only. Output only the acknowledgment, no preamble.`;
 
 // Light-touch cleanup so **bold** markers don't render literally in the bubble.
 function clean(text) {
   return (text || '').replace(/\*\*(.*?)\*\*/g, '$1');
+}
+
+// Contextual quick-tap chips depend on the case's risk level.
+function chipsForRisk(risk) {
+  if (risk === 'high') return ['Why is this case high risk?', 'Draft a supervisor update', 'What referral is most urgent?'];
+  if (risk === 'medium') return ['What indicators support this risk level?', 'What follow-up is needed?', 'Find a referral service'];
+  return ['Explain CTDC indicators', 'What are the next steps?', 'Draft a case summary'];
 }
 
 export default function AiChatScreen({ caseContext, onClose }) {
@@ -22,9 +31,12 @@ export default function AiChatScreen({ caseContext, onClose }) {
   const [busy, setBusy] = useState(false);
   const scrollRef = useRef(null);
   const abortRef = useRef(null);
+  const greetedRef = useRef(false);
 
-  const system = useMemo(() => buildCaseSystemPrompt(caseContext), [caseContext]);
+  const contextBlock = useMemo(() => buildCaseContextBlock(caseContext), [caseContext]);
+  const system = useMemo(() => `${CONSULT_SYSTEM}\n\n${contextBlock}`, [contextBlock]);
   const contextId = caseContext?.caseRecord?.id || 'new intake';
+  const chips = chipsForRisk(caseContext?.caseRecord?.riskLevel);
 
   // Keep the newest message in view as tokens stream in.
   useEffect(() => {
@@ -33,6 +45,49 @@ export default function AiChatScreen({ caseContext, onClose }) {
   }, [messages]);
 
   useEffect(() => () => abortRef.current?.abort(), []);
+
+  // Case-aware opening greeting, generated once when the chat opens. The ref
+  // guards against re-firing; the `ignore` flag makes it StrictMode-safe.
+  useEffect(() => {
+    if (greetedRef.current) return undefined;
+    let ignore = false;
+    (async () => {
+      setBusy(true);
+      setMessages([{ role: 'assistant', content: '', streaming: true }]);
+      try {
+        await streamCaseChat({
+          system: `${GREETING_SYSTEM}\n\n${contextBlock}`,
+          history: [],
+          question: 'Write your opening acknowledgment now.',
+          max_tokens: 120,
+          onToken: (chunk) => {
+            if (ignore) return;
+            setMessages((prev) => {
+              const copy = [...prev];
+              const last = copy[copy.length - 1];
+              copy[copy.length - 1] = { ...last, content: last.content + chunk };
+              return copy;
+            });
+          }
+        });
+        if (ignore) return;
+        greetedRef.current = true;
+        setMessages((prev) => {
+          const copy = [...prev];
+          copy[copy.length - 1] = { ...copy[copy.length - 1], streaming: false };
+          return copy;
+        });
+      } catch {
+        if (!ignore) setMessages([]); // fall back to the empty state on failure
+      } finally {
+        if (!ignore) setBusy(false);
+      }
+    })();
+    return () => {
+      ignore = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function send(raw) {
     const question = (raw ?? input).trim();
@@ -105,7 +160,7 @@ export default function AiChatScreen({ caseContext, onClose }) {
           <div>
             <h1 className="text-sm font-semibold text-tracev2-text">Ask TRACE AI</h1>
             <p className="text-[11px] text-tracev2-subtle">
-              Context: <span className="tabular-nums text-tracev2-muted">{contextId}</span>
+              Case consultation · <span className="tabular-nums text-tracev2-muted">{contextId}</span>
             </p>
           </div>
         </div>
@@ -120,27 +175,13 @@ export default function AiChatScreen({ caseContext, onClose }) {
         </button>
       </div>
 
-      {/* Quick-action chips */}
-      <div className="flex-shrink-0 flex gap-2 overflow-x-auto scrollbar-thin border-b border-tracev2-border/60 px-4 py-2.5">
-        {QUICK_ACTIONS.map((q) => (
-          <button
-            key={q}
-            onClick={() => send(q)}
-            disabled={busy}
-            className="whitespace-nowrap rounded-full border border-tracev2-border bg-tracev2-card px-3 py-1.5 text-[12px] text-tracev2-text transition-colors duration-150 hover:border-tracev2-accent/60 hover:text-white disabled:opacity-40"
-          >
-            {q}
-          </button>
-        ))}
-      </div>
-
       {/* Thread */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto scrollbar-thin px-4 py-3">
         {messages.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center px-6 text-center">
-            <p className="text-sm font-medium text-tracev2-text">Ask about case {contextId}</p>
+            <p className="text-sm font-medium text-tracev2-text">Case consultation · {contextId}</p>
             <p className="mt-1.5 text-xs leading-relaxed text-tracev2-subtle">
-              Grounded in the case&apos;s structured data and CTDC indicators. Tap a suggestion above or type a question.
+              A second opinion grounded in the case, IOM protocols, and the CTDC framework.
             </p>
           </div>
         ) : (
@@ -172,6 +213,20 @@ export default function AiChatScreen({ caseContext, onClose }) {
 
       {/* Input */}
       <div className="flex-shrink-0 border-t border-tracev2-border px-3 py-2.5 pb-[max(env(safe-area-inset-bottom),10px)]">
+        {/* Contextual quick-tap chips — hidden while a response streams */}
+        {!busy && (
+          <div className="overflow-x-auto scrollbar-none flex gap-2 pb-1">
+            {chips.map((c) => (
+              <button
+                key={c}
+                onClick={() => send(c)}
+                className="whitespace-nowrap flex-shrink-0 rounded-full border border-tracev2-border bg-tracev2-card px-3 py-1.5 text-[11px] text-tracev2-muted hover:border-tracev2-accent/50 hover:text-tracev2-accent transition-colors"
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+        )}
         <div className="flex items-end gap-2">
           <textarea
             value={input}

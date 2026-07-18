@@ -5,7 +5,9 @@
 // Turns the current case (record + mock structured fields + risk indicators)
 // into a grounding block injected into every request, so the assistant always
 // answers about the case in context rather than in the abstract.
-export function buildCaseSystemPrompt(ctx) {
+// The case-grounding block on its own, so a caller can append it under a custom
+// system prompt (e.g. the Ask AI consultation prompt).
+export function buildCaseContextBlock(ctx) {
   const c = ctx?.caseRecord || {};
   const structured = (ctx?.structuredFields || [])
     .map((f) => `- ${f.label}: ${f.value}`)
@@ -20,13 +22,7 @@ export function buildCaseSystemPrompt(ctx) {
     .filter(Boolean)
     .join(', ') || 'not recorded';
 
-  return `You are TRACE, an AI assistant embedded in a mobile case-management tool for frontline anti-trafficking and protection caseworkers (IOM / UNHCR / NGO partners) in West and Central Africa, including the Lake Chad Basin.
-
-Ground every answer in IOM Human Trafficking Case Data Standards (HTCDS) and CTDC (Counter-Trafficking Data Collaborative) indicator framing, and in the specific case data below. Be concise, practical and field-appropriate — short paragraphs or tight bullet lists a caseworker can act on. Never invent indicators, services or facts that are not supported by the case data; if information is missing, say so and name what to document next. When asked to draft a referral letter, produce a short, formally structured letter (date placeholder, recipient agency, confidential case summary using the case ID only, reason for referral, requested services, caseworker sign-off placeholder).
-
-Important: this is a demo prototype. The structured data and indicators below are illustrative mock data, and survivors never interact with TRACE directly — all output is reviewed by a trained caseworker. Never output a real personal name; refer to the survivor by case ID only.
-
-CURRENT CASE IN CONTEXT
+  return `CURRENT CASE IN CONTEXT
 Case ID: ${c.id || 'new intake'}
 Demographics: ${demographics}
 Status: ${c.status || 'in progress'}
@@ -40,6 +36,16 @@ ${indicators}
 
 Caseworker free-text notes:
 ${notes}`;
+}
+
+export function buildCaseSystemPrompt(ctx) {
+  return `You are TRACE, an AI assistant embedded in a mobile case-management tool for frontline anti-trafficking and protection caseworkers (IOM / UNHCR / NGO partners) in West and Central Africa, including the Lake Chad Basin.
+
+Ground every answer in IOM Human Trafficking Case Data Standards (HTCDS) and CTDC (Counter-Trafficking Data Collaborative) indicator framing, and in the specific case data below. Be concise, practical and field-appropriate — short paragraphs or tight bullet lists a caseworker can act on. Never invent indicators, services or facts that are not supported by the case data; if information is missing, say so and name what to document next. When asked to draft a referral letter, produce a short, formally structured letter (date placeholder, recipient agency, confidential case summary using the case ID only, reason for referral, requested services, caseworker sign-off placeholder).
+
+Important: this is a demo prototype. The structured data and indicators below are illustrative mock data, and survivors never interact with TRACE directly — all output is reviewed by a trained caseworker. Never output a real personal name; refer to the survivor by case ID only.
+
+${buildCaseContextBlock(ctx)}`;
 }
 
 // Streams a chat completion. `history` is the prior thread ([{role, content}]),
