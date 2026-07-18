@@ -8,6 +8,8 @@ import { useTranslation } from 'react-i18next';
 import traceLogo from '../../assets/trace-logo.png';
 import CaseCard from '../components/CaseCard.jsx';
 import HeaderControls from '../components/HeaderControls.jsx';
+import DailyBriefCard from '../components/DailyBriefCard.jsx';
+import PatternAlertBanner from '../components/PatternAlertBanner.jsx';
 import { RISK_LABEL } from '../theme.js';
 
 function greeting() {
@@ -172,6 +174,12 @@ export default function DashboardScreen({
         <StatPill value={stats.urgent} label="Urgent" tone="red" />
         <StatPill value={stats.pending} label="Pending" tone="neutral" />
       </div>
+
+      {/* AI daily brief */}
+      <DailyBriefCard cases={cases} />
+
+      {/* Cross-case pattern alerts */}
+      <PatternAlertBanner cases={cases} />
 
       {/* Supervisor: pending referrals */}
       {supervisorMode && (
