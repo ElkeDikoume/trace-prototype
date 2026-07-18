@@ -9,6 +9,7 @@ import ServiceFinderModal from '../components/ServiceFinderModal.jsx';
 import { RISK_BANNER, RISK_LABEL } from '../theme.js';
 import { DOC_TYPES } from '../lib/documents.js';
 import { toggleTask, getSessions } from '../lib/caseStore.js';
+import { streamCaseChat } from '../lib/claudeStream.js';
 import { mockRiskIndicators } from '../mockData.js';
 
 const TABS = [
@@ -40,6 +41,9 @@ export default function CaseViewScreen({ caseData, onBack, onAddSessionNote, onT
   const [riskOpen, setRiskOpen] = useState(false);
   const [serviceFinder, setServiceFinder] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
+  const [translating, setTranslating] = useState(false);
+  const [translation, setTranslation] = useState('');
+  const [translationError, setTranslationError] = useState('');
 
   const s = caseData?.structuredData || {};
   const risk = caseData?.riskLevel || s.risk_level || 'medium';
@@ -49,6 +53,32 @@ export default function CaseViewScreen({ caseData, onBack, onAddSessionNote, onT
     const next = toggleTask(caseData.id, i, caseData.follow_up_tasks || []);
     setTasks(next);
     onTasksChanged?.(caseData.id, next);
+  }
+
+  async function handleTranslate() {
+    const rawNotes = sessions[0]?.notes || caseData.notes || '';
+    if (!rawNotes) return;
+    setTranslating(true);
+    setTranslation('');
+    setTranslationError('');
+    let buf = '';
+    try {
+      await streamCaseChat({
+        system:
+          'You are TRACE, translating multilingual case intake notes into clear, professional English for a caseworker review. Translate faithfully — do not summarise, add, or remove information. If a passage is already in English, include it unchanged. Output plain prose only.',
+        history: [],
+        question: `Translate the following intake notes to English:\n\n${rawNotes}`,
+        max_tokens: 600,
+        onToken: (chunk) => {
+          buf += chunk;
+          setTranslation(buf);
+        }
+      });
+    } catch (err) {
+      if (err?.name !== 'AbortError') setTranslationError('Translation unavailable — check connection.');
+    } finally {
+      setTranslating(false);
+    }
   }
 
   // Timeline sessions: the initial case note seeded as session 0, plus any
@@ -178,6 +208,7 @@ export default function CaseViewScreen({ caseData, onBack, onAddSessionNote, onT
         )}
 
         {tab === 'notes' && (
+          <>
           <div className="relative pl-5">
             {/* Vertical spine */}
             <div className="absolute left-2 top-1 bottom-1 w-px bg-tracev2-border" />
@@ -220,6 +251,45 @@ export default function CaseViewScreen({ caseData, onBack, onAddSessionNote, onT
               );
             })}
           </div>
+
+          {/* Translation panel */}
+          {(sessions[0]?.notes || caseData.notes) && (
+            <div className="mt-3">
+              {!translation && !translating && (
+                <button
+                  onClick={handleTranslate}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-tracev2-border py-2.5 text-xs font-medium text-tracev2-muted hover:border-tracev2-accent/50 hover:text-tracev2-accent transition-colors"
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M3 5h12M9 3v2M5.5 8.5c.6 2 2 3.5 3.5 5M4 16s1.5-1 3-1 3 1 3 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M22 21L17 11l-5 10M19.6 17H14.4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  Translate notes to English
+                </button>
+              )}
+              {translating && (
+                <div className="rounded-xl border border-tracev2-accent/30 bg-tracev2-accent/5 p-3">
+                  <div className="flex items-center gap-2">
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-tracev2-accent" />
+                    <span className="text-[11px] font-semibold uppercase tracking-wide text-tracev2-accent">Translating…</span>
+                  </div>
+                  <p className="mt-1.5 text-sm text-tracev2-muted">{translation || 'Working on it…'}</p>
+                </div>
+              )}
+              {translation && !translating && (
+                <div className="rounded-xl border border-tracev2-accent/30 bg-tracev2-accent/5 p-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[11px] font-semibold uppercase tracking-wide text-tracev2-accent">English translation</span>
+                    <button onClick={() => setTranslation('')} className="text-tracev2-subtle hover:text-tracev2-muted">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+                    </button>
+                  </div>
+                  <p className="text-sm leading-relaxed text-tracev2-text">{translation}</p>
+                </div>
+              )}
+              {translationError && (
+                <p className="mt-1 text-xs text-tracev2-risk-medium">{translationError}</p>
+              )}
+            </div>
+          )}
+          </>
         )}
 
         {tab === 'documents' && (
