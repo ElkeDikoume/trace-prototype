@@ -33,7 +33,7 @@ function Tab({ label, active, onClick, children }) {
   return (
     <button
       onClick={onClick}
-      className={`flex flex-1 flex-col items-center gap-0.5 py-2 transition-colors duration-150 ${
+      className={`flex flex-1 flex-col items-center justify-center gap-0.5 py-2 transition-colors duration-150 ${
         active ? 'text-tracev2-accent' : 'text-tracev2-subtle hover:text-tracev2-text'
       }`}
     >
@@ -45,7 +45,7 @@ function Tab({ label, active, onClick, children }) {
 
 export default function BottomNav({ active, onNavigate }) {
   return (
-    <nav className="flex-shrink-0 flex items-stretch border-t border-tracev2-border bg-tracev2-bg/95 backdrop-blur px-1 pb-[max(env(safe-area-inset-bottom),6px)]">
+    <nav className="flex-shrink-0 flex w-full items-stretch border-t border-tracev2-border bg-tracev2-bg/95 backdrop-blur pb-[max(env(safe-area-inset-bottom),6px)]">
       <Tab label="Cases" active={active === 'cases'} onClick={() => onNavigate('cases')}>
         <CasesIcon />
       </Tab>
@@ -53,7 +53,7 @@ export default function BottomNav({ active, onNavigate }) {
       {/* Emphasised centre action */}
       <button
         onClick={() => onNavigate('intake')}
-        className="flex flex-1 flex-col items-center gap-0.5 py-1.5"
+        className="flex flex-1 flex-col items-center justify-center gap-0.5 py-1.5"
       >
         <span
           className={`flex h-9 w-9 items-center justify-center rounded-full text-lg font-semibold transition-colors duration-150 ${
