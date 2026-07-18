@@ -65,6 +65,23 @@ export function setFollowUpTasks(id, tasks) {
   patchCase(id, { follow_up_tasks: tasks });
 }
 
+// --- Case timeline sessions -------------------------------------------------
+export function getSessions(caseId) {
+  const state = read();
+  return state.cases[caseId]?.sessions || [];
+}
+
+export function addSession(caseId, session) {
+  // session: { id, when, notes, risk, createdAt (ISO string) }
+  const state = read();
+  const existing = state.cases[caseId]?.sessions || [];
+  state.cases[caseId] = {
+    ...(state.cases[caseId] || {}),
+    sessions: [...existing, session]
+  };
+  write(state);
+}
+
 // Toggle a single follow-up task's completion for a case, returning the new list.
 // baseTasks is the task list from the base case object (mockData or Supabase)
 // used as fallback when the overlay has no entry yet for this case.

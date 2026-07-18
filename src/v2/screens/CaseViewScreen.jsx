@@ -8,7 +8,7 @@ import DocumentModal from '../components/DocumentModal.jsx';
 import ServiceFinderModal from '../components/ServiceFinderModal.jsx';
 import { RISK_BANNER, RISK_LABEL } from '../theme.js';
 import { DOC_TYPES } from '../lib/documents.js';
-import { toggleTask } from '../lib/caseStore.js';
+import { toggleTask, getSessions } from '../lib/caseStore.js';
 import { mockRiskIndicators } from '../mockData.js';
 
 const TABS = [
@@ -51,10 +51,22 @@ export default function CaseViewScreen({ caseData, onBack, onAddSessionNote, onT
     onTasksChanged?.(caseData.id, next);
   }
 
-  // For now a single session from the case's existing notes.
-  const sessions = [
-    { when: caseData?.lastUpdated || 'This session', notes: caseData?.notes || '', risk }
-  ];
+  // Timeline sessions: the initial case note seeded as session 0, plus any
+  // stored follow-up sessions from the overlay.
+  const [sessions] = useState(() => {
+    const stored = getSessions(caseData.id);
+    if (stored.length === 0 && caseData.notes) {
+      return [
+        { id: 'initial', when: caseData.lastUpdated || 'Initial session', notes: caseData.notes, risk: caseData.riskLevel || 'medium', createdAt: null }
+      ];
+    }
+    return stored.length > 0
+      ? [
+          { id: 'initial', when: caseData.lastUpdated || 'Initial session', notes: caseData.notes, risk: caseData.riskLevel || 'medium', createdAt: null },
+          ...stored
+        ]
+      : [{ id: 'initial', when: 'Initial session', notes: '(no notes recorded)', risk: 'medium', createdAt: null }];
+  });
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
@@ -166,25 +178,45 @@ export default function CaseViewScreen({ caseData, onBack, onAddSessionNote, onT
         )}
 
         {tab === 'notes' && (
-          <div className="space-y-2">
+          <div className="relative pl-5">
+            {/* Vertical spine */}
+            <div className="absolute left-2 top-1 bottom-1 w-px bg-tracev2-border" />
+
             {sessions.map((sess, i) => {
-              const expanded = expandedSession === i;
+              const riskDot =
+                sess.risk === 'high'
+                  ? 'bg-tracev2-risk-high'
+                  : sess.risk === 'medium'
+                    ? 'bg-tracev2-risk-medium'
+                    : 'bg-tracev2-risk-low';
               return (
-                <button
-                  key={i}
-                  onClick={() => setExpandedSession(expanded ? -1 : i)}
-                  className="block w-full rounded-xl border border-tracev2-border bg-tracev2-card p-3 text-start"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-medium text-tracev2-text">{sess.when}</span>
-                    <span className="rounded-full bg-tracev2-bg px-2 py-0.5 text-[10px] text-tracev2-muted ring-1 ring-tracev2-border">
-                      {RISK_LABEL[sess.risk]}
-                    </span>
-                  </div>
-                  <p className={`mt-1.5 text-sm leading-relaxed text-tracev2-muted ${expanded ? '' : 'line-clamp-2'}`}>
-                    {sess.notes || <span className="text-tracev2-subtle">No notes recorded for this session.</span>}
-                  </p>
-                </button>
+                <div key={sess.id || i} className="relative mb-4 last:mb-0">
+                  {/* Node dot */}
+                  <div className={`absolute -left-3 top-2.5 h-3 w-3 rounded-full border-2 border-tracev2-bg ${riskDot}`} />
+
+                  <button
+                    onClick={() => setExpandedSession(expandedSession === i ? -1 : i)}
+                    className="block w-full rounded-xl border border-tracev2-border bg-tracev2-card p-3 text-start"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-tracev2-text">{sess.when}</span>
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                          sess.risk === 'high'
+                            ? 'bg-tracev2-risk-high/15 text-tracev2-risk-high'
+                            : sess.risk === 'medium'
+                              ? 'bg-tracev2-risk-medium/15 text-tracev2-risk-medium'
+                              : 'bg-tracev2-risk-low/15 text-tracev2-risk-low'
+                        }`}
+                      >
+                        {RISK_LABEL[sess.risk]}
+                      </span>
+                    </div>
+                    <p className={`mt-1.5 text-sm leading-relaxed text-tracev2-muted ${expandedSession === i ? '' : 'line-clamp-2'}`}>
+                      {sess.notes || 'No notes recorded for this session.'}
+                    </p>
+                  </button>
+                </div>
               );
             })}
           </div>

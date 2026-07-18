@@ -24,7 +24,7 @@ import { ThemeProvider, useTheme } from './lib/ThemeContext.jsx';
 import { ToastProvider, useToast } from './lib/ToastContext.jsx';
 import { isRtl } from './lib/i18n.js';
 import { fetchCases, flushQueue } from './lib/cases.js';
-import { mergeCases, setStatus } from './lib/caseStore.js';
+import { mergeCases, setStatus, addSession } from './lib/caseStore.js';
 import {
   getSessionProfile,
   isDemo,
@@ -165,7 +165,22 @@ function Shell() {
   }
 
   function handleSavedCase() {
-    loadCases();
+    // Re-read cases, then record this save as a timeline session on the case.
+    fetchCases().then((base) => {
+      const merged = mergeCases(base);
+      setCases(merged);
+      const id = activeIntake?.caseId;
+      const c = id && merged.find((x) => x.id === id);
+      if (c) {
+        addSession(id, {
+          id: Date.now(),
+          when: 'just now',
+          notes: c.notes,
+          risk: c.riskLevel || 'medium',
+          createdAt: new Date().toISOString()
+        });
+      }
+    });
   }
 
   // Supervisor mode + approval queue.
