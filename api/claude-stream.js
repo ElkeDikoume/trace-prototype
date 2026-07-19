@@ -1,5 +1,5 @@
 // Vercel serverless function — production equivalent of the local Express
-// route POST /api/claude/stream in server/index.js. Streams Anthropic's token
+// route POST /api/claude-stream in server/index.js. Streams Anthropic's token
 // deltas to the client as Server-Sent Events. The Anthropic key is read from
 // ANTHROPIC_API_KEY (Vercel env), never reaching the browser bundle.
 

@@ -1,6 +1,9 @@
 // Client half of the v2 "Ask TRACE AI" tab. Builds a case-grounded system
 // prompt and streams the real Claude response token-by-token from the server
-// proxy (POST /api/claude/stream, same key-stays-server-side pattern as v1).
+// proxy (POST /api/claude-stream, same key-stays-server-side pattern as v1).
+// NOTE: the path must match the serverless filename api/claude-stream.js —
+// Vercel maps files to routes 1:1, so a "/api/claude/stream" path would 404 in
+// production (only the dev Express server tolerated the slashed form).
 
 // Turns the current case (record + mock structured fields + risk indicators)
 // into a grounding block injected into every request, so the assistant always
@@ -57,7 +60,7 @@ export async function streamCaseChat({ system, history = [], question, max_token
     { role: 'user', content: question }
   ];
 
-  const res = await fetch('/api/claude/stream', {
+  const res = await fetch('/api/claude-stream', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ system, messages, max_tokens }),

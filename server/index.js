@@ -50,7 +50,9 @@ app.post('/api/claude', async (req, res) => {
 // Streaming variant used by the v2 "Ask TRACE AI" tab. Same proxy pattern as
 // /api/claude (key stays server-side), but forwards Anthropic's token deltas to
 // the client as Server-Sent Events so the chat can render as it generates.
-app.post('/api/claude/stream', async (req, res) => {
+// Path mirrors the Vercel serverless filename (api/claude-stream.js) so dev and
+// production resolve identically.
+app.post('/api/claude-stream', async (req, res) => {
   if (!apiKey) {
     return res.status(500).json({ error: 'Server has no Anthropic API key configured. Check API_KEY.txt.' });
   }

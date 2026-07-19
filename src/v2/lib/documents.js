@@ -1,5 +1,5 @@
 // Streaming document generation for the Documents tab. Reuses the SSE proxy
-// (POST /api/claude/stream via streamCaseChat) with per-document system prompts
+// (POST /api/claude-stream via streamCaseChat) with per-document system prompts
 // built from the case's structured data. Output is plain text meant to render
 // in a monospace preview.
 import { streamCaseChat } from './claudeStream.js';

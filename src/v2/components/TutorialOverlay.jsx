@@ -1,17 +1,14 @@
-// Scripted demo walkthrough for v2. Step 0 is an intro card; steps 1–4 drive the
+// Scripted demo walkthrough for v2. Step 0 is an intro card; steps 1–5 drive the
 // real app — navigating to live screens and showing scripted (no-API) content so
 // the demo is reliable. Scenario: "You're Marie-Claire, a caseworker in
 // N'Djamena. Falmata, 16, was brought in this morning. Here's how TRACE helps."
 //
 // Steps 1–2 spotlight a real element (dark overlay + accent ring) with an info
-// card; steps 3–4 float an info card over the full-screen AiChat / DocumentModal.
+// card; steps 3–5 float an info card over the full-screen AiChat / DocumentModal.
 import { useEffect, useState } from 'react';
+import traceLogo from '../../assets/trace-logo.png';
 
-// Intro video embed. Empty → "coming soon" placeholder; set to a player URL to
-// render an inline iframe instead.
-const VIDEO_URL = '';
-
-const TOTAL = 4;
+const TOTAL = 5;
 
 // Scripted AI consultation injected into AiChatScreen (via window global).
 const DEMO_AI_MESSAGES = [
@@ -22,6 +19,18 @@ const DEMO_AI_MESSAGES = [
       "Three CTDC indicators are confirmed in the notes: document confiscation (indicator 2.1), recruitment by deception — false employment offer (indicator 1.2), and the survivor is an unaccompanied minor aged 16–18 (indicator 6.3). The combination of all three automatically triggers a HIGH RISK classification. I'd prioritise the medical assessment today — it's the only outstanding urgent task."
   }
 ];
+
+// Scripted safe information card injected into DocumentModal for step 5.
+const DEMO_SAFE_CARD_CONTENT = `Vous êtes en sécurité. Vous avez le droit à l'aide.
+
+Ce qui se passe maintenant : notre équipe va vous accompagner à chaque étape. Un médecin va vous examiner aujourd'hui. Nous resterons en contact avec vous.
+
+Si vous vous sentez en danger, appelez immédiatement :
+📞 IOM Tchad : +235 63 52 24 76
+📞 Police des Mineurs : +235 22 52 46 57
+📞 UNHCR Tchad : +235 22 52 47 57
+
+Vous n'êtes pas seule.`;
 
 // Scripted referral letter injected into DocumentModal (via demoContent).
 const DEMO_DOC_CONTENT = `N'Djamena, 19 July 2026
@@ -43,7 +52,7 @@ const STEP_CONTENT = {
     selector: '[data-tutorial="daily-brief"]',
     heading: 'Your morning briefing — written by AI',
     body: "Before you open a single case, TRACE has already read your full caseload. Falmata's case is flagged HIGH RISK. Document confiscation confirmed. Medical assessment overdue. You know where to start.",
-    label: '1 of 4'
+    label: '1 of 5'
   },
   2: {
     kind: 'spotlight',
@@ -54,19 +63,25 @@ const STEP_CONTENT = {
       hausa: 'An kwace mata takardunta, an ce za ta biya kudin…',
       english: 'Her documents were confiscated. She was told she must pay…'
     },
-    label: '2 of 4'
+    label: '2 of 5'
   },
   3: {
     kind: 'floating-bottom',
     heading: 'Ask AI — a senior colleague, always available',
     body: "The AI already read Falmata's file before you asked. Ask for second opinions, CTDC clarifications, or a draft supervisor update.",
-    label: '3 of 4'
+    label: '3 of 5'
   },
   4: {
     kind: 'floating-top',
     heading: 'Documents in seconds — in English or French',
     body: 'Referral letters, risk assessments, IOM HTCDS forms, safe exit plans. Every document is AI-drafted and caseworker-reviewed before it leaves the app.',
-    label: '4 of 4'
+    label: '4 of 5'
+  },
+  5: {
+    kind: 'floating-top',
+    heading: 'Safety information — spoken aloud in French',
+    body: "82% of displaced persons in this region have little formal education. Survivors can't read a safe exit plan. One tap reads emergency contacts aloud in French using the device's own voice — no app required on the survivor's side.",
+    label: '5 of 5'
   }
 };
 
@@ -145,6 +160,8 @@ export default function TutorialOverlay({ onFinish, onNavigate, onOpenAi, onOpen
       onOpenAi?.();
     } else if (step === 4) {
       onOpenDocModal?.('#0043', 'referral', DEMO_DOC_CONTENT);
+    } else if (step === 5) {
+      onOpenDocModal?.('#0043', 'safe_card', DEMO_SAFE_CARD_CONTENT);
     }
 
     return () => {
@@ -172,19 +189,12 @@ export default function TutorialOverlay({ onFinish, onNavigate, onOpenAi, onOpen
             An AI assistant that makes anti-trafficking caseworkers better at their work.
           </p>
 
-          <div className="mt-4">
-            {VIDEO_URL ? (
-              <iframe
-                src={VIDEO_URL}
-                title="TRACE demo video"
-                allowFullScreen
-                className="aspect-video w-full rounded-xl border border-tracev2-border"
-              />
-            ) : (
-              <div className="flex aspect-video w-full items-center justify-center rounded-xl border border-tracev2-border bg-tracev2-card">
-                <span className="text-xs text-tracev2-subtle">Demo video loading soon…</span>
-              </div>
-            )}
+          {/* Hero: centered TRACE logo + tagline */}
+          <div className="mt-4 flex h-32 flex-col items-center justify-center gap-3 rounded-xl border border-tracev2-border bg-tracev2-card px-4">
+            <img src={traceLogo} alt="TRACE" className="h-12 w-12 object-contain" />
+            <p className="text-center text-xs leading-snug text-tracev2-muted">
+              AI that makes the hardest work in the world a little easier.
+            </p>
           </div>
 
           <div className="mt-4 space-y-2">

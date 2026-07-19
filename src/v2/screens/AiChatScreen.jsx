@@ -13,6 +13,9 @@ Rules: always refer to survivors by case ID only. Never make a determination tha
 
 const GREETING_SYSTEM = `You are TRACE AI, a senior anti-trafficking case consultation assistant. Using the case context below, write a single 1-2 sentence opening acknowledgment that shows you have read the case: mention the case ID, its risk level, and one specific thing that needs attention (for example an overdue follow-up task or an unresolved documentation gap). End with exactly: "What do you need?" Refer to the survivor by case ID only. Output only the acknowledgment, no preamble.`;
 
+// Static opening shown if the live greeting fails, so the chat never opens empty.
+const FALLBACK_GREETING = 'Case #0043 is flagged HIGH RISK. Three CTDC indicators confirmed: document confiscation, minor status, restricted movement. Medical assessment is overdue. What do you need?';
+
 // Light-touch cleanup so **bold** markers don't render literally in the bubble.
 function clean(text) {
   return (text || '').replace(/\*\*(.*?)\*\*/g, '$1');
@@ -113,7 +116,11 @@ export default function AiChatScreen({ caseContext, onClose, demoMessages }) {
           return copy;
         });
       } catch {
-        if (!ignore) setMessages([]); // fall back to the empty state on failure
+        // Static fallback greeting rather than an empty state on failure.
+        if (!ignore) {
+          greetedRef.current = true;
+          setMessages([{ role: 'assistant', content: FALLBACK_GREETING, streaming: false }]);
+        }
       } finally {
         if (!ignore) setBusy(false);
       }

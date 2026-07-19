@@ -108,7 +108,7 @@ export default function WelcomeScreen({ onMicrosoft, onDemo, onDemoWithTour, sig
               onClick={onDemo}
               className="flex-1 rounded-lg border border-tracev2-border bg-transparent py-2.5 text-sm font-medium text-tracev2-text transition-colors duration-150 hover:border-tracev2-muted"
             >
-              Explore yourself
+              Try it yourself
             </button>
             <button
               onClick={onDemoWithTour}

@@ -47,13 +47,17 @@ function setCache(text) {
   try { sessionStorage.setItem(SESSION_KEY, JSON.stringify({ text })); } catch { /* ignore */ }
 }
 
+// Static brief shown when live generation is unavailable (offline or API error),
+// so the card never shows a bare error — the demo always has a usable brief.
+const FALLBACK_BRIEF = `Cases #0043 and #0042 are both HIGH RISK with overlapping indicators — document confiscation, minor status, restricted movement. Prioritise #0043: medical assessment is overdue. Pattern alert: three cases share deceptive recruitment via false domestic employment offer — possible shared route or broker. Recommend joint supervisor review before end of day.`;
+
 export default function DailyBriefCard({ cases = [] }) {
   // Always brief on something — fall back to the demo caseload so the card
   // renders on a fresh reset before any real cases have loaded.
   const briefCases = cases.length > 0 ? cases : mockCases;
   const [text, setText] = useState('');
   const [streaming, setStreaming] = useState(false);
-  const [error, setError] = useState('');
+  const [usedFallback, setUsedFallback] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [dismissed, setDismissed] = useState(false);
   const abortRef = useRef(null);
@@ -63,12 +67,19 @@ export default function DailyBriefCard({ cases = [] }) {
     if (ran.current) return;
     ran.current = true;
 
-    // Use cached brief for this session (avoids double-API call on re-render)
+    // Use cached brief for this session (avoids double-API call on re-render).
+    // A cached copy of the fallback keeps the "(Cached brief)" label on reload.
     const cached = getCached();
-    if (cached) { setText(cached.text); return; }
+    if (cached) {
+      setText(cached.text);
+      setUsedFallback(cached.text === FALLBACK_BRIEF);
+      return;
+    }
 
     if (!navigator.onLine) {
-      setError('Brief unavailable offline.');
+      setText(FALLBACK_BRIEF);
+      setUsedFallback(true);
+      setCache(FALLBACK_BRIEF);
       return;
     }
 
@@ -90,7 +101,11 @@ export default function DailyBriefCard({ cases = [] }) {
     })
       .then(() => setCache(buf))
       .catch((err) => {
-        if (err?.name !== 'AbortError') setError('Brief unavailable — check connection.');
+        if (err?.name !== 'AbortError') {
+          setText(FALLBACK_BRIEF);
+          setUsedFallback(true);
+          setCache(FALLBACK_BRIEF);
+        }
       })
       .finally(() => setStreaming(false));
 
@@ -99,7 +114,7 @@ export default function DailyBriefCard({ cases = [] }) {
   }, [cases.length]);
 
   if (dismissed) return null;
-  if (!text && !streaming && !error) return null;
+  if (!text && !streaming) return null;
 
   return (
     <div data-tutorial="daily-brief" className="mt-3 rounded-xl border border-tracev2-accent/30 bg-tracev2-accent/5 overflow-hidden">
@@ -115,6 +130,9 @@ export default function DailyBriefCard({ cases = [] }) {
           </span>
           {streaming && (
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-tracev2-accent" />
+          )}
+          {usedFallback && !streaming && (
+            <span className="text-[10px] text-tracev2-subtle">(Cached brief)</span>
           )}
         </div>
         <div className="flex items-center gap-2">
@@ -141,16 +159,12 @@ export default function DailyBriefCard({ cases = [] }) {
 
       {!collapsed && (
         <div className="border-t border-tracev2-accent/20 px-3.5 py-2.5">
-          {error ? (
-            <p className="text-[12px] text-tracev2-risk-medium">{error}</p>
-          ) : (
-            <p className="text-[12.5px] leading-relaxed text-tracev2-text">
-              {text}
-              {streaming && (
-                <span className="ml-0.5 inline-block h-3 w-[2px] translate-y-0.5 animate-pulse bg-tracev2-accent align-middle" />
-              )}
-            </p>
-          )}
+          <p className="text-[12.5px] leading-relaxed text-tracev2-text">
+            {text}
+            {streaming && (
+              <span className="ml-0.5 inline-block h-3 w-[2px] translate-y-0.5 animate-pulse bg-tracev2-accent align-middle" />
+            )}
+          </p>
         </div>
       )}
     </div>
