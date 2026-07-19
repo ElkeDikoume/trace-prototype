@@ -14,6 +14,7 @@ import AiChatScreen from './screens/AiChatScreen.jsx';
 import BottomNav from './components/BottomNav.jsx';
 import OfflineBanner from './components/OfflineBanner.jsx';
 import TutorialOverlay from './components/TutorialOverlay.jsx';
+import ErrorBoundary from './components/ErrorBoundary.jsx';
 import WelcomeScreen from './screens/WelcomeScreen.jsx';
 import DashboardScreen from './screens/DashboardScreen.jsx';
 import IntakeStartScreen from './screens/IntakeStartScreen.jsx';
@@ -41,7 +42,9 @@ export default function TraceV2App() {
   return (
     <ThemeProvider>
       <ToastProvider>
-        <Shell />
+        <ErrorBoundary>
+          <Shell />
+        </ErrorBoundary>
       </ToastProvider>
     </ThemeProvider>
   );
