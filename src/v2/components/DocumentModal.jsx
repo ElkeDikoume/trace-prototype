@@ -11,7 +11,7 @@ const SAFE_CONTACTS = [
   { org: 'UNHCR Chad', number: '+235 22 52 47 57' }
 ];
 
-export default function DocumentModal({ open, docType, caseData, targetService, onClose }) {
+export default function DocumentModal({ open, docType, caseData, targetService, demoContent, onClose }) {
   const [text, setText] = useState('');
   const [streaming, setStreaming] = useState(false);
   const [error, setError] = useState('');
@@ -35,6 +35,20 @@ export default function DocumentModal({ open, docType, caseData, targetService, 
     window.speechSynthesis?.cancel();
     setSpeaking(false);
 
+    // Scripted demo mode: typewriter the pre-written content at 12ms/char, no API.
+    if (demoContent) {
+      let i = 0;
+      let timer;
+      const tick = () => {
+        i += 1;
+        setText(demoContent.slice(0, i));
+        if (i < demoContent.length) timer = setTimeout(tick, 12);
+        else setStreaming(false);
+      };
+      timer = setTimeout(tick, 200);
+      return () => clearTimeout(timer);
+    }
+
     const controller = new AbortController();
     abortRef.current = controller;
 
@@ -53,7 +67,7 @@ export default function DocumentModal({ open, docType, caseData, targetService, 
 
     return () => controller.abort();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, docType, caseData, targetService, outputLang]);
+  }, [open, docType, caseData, targetService, outputLang, demoContent]);
 
   // Stop any in-progress speech when the card closes, and on unmount.
   useEffect(() => {

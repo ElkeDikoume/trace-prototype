@@ -10,7 +10,6 @@ import CaseCard from '../components/CaseCard.jsx';
 import HeaderControls from '../components/HeaderControls.jsx';
 import DailyBriefCard from '../components/DailyBriefCard.jsx';
 import PatternAlertBanner from '../components/PatternAlertBanner.jsx';
-import TutorialOverlay from '../components/TutorialOverlay.jsx';
 import { getWellnessAlert } from '../components/WellnessCheckModal.jsx';
 import { RISK_LABEL } from '../theme.js';
 
@@ -106,10 +105,7 @@ export default function DashboardScreen({
   onSeeAll,
   onEnableSupervisor,
   onApprove,
-  onFlag,
-  showTutorial = false,
-  onStartTour,
-  onTutorialFinish
+  onFlag
 }) {
   const { t } = useTranslation();
   const tapRef = useRef({ count: 0, timer: null });
@@ -173,18 +169,6 @@ export default function DashboardScreen({
         {greeting()}, {firstName(profile?.full_name)}
       </h1>
       <p className="text-xs text-tracev2-subtle">Here&apos;s your caseload today.</p>
-      {onStartTour && (
-        <button
-          onClick={onStartTour}
-          className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-tracev2-accent hover:underline"
-        >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-            <path d="M12 11v5M12 8h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          </svg>
-          Take a tour
-        </button>
-      )}
 
       {/* Stat pills */}
       <div className="mt-3 flex gap-2">
@@ -248,8 +232,6 @@ export default function DashboardScreen({
           cases.slice(0, 3).map((c) => <CaseCard key={c.id} c={c} onOpen={onOpenCase} />)
         )}
       </div>
-
-      {showTutorial && <TutorialOverlay onFinish={() => onTutorialFinish?.()} />}
     </div>
   );
 }

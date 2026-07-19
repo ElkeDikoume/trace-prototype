@@ -11,6 +11,51 @@ export const caseworkerInitials = 'MC';
 // status:    'Active' | 'Urgent' | 'Pending' | 'In progress'
 export const mockCases = [
   {
+    // Falmata — the scripted demo-walkthrough protagonist (see TutorialOverlay).
+    id: '#0043',
+    ageRange: '16–17',
+    sex: 'F',
+    riskLevel: 'high',
+    status: 'Urgent',
+    lastUpdated: 'this morning',
+    notes:
+      'Sunanta Falmata, tana da shekaru 16. An kwace mata takardunta, an ce za ta biya kuɗin tafiya kafin a bar ta ta tafi. An yi mata alkawarin aikin gida a birnin N\'Djamena, amma tun da ta zo ba a biya ta ba. Ba a bar ta ta fita ita kaɗai ba, tana kwana a gidan mai aiki. Tana matuƙar jin tsoro, ba ta iya barci. Ba ta san inda mutumin da ya kawo ta yake ba, kuma ba ta taɓa ganin iyalinta ba tun watanni uku.',
+    structuredData: {
+      detected_language: 'Hausa (auto-detected)',
+      case_type: 'Suspected trafficking — domestic servitude (unaccompanied minor)',
+      age_range: '16–17',
+      sex: 'F',
+      recruitment_method: 'False promise of paid domestic employment in N\'Djamena; recruited by an acquaintance posing as a labour broker',
+      control_method: 'Document confiscation; debt imposed for transport costs; restricted movement; isolation from family',
+      exploitation_type: 'Domestic servitude — forced labour in a private household',
+      risk_level: 'high',
+      ctdc_indicators: [
+        'Recruited by deception (false promise of employment)',
+        'Minor at time of recruitment',
+        'Documents withheld by third party',
+        'Unable to leave workplace or residence freely',
+        'Unpaid or underpaid labour',
+        'Isolation from family and community'
+      ],
+      summary:
+        'Survivor, 16, female, unaccompanied minor, brought to the N\'Djamena reception point this morning. She reports being recruited in her home village by an acquaintance who promised paid domestic work in the capital. On arrival her identity and travel documents were confiscated and she was told she must repay her transport costs before she could leave. She has not been paid, is not permitted to leave the household unaccompanied, and has had no contact with her family for three months. Three CTDC trafficking indicators are confirmed. Medical assessment is outstanding and urgent.'
+    },
+    ctdcIndicators: [
+      'Recruited by deception (false promise of employment)',
+      'Minor at time of recruitment',
+      'Documents withheld by third party',
+      'Unable to leave workplace or residence freely',
+      'Unpaid or underpaid labour',
+      'Isolation from family and community'
+    ],
+    follow_up_tasks: [
+      { task: 'Complete medical assessment and psychosocial screening', due: 'Overdue', priority: 'high', done: false },
+      { task: 'Refer to child-protection focal point and notify supervisor', due: 'Today', priority: 'high', done: false },
+      { task: 'Arrange emergency safe shelter placement', due: 'Today', priority: 'high', done: false },
+      { task: 'Request legal aid for document recovery', due: 'This week', priority: 'medium', done: false }
+    ]
+  },
+  {
     id: '#0042',
     ageRange: '16–17',
     sex: 'F',

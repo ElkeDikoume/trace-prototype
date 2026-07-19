@@ -3,6 +3,7 @@
 // category or a common recruitment keyword, surfaces a collapsible amber alert.
 // This is a UX prompt for the caseworker — not an automated finding.
 import { useMemo, useState } from 'react';
+import { mockCases } from '../mockData.js';
 
 // Canonical indicator categories to watch for clustering.
 const PATTERN_CATEGORIES = [
@@ -73,7 +74,13 @@ export default function PatternAlertBanner({ cases = [] }) {
   const [collapsed, setCollapsed] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
-  const patterns = useMemo(() => detectPatterns(cases), [cases]);
+  // Detect on the live caseload; if nothing surfaces (e.g. a fresh reset before
+  // real cases have loaded), fall back to the demo caseload so the banner still
+  // appears on the dashboard.
+  const patterns = useMemo(() => {
+    const found = detectPatterns(cases);
+    return found.length > 0 ? found : detectPatterns(mockCases);
+  }, [cases]);
 
   if (patterns.length === 0 || dismissed) return null;
 

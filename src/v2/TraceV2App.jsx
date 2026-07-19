@@ -13,6 +13,7 @@ import AiStrip from './components/AiStrip.jsx';
 import AiChatScreen from './screens/AiChatScreen.jsx';
 import BottomNav from './components/BottomNav.jsx';
 import OfflineBanner from './components/OfflineBanner.jsx';
+import TutorialOverlay from './components/TutorialOverlay.jsx';
 import WelcomeScreen from './screens/WelcomeScreen.jsx';
 import DashboardScreen from './screens/DashboardScreen.jsx';
 import IntakeStartScreen from './screens/IntakeStartScreen.jsx';
@@ -66,6 +67,7 @@ function Shell() {
   const [privacyMode, setPrivacyMode] = useState(false);
   const [wellnessOpen, setWellnessOpen] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
+  const [demoDocOpen, setDemoDocOpen] = useState(null); // { caseId, docType, content }
   const resetRan = useRef(false);
 
   // ?reset — unchanged from earlier phases. Guarded so it runs once.
@@ -116,9 +118,13 @@ function Shell() {
     };
   }, [profile]);
 
-  // Weekly caseworker wellness check-in — surfaced once per ISO week.
+  // Weekly caseworker wellness check-in — surfaced once per ISO week. Suppressed
+  // when the guided tour is starting, so the two overlays don't collide on a
+  // fresh demo login (the "Take a guided tour" path).
   useEffect(() => {
-    if (profile && isWellnessDue()) setWellnessOpen(true);
+    const tourFlag = typeof window !== 'undefined' && window.location.search.includes('tour');
+    if (profile && isWellnessDue() && !showTutorial && !tourFlag) setWellnessOpen(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile]);
 
   // ?tour — auto-start the guided tour on load (for demos). Runs once the
@@ -148,6 +154,27 @@ function Shell() {
   function handleDemo() {
     setProfile(continueAsDemo());
     setScreen('dashboard');
+  }
+
+  function handleDemoWithTour() {
+    setProfile(continueAsDemo());
+    setScreen('dashboard');
+    setShowTutorial(true);
+  }
+
+  // Guided-walkthrough coordination (TutorialOverlay drives the real app).
+  function finishTour() {
+    setShowTutorial(false);
+    setAiOpen(false);
+    setDemoDocOpen(null);
+    if (typeof window !== 'undefined') window.__traceDemoMessages = null;
+    setScreen('dashboard');
+  }
+  function openDemoDoc(caseId, docType, content) {
+    setAiOpen(false);
+    setSelectedCaseId(caseId);
+    setScreen('caseView');
+    setDemoDocOpen({ caseId, docType, content });
   }
 
   // Tapping a case card opens the 3-tab case view.
@@ -251,7 +278,7 @@ function Shell() {
   if (!profile) {
     return (
       <PhoneFrame theme={theme} dir={dir}>
-        <WelcomeScreen onMicrosoft={handleMicrosoft} onDemo={handleDemo} signingIn={signingIn} />
+        <WelcomeScreen onMicrosoft={handleMicrosoft} onDemo={handleDemo} onDemoWithTour={handleDemoWithTour} signingIn={signingIn} />
       </PhoneFrame>
     );
   }
@@ -275,9 +302,6 @@ function Shell() {
           onEnableSupervisor={enableSupervisor}
           onApprove={approveReferral}
           onFlag={flagReferral}
-          showTutorial={showTutorial}
-          onStartTour={() => setShowTutorial(true)}
-          onTutorialFinish={() => setShowTutorial(false)}
         />
       )}
       {screen === 'intakeStart' && (
@@ -302,6 +326,7 @@ function Shell() {
           onBack={() => setScreen('dashboard')}
           onAddSessionNote={addSessionNote}
           onTasksChanged={() => loadCases()}
+          demoDocOpen={demoDocOpen}
         />
       )}
       {screen === 'docs' && <DocsScreen />}
@@ -319,6 +344,21 @@ function Shell() {
         onClose={() => setWellnessOpen(false)}
         caseworkerName={profile?.full_name}
       />
+
+      {/* Guided demo walkthrough — rendered at shell level so it persists across
+          the screens it navigates through. */}
+      {showTutorial && (
+        <TutorialOverlay
+          onFinish={finishTour}
+          onNavigate={(screen, id) => {
+            setSelectedCaseId(id);
+            setScreen(screen);
+          }}
+          onOpenAi={() => setAiOpen(true)}
+          onOpenDocModal={openDemoDoc}
+          cases={cases}
+        />
+      )}
     </PhoneFrame>
   );
 }

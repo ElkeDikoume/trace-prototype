@@ -4,6 +4,7 @@
 // action. Collapses once read and regenerates at most once per session.
 import { useEffect, useRef, useState } from 'react';
 import { streamCaseChat } from '../lib/claudeStream.js';
+import { mockCases } from '../mockData.js';
 
 function buildBriefSystem(cases) {
   const today = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
@@ -47,6 +48,9 @@ function setCache(text) {
 }
 
 export default function DailyBriefCard({ cases = [] }) {
+  // Always brief on something — fall back to the demo caseload so the card
+  // renders on a fresh reset before any real cases have loaded.
+  const briefCases = cases.length > 0 ? cases : mockCases;
   const [text, setText] = useState('');
   const [streaming, setStreaming] = useState(false);
   const [error, setError] = useState('');
@@ -56,7 +60,7 @@ export default function DailyBriefCard({ cases = [] }) {
   const ran = useRef(false);
 
   useEffect(() => {
-    if (ran.current || cases.length === 0) return;
+    if (ran.current) return;
     ran.current = true;
 
     // Use cached brief for this session (avoids double-API call on re-render)
@@ -74,7 +78,7 @@ export default function DailyBriefCard({ cases = [] }) {
     let buf = '';
 
     streamCaseChat({
-      system: buildBriefSystem(cases),
+      system: buildBriefSystem(briefCases),
       history: [],
       question: 'Generate the daily caseload brief now.',
       max_tokens: 400,

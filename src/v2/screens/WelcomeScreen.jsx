@@ -20,7 +20,7 @@ function MicrosoftLogo() {
   );
 }
 
-export default function WelcomeScreen({ onMicrosoft, onDemo, signingIn }) {
+export default function WelcomeScreen({ onMicrosoft, onDemo, onDemoWithTour, signingIn }) {
   const [phase, setPhase] = useState('splash'); // 'splash' | 'auth'
   const { show } = useToast();
   const tapRef = useRef({ count: 0, timer: null });
@@ -103,12 +103,20 @@ export default function WelcomeScreen({ onMicrosoft, onDemo, signingIn }) {
             Sign in with Microsoft
           </button>
 
-          <button
-            onClick={onDemo}
-            className="text-xs text-tracev2-muted underline-offset-2 transition-colors duration-150 hover:text-tracev2-text hover:underline"
-          >
-            Continue as demo user →
-          </button>
+          <div className="flex w-full gap-2">
+            <button
+              onClick={onDemo}
+              className="flex-1 rounded-lg border border-tracev2-border bg-transparent py-2.5 text-sm font-medium text-tracev2-text transition-colors duration-150 hover:border-tracev2-muted"
+            >
+              Explore yourself
+            </button>
+            <button
+              onClick={onDemoWithTour}
+              className="flex-1 rounded-lg bg-tracev2-accent py-2.5 text-sm font-semibold text-white transition-colors duration-150 hover:bg-tracev2-accent/90"
+            >
+              Take a guided tour
+            </button>
+          </div>
 
           <p className="mt-3 text-[10px] leading-snug text-tracev2-subtle">
             Survivors never interact with TRACE directly. All outputs are reviewed by a trained caseworker.

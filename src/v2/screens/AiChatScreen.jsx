@@ -25,13 +25,22 @@ function chipsForRisk(risk) {
   return ['Explain CTDC indicators', 'What are the next steps?', 'Draft a case summary'];
 }
 
-export default function AiChatScreen({ caseContext, onClose }) {
+export default function AiChatScreen({ caseContext, onClose, demoMessages }) {
   const [messages, setMessages] = useState([]); // { role, content, streaming }
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
   const scrollRef = useRef(null);
   const abortRef = useRef(null);
   const greetedRef = useRef(false);
+
+  // Scripted demo mode: prefer an explicit prop, else read the global set by the
+  // guided walkthrough (TutorialOverlay). Captured once at mount; the overlay
+  // owns clearing the global (StrictMode-safe — we never clear it on read).
+  const [demoScript] = useState(() => {
+    if (demoMessages?.length) return demoMessages;
+    const g = typeof window !== 'undefined' ? window.__traceDemoMessages : null;
+    return g?.length ? g : null;
+  });
 
   const contextBlock = useMemo(() => buildCaseContextBlock(caseContext), [caseContext]);
   const system = useMemo(() => `${CONSULT_SYSTEM}\n\n${contextBlock}`, [contextBlock]);
@@ -46,10 +55,36 @@ export default function AiChatScreen({ caseContext, onClose }) {
 
   useEffect(() => () => abortRef.current?.abort(), []);
 
+  // Scripted demo playback: show the user message immediately and typewriter the
+  // assistant reply at 18ms/char. Skips the live greeting/API entirely.
+  useEffect(() => {
+    if (!demoScript?.length) return undefined;
+    greetedRef.current = true; // block the live greeting below
+    const script = demoScript.map((m) => ({ role: m.role, content: m.content }));
+    const lastIsAssistant = script[script.length - 1]?.role === 'assistant';
+    if (!lastIsAssistant) {
+      setMessages(script);
+      return undefined;
+    }
+    const target = script[script.length - 1].content;
+    const head = script.slice(0, -1);
+    setMessages([...head, { role: 'assistant', content: '', streaming: true }]);
+    let i = 0;
+    let timer;
+    const tick = () => {
+      i += 1;
+      setMessages([...head, { role: 'assistant', content: target.slice(0, i), streaming: i < target.length }]);
+      if (i < target.length) timer = setTimeout(tick, 18);
+    };
+    timer = setTimeout(tick, 350);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Case-aware opening greeting, generated once when the chat opens. The ref
   // guards against re-firing; the `ignore` flag makes it StrictMode-safe.
   useEffect(() => {
-    if (greetedRef.current) return undefined;
+    if (greetedRef.current || demoScript?.length) return undefined;
     let ignore = false;
     (async () => {
       setBusy(true);

@@ -2,7 +2,7 @@
 // Opened when a caseworker taps a case card. Receives the case object; the
 // Overview tab shows structured data + a follow-up task checklist, Notes lists
 // sessions, Documents streams AI-generated documents.
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import DocumentModal from '../components/DocumentModal.jsx';
 import ServiceFinderModal from '../components/ServiceFinderModal.jsx';
 import CasePrintScreen from './CasePrintScreen.jsx';
@@ -58,11 +58,12 @@ function Row({ label, value }) {
   );
 }
 
-export default function CaseViewScreen({ caseData, supervisorMode = false, onBack, onAddSessionNote, onTasksChanged }) {
+export default function CaseViewScreen({ caseData, supervisorMode = false, onBack, onAddSessionNote, onTasksChanged, demoDocOpen }) {
   const [tab, setTab] = useState('overview');
   const [tasks, setTasks] = useState(caseData?.follow_up_tasks || []);
   const [expandedSession, setExpandedSession] = useState(0);
   const [doc, setDoc] = useState({ open: false, type: null });
+  const [demoDocContent, setDemoDocContent] = useState(null);
   const [riskOpen, setRiskOpen] = useState(false);
   const [showPrint, setShowPrint] = useState(false);
   const [serviceFinder, setServiceFinder] = useState(false);
@@ -74,6 +75,16 @@ export default function CaseViewScreen({ caseData, supervisorMode = false, onBac
   const s = caseData?.structuredData || {};
   const risk = caseData?.riskLevel || s.risk_level || 'medium';
   const indicators = (s.ctdc_indicators?.length ? s.ctdc_indicators : caseData?.ctdcIndicators) || [];
+
+  // Scripted demo: auto-open the document modal with pre-written content when the
+  // guided walkthrough requests it for this case.
+  useEffect(() => {
+    if (demoDocOpen && demoDocOpen.caseId === caseData?.id) {
+      setDemoDocContent(demoDocOpen.content || null);
+      setDoc({ open: true, type: demoDocOpen.docType });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [demoDocOpen]);
 
   function handleToggleTask(i) {
     const next = toggleTask(caseData.id, i, caseData.follow_up_tasks || []);
@@ -192,6 +203,7 @@ export default function CaseViewScreen({ caseData, supervisorMode = false, onBac
         {TABS.map((tb) => (
           <button
             key={tb.id}
+            data-tutorial={`tab-${tb.id}`}
             onClick={() => setTab(tb.id)}
             className={`flex-1 border-b-2 py-2.5 text-sm font-medium transition-colors duration-150 ${
               tab === tb.id ? 'border-tracev2-accent text-tracev2-accent' : 'border-transparent text-tracev2-subtle hover:text-tracev2-text'
@@ -284,7 +296,7 @@ export default function CaseViewScreen({ caseData, supervisorMode = false, onBac
         )}
 
         {tab === 'notes' && (
-          <>
+          <div data-tutorial="case-notes">
           <div className="relative pl-5">
             {/* Vertical spine */}
             <div className="absolute left-2 top-1 bottom-1 w-px bg-tracev2-border" />
@@ -365,7 +377,7 @@ export default function CaseViewScreen({ caseData, supervisorMode = false, onBac
               )}
             </div>
           )}
-          </>
+          </div>
         )}
 
         {tab === 'documents' && (
@@ -442,7 +454,11 @@ export default function CaseViewScreen({ caseData, supervisorMode = false, onBac
         docType={doc.type}
         caseData={caseData}
         targetService={selectedService}
-        onClose={() => setDoc({ open: false, type: null })}
+        demoContent={demoDocContent}
+        onClose={() => {
+          setDoc({ open: false, type: null });
+          setDemoDocContent(null);
+        }}
       />
 
       <ServiceFinderModal
