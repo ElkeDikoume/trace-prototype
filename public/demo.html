@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TRACE v2 — Interactive Demo</title>
+<style>
+  :root {
+    --bg: #0a0d14;
+    --card: #111827;
+    --border: #1f2d4a;
+    --accent: #3b4fd8;
+    --accent-light: #5b6fe8;
+    --text: #e2e8f0;
+    --muted: #6b7498;
+    --subtle: #3a4060;
+    --high: #ef4444;
+    --med: #f59e0b;
+    --low: #10b981;
+    --phone-bg: #0f1117;
+    --phone-card: #1a2035;
+    --phone-border: #2a3350;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 32px;
+    background: rgba(10,13,20,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo { display: flex; align-items: center; gap: 10px; }
+  .logo-mark {
+    width: 32px; height: 32px; background: var(--accent); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 900; color: #fff; letter-spacing: -1px;
+  }
+  .nav-title { font-size: 15px; font-weight: 700; color: var(--text); }
+  .nav-title span { color: var(--muted); font-weight: 400; }
+  .lang-switcher { display: flex; gap: 4px; }
+  .lang-btn {
+    padding: 5px 11px; border-radius: 6px; font-size: 11px; font-weight: 600;
+    border: 1px solid var(--border); background: transparent; color: var(--muted);
+    cursor: pointer; transition: all 0.15s;
+  }
+  .lang-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .lang-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .nav-cta {
+    padding: 7px 16px; border-radius: 8px; font-size: 12px; font-weight: 600;
+    background: var(--accent); color: #fff; border: none; cursor: pointer;
+    text-decoration: none; transition: opacity 0.15s;
+  }
+  .nav-cta:hover { opacity: 0.85; }
+
+  /* HERO */
+  .hero {
+    padding: 120px 32px 60px;
+    text-align: center;
+    max-width: 760px; margin: 0 auto;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    border: 1px solid var(--accent); border-radius: 50px;
+    padding: 5px 14px; font-size: 11px; font-weight: 600; color: var(--accent);
+    margin-bottom: 24px;
+  }
+  .hero-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
+  .hero h1 { font-size: clamp(28px, 5vw, 44px); font-weight: 800; line-height: 1.15; margin-bottom: 18px; }
+  .hero h1 span { color: var(--accent); }
+  .hero p { font-size: 16px; color: var(--muted); line-height: 1.7; max-width: 560px; margin: 0 auto 36px; }
+  .hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn-primary {
+    padding: 12px 28px; border-radius: 10px; font-size: 14px; font-weight: 600;
+    background: var(--accent); color: #fff; border: none; cursor: pointer;
+    text-decoration: none; transition: opacity 0.15s;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+  .btn-secondary {
+    padding: 12px 28px; border-radius: 10px; font-size: 14px; font-weight: 600;
+    background: transparent; color: var(--text); border: 1px solid var(--border);
+    cursor: pointer; text-decoration: none; transition: border-color 0.15s;
+  }
+  .btn-secondary:hover { border-color: var(--muted); }
+
+  /* STATS BAR */
+  .stats-bar {
+    display: flex; justify-content: center; gap: 0;
+    border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    margin: 0; padding: 0;
+  }
+  .stat-item {
+    flex: 1; max-width: 200px;
+    text-align: center; padding: 24px 16px;
+    border-right: 1px solid var(--border);
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-val { font-size: 28px; font-weight: 800; color: var(--accent); }
+  .stat-lbl { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  /* TOUR */
+  .tour-section { padding: 80px 32px; max-width: 1100px; margin: 0 auto; }
+  .tour-header { text-align: center; margin-bottom: 60px; }
+  .tour-header h2 { font-size: 28px; font-weight: 700; margin-bottom: 10px; }
+  .tour-header p { color: var(--muted); font-size: 15px; }
+
+  .step-tabs {
+    display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;
+    margin-bottom: 48px;
+  }
+  .step-tab {
+    padding: 7px 16px; border-radius: 8px; font-size: 12px; font-weight: 500;
+    border: 1px solid var(--border); background: transparent; color: var(--muted);
+    cursor: pointer; transition: all 0.15s;
+  }
+  .step-tab:hover { border-color: var(--accent); color: var(--accent); }
+  .step-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  .step-content { display: none; }
+  .step-content.active { display: flex; align-items: center; gap: 48px; flex-wrap: wrap; justify-content: center; }
+
+  /* PHONE */
+  .phone-wrap { flex-shrink: 0; }
+  .phone {
+    width: 240px; border-radius: 36px;
+    background: var(--phone-bg);
+    border: 6px solid #1e2740;
+    box-shadow: 0 0 0 1px var(--phone-border), 0 32px 64px rgba(0,0,0,0.6);
+    overflow: hidden;
+  }
+  .phone-screen { height: 460px; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* FEATURE PANEL */
+  .feature-panel { flex: 1; min-width: 280px; max-width: 420px; }
+  .feature-step-num {
+    font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 12px;
+  }
+  .feature-panel h3 { font-size: 24px; font-weight: 700; margin-bottom: 14px; line-height: 1.3; }
+  .feature-panel > p { font-size: 15px; color: var(--muted); line-height: 1.7; margin-bottom: 24px; }
+  .feature-list { display: flex; flex-direction: column; gap: 12px; }
+  .feature-item { display: flex; align-items: flex-start; gap: 10px; }
+  .feature-dot { width: 20px; height: 20px; border-radius: 50%; background: var(--accent); flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #fff; font-weight: 700; }
+  .feature-item-text { font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .feature-item-text strong { color: var(--text); font-weight: 600; }
+
+  /* STEP NAV */
+  .step-nav { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 48px; }
+  .step-nav-btn {
+    padding: 10px 24px; border-radius: 8px; font-size: 13px; font-weight: 600;
+    border: 1px solid var(--border); background: var(--card); color: var(--text);
+    cursor: pointer; transition: all 0.15s;
+  }
+  .step-nav-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  .step-nav-btn:disabled { opacity: 0.3; cursor: default; }
+  .step-counter { font-size: 12px; color: var(--muted); min-width: 60px; text-align: center; }
+
+  /* MINI UI ELEMENTS for phone screens */
+  .p-sbar { display:flex;justify-content:space-between;padding:8px 12px 4px;font-size:8px;color:#6b7498; }
+  .p-hdr { display:flex;justify-content:space-between;align-items:center;padding:6px 12px 4px; }
+  .p-logo { display:flex;align-items:center;gap:5px; }
+  .p-logo-box { width:20px;height:20px;background:#fff;border-radius:4px;display:flex;align-items:center;justify-content:center; }
+  .p-logo-dot { width:10px;height:10px;background:#3b4fd8;border-radius:2px; }
+  .p-app-name { font-size:9px;font-weight:700;color:#e2e8f0; }
+  .p-ctrl { display:flex;gap:4px; }
+  .p-ctrl-btn { width:20px;height:20px;background:#1a2035;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:8px;color:#6b7498; }
+  .p-avatar { width:20px;height:20px;background:#3b4fd8;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;color:#fff; }
+  .p-greet { padding:2px 12px;font-size:12px;font-weight:700;color:#e2e8f0; }
+  .p-greet-sub { padding:0 12px 6px;font-size:7px;color:#6b7498; }
+  .p-pills { display:flex;gap:4px;padding:0 12px 6px; }
+  .p-pill { flex:1;background:#1a2035;border:1px solid #2a3350;border-radius:7px;padding:4px 5px; }
+  .p-pill-val { font-size:12px;font-weight:700; }
+  .p-pill-lbl { font-size:6px;color:#6b7498; }
+  .p-green { color:#10b981; } .p-red { color:#ef4444; } .p-white { color:#e2e8f0; }
+  .p-card { margin:0 12px 5px;background:#1a2035;border:1px solid #2a3350;border-radius:7px;padding:5px 8px; }
+  .p-card-hdr { display:flex;align-items:center;gap:4px;margin-bottom:3px; }
+  .p-card-dot { width:5px;height:5px;background:#3b4fd8;border-radius:50%; }
+  .p-card-title { font-size:7px;font-weight:700;color:#3b4fd8;text-transform:uppercase;letter-spacing:.4px; }
+  .p-card-body { font-size:7px;color:#c7ceea;line-height:1.4; }
+  .p-alert { margin:0 12px 5px;background:#f59e0b10;border:1px solid #f59e0b40;border-radius:7px;padding:4px 8px;display:flex;align-items:center;gap:5px; }
+  .p-alert-text { font-size:7px;color:#f59e0b;font-weight:600; }
+  .p-sec { display:flex;justify-content:space-between;align-items:center;padding:2px 12px 3px; }
+  .p-sec-title { font-size:8px;font-weight:600;color:#e2e8f0; }
+  .p-sec-link { font-size:7px;color:#3b4fd8; }
+  .p-case { margin:0 12px 4px;background:#1a2035;border:1px solid #2a3350;border-radius:7px;padding:5px 8px;display:flex;justify-content:space-between;align-items:center; }
+  .p-case-id { font-size:8px;font-weight:700;color:#e2e8f0; }
+  .p-case-meta { font-size:6.5px;color:#6b7498;margin-top:1px; }
+  .p-badge { border-radius:50px;padding:2px 5px;font-size:6px;font-weight:600; }
+  .p-high { background:#ef444420;color:#ef4444; } .p-med2 { background:#f59e0b20;color:#f59e0b; } .p-low2 { background:#10b98120;color:#10b981; }
+  .p-bnav { display:flex;background:#0f1117;border-top:1px solid #2a3350;padding:6px 0 10px;margin-top:auto; }
+  .p-tab { flex:1;display:flex;flex-direction:column;align-items:center;gap:2px; }
+  .p-tab-icon { font-size:13px;color:#6b7498; }
+  .p-tab-icon.on { color:#3b4fd8; }
+  .p-tab-lbl { font-size:5.5px;color:#6b7498; }
+  .p-tab-lbl.on { color:#3b4fd8;font-weight:600; }
+
+  /* BOTTOM STRIP */
+  .bottom-strip { background: var(--card); border-top: 1px solid var(--border); padding: 60px 32px; text-align: center; }
+  .bottom-strip h2 { font-size: 26px; font-weight: 700; margin-bottom: 12px; }
+  .bottom-strip p { color: var(--muted); font-size: 15px; margin-bottom: 28px; max-width: 500px; margin-left: auto; margin-right: auto; }
+  .bottom-links { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+  /* RESPONSIVE */
+  @media (max-width: 700px) {
+    nav { padding: 12px 16px; }
+    .hero { padding: 100px 16px 48px; }
+    .tour-section { padding: 48px 16px; }
+    .step-content.active { flex-direction: column; }
+    .stats-bar { flex-wrap: wrap; }
+    .stat-item { flex: 0 0 50%; border-right: none; border-bottom: 1px solid var(--border); }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <div class="logo-mark">T</div>
+    <div class="nav-title">TRACE <span>v2</span></div>
+  </div>
+  <div class="lang-switcher">
+    <button class="lang-btn active" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" onclick="setLang('fr')">FR</button>
+    <button class="lang-btn" onclick="setLang('es')">ES</button>
+    <button class="lang-btn" onclick="setLang('pt')">PT</button>
+  </div>
+  <a href="https://trace-v2-git-v2-demo-trace-prototype.vercel.app/?v2" target="_blank" class="nav-cta" data-i18n="nav_cta" style="white-space:nowrap">Try live demo →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">
+    <div class="hero-badge-dot"></div>
+    <span data-i18n="badge">AI for Social Good · Lake Chad Basin</span>
+  </div>
+  <h1 data-i18n="hero_h1">The AI assistant that makes <span>anti-trafficking caseworkers</span> better at their work</h1>
+  <p data-i18n="hero_p">TRACE is a mobile-first case management platform designed for frontline caseworkers in conflict-affected regions. Not a data collection tool — a practice improvement platform.</p>
+  <div class="hero-btns">
+    <a href="https://trace-v2-git-v2-demo-trace-prototype.vercel.app/?v2" target="_blank" class="btn-primary" data-i18n="hero_demo">Try the live demo</a>
+    <button class="btn-secondary" onclick="scrollToTour()" data-i18n="hero_tour">Take the guided tour</button>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <div class="stat-val">82%</div>
+    <div class="stat-lbl" data-i18n="stat1">of displaced persons in Chad have little or no education</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-val">3.5M</div>
+    <div class="stat-lbl" data-i18n="stat2">children out of school in the Lake Chad Basin</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-val">6</div>
+    <div class="stat-lbl" data-i18n="stat3">document types generated in seconds, not hours</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-val">0</div>
+    <div class="stat-lbl" data-i18n="stat4">survivor data shared without caseworker review</div>
+  </div>
+</div>
+
+<!-- GUIDED TOUR -->
+<section class="tour-section" id="tour">
+  <div class="tour-header">
+    <h2 data-i18n="tour_title">Guided feature tour</h2>
+    <p data-i18n="tour_sub">Seven features that change how caseworkers work in the field</p>
+  </div>
+
+  <div class="step-tabs" id="stepTabs"></div>
+
+  <!-- STEP 1: Dashboard -->
+  <div class="step-content active" id="step-1">
+    <div class="phone-wrap">
+      <div class="phone"><div class="phone-screen">
+        <div class="p-sbar"><span>9:41</span><span>●●● 🔋</span></div>
+        <div class="p-hdr">
+          <div class="p-logo"><div class="p-logo-box"><div class="p-logo-dot"></div></div><span class="p-app-name">TRACE</span></div>
+          <div class="p-ctrl"><div class="p-ctrl-btn">☀</div><div class="p-ctrl-btn">FR</div><div class="p-ctrl-btn">♡</div><div class="p-avatar">MC</div></div>
+        </div>
+        <div class="p-greet" data-phone-i18n="good_morning">Good morning, Marie-Claire</div>
+        <div class="p-greet-sub" data-phone-i18n="caseload_today">Here's your caseload today.</div>
+        <div class="p-pills">
+          <div class="p-pill"><div class="p-pill-val p-green">4</div><div class="p-pill-lbl" data-phone-i18n="active">Active</div></div>
+          <div class="p-pill"><div class="p-pill-val p-red">2</div><div class="p-pill-lbl" data-phone-i18n="urgent">Urgent</div></div>
+          <div class="p-pill"><div class="p-pill-val p-white">1</div><div class="p-pill-lbl" data-phone-i18n="pending">Pending</div></div>
+        </div>
+        <div class="p-card">
+          <div class="p-card-hdr"><div class="p-card-dot"></div><span class="p-card-title" data-phone-i18n="todays_brief">Today's brief</span></div>
+          <div class="p-card-body" data-phone-i18n="brief_text">Cases #0043 and #0039 both show document confiscation. Case #0042 has 2 overdue tasks. Prioritise medical referral today.</div>
+        </div>
+        <div class="p-alert">
+          <span style="font-size:10px">⚠</span>
+          <span class="p-alert-text" data-phone-i18n="pattern_alert">Pattern alert: document confiscation in 3 cases</span>
+        </div>
+        <div class="p-sec"><span class="p-sec-title" data-phone-i18n="recent_cases">Recent cases</span><span class="p-sec-link" data-phone-i18n="see_all">See all</span></div>
+        <div class="p-case">
+          <div><div class="p-case-id">#0043</div><div class="p-case-meta">F · 16–18 · Active · 2h ago</div></div>
+          <div style="display:flex;align-items:center;gap:4px"><span class="p-badge p-high" data-phone-i18n="high">High</span><span style="color:#6b7498;font-size:10px">›</span></div>
+        </div>
+        <div class="p-case">
+          <div><div class="p-case-id">#0042</div><div class="p-case-meta">F · 19–25 · Active · Yesterday</div></div>
+          <div style="display:flex;align-items:center;gap:4px"><span class="p-badge p-med2" data-phone-i18n="medium">Med</span><span style="color:#6b7498;font-size:10px">›</span></div>
+        </div>
+        <div class="p-bnav">
+          <div class="p-tab"><div class="p-tab-icon on">⊟</div><div class="p-tab-lbl on" data-phone-i18n="cases">Cases</div></div>
+          <div class="p-tab"><div class="p-tab-icon">＋</div><div class="p-tab-lbl" data-phone-i18n="intake">Intake</div></div>
+          <div class="p-tab"><div class="p-tab-icon">✦</div><div class="p-tab-lbl" data-phone-i18n="ask_ai">Ask AI</div></div>
+          <div class="p-tab"><div class="p-tab-icon">≡</div><div class="p-tab-lbl" data-phone-i18n="docs">Docs</div></div>
+        </div>
+      </div></div>
+    </div>
+    <div class="feature-panel">
+      <div class="feature-step-num" data-i18n="step_1_num">Step 1 of 7</div>
+      <h3 data-i18n="step_1_title">AI daily brief — your caseload at a glance</h3>
+      <p data-i18n="step_1_desc">Every morning, TRACE reads the full caseload and generates a prioritised briefing — what's urgent, what's overdue, what patterns have emerged. No scrolling through cases to figure out where to start.</p>
+      <div class="feature-list">
+        <div class="feature-item"><div class="feature-dot">✓</div><div class="feature-item-text"><strong data-i18n="f1_1_title">Cross-case pattern detection</strong> — <span data-i18n="f1_1_body">flags linked indicators across cases without any API call</span></div></div>
+        <div class="feature-item"><div class="feature-dot">✓</div><div class="feature-item-text"><strong data-i18n="f1_2_title">Session-cached</strong> — <span data-i18n="f1_2_body">generates once per session, never repeats unnecessarily</span></div></div>
+        <div class="feature-item"><div class="feature-dot">✓</div><div class="feature-item-text"><strong data-i18n="f1_3_title">Supervisor wellness alert</strong> — <span data-i18n="f1_3_body">weekly check-in, alerts supervisor if caseworker scores are consistently low</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2: Intake + Gap Detector -->
+  <div class="step-content" id="step-2">
+    <div class="phone-wrap"><div class="phone"><div class="phone-screen">
+      <div class="p-sbar"><span>9:41</span><span>●●● 🔋</span></div>
+      <div style="background:#0f1117;border-bottom:1px solid #2a3350;padding:6px 12px 5px">
+        <div style="font-size:7px;color:#3b4fd8;margin-bottom:2px">‹ Cases</div>
+        <div style="font-size:11px;font-weight:700;color:#e2e8f0" data-phone-i18n="new_intake">New intake</div>
+        <div style="font-size:7px;color:#6b7498">Case #0046 · Draft</div>
+      </div>
+      <div style="padding:8px 12px;flex:1;display:flex;flex-direction:column;gap:5px">
+        <div style="display:flex;gap:4px">
+          <div style="flex:1;background:#1a2035;border:1px solid #2a3350;border-radius:5px;padding:4px 6px"><div style="font-size:6px;color:#6b7498" data-phone-i18n="age">Age</div><div style="font-size:8px;color:#e2e8f0;font-weight:600">14–17</div></div>
+          <div style="flex:1;background:#1a2035;border:1px solid #2a3350;border-radius:5px;padding:4px 6px"><div style="font-size:6px;color:#6b7498" data-phone-i18n="sex">Sex</div><div style="font-size:8px;color:#e2e8f0;font-weight:600" data-phone-i18n="female">F</div></div>
+          <div style="flex:1;background:#1a2035;border:1px solid #2a3350;border-radius:5px;padding:4px 6px"><div style="font-size:6px;color:#6b7498" data-phone-i18n="risk">Risk</div><div style="font-size:8px;color:#ef4444;font-weight:600" data-phone-i18n="high">High</div></div>
+        </div>
+        <div style="background:#1a2035;border:1px solid #2a3350;border-radius:5px;padding:5px 6px;font-size:7px;color:#c7ceea;line-height:1.4;height:58px">Yarinya ta zo gidan da safe… an kwace takardun ta… an ce mata za ta biya kuɗin tafiya…</div>
+        <div style="background:#3b4fd810;border:1px solid #3b4fd830;border-radius:6px;padding:5px 7px">
+          <div style="font-size:6px;font-weight:700;color:#3b4fd8;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px" data-phone-i18n="ctdc_coverage">CTDC coverage</div>
+          <div style="display:flex;align-items:center;gap:3px;margin-bottom:2px"><div style="width:6px;height:6px;border-radius:50%;background:#10b981"></div><span style="font-size:6.5px;color:#c7ceea" data-phone-i18n="recruitment">Recruitment</span></div>
+          <div style="display:flex;align-items:center;gap:3px;margin-bottom:2px"><div style="width:6px;height:6px;border-radius:50%;background:#10b981"></div><span style="font-size:6.5px;color:#c7ceea" data-phone-i18n="documents">Documents</span></div>
+          <div style="display:flex;align-items:center;gap:3px;margin-bottom:2px"><div style="width:6px;height:6px;border-radius:50%;background:#2a3350;border:1px solid #6b7498"></div><span style="font-size:6.5px;color:#c7ceea" data-phone-i18n="movement">Movement</span></div>
+          <div style="display:flex;align-items:center;gap:3px;font-style:italic"><div style="width:6px;height:6px;border-radius:50%;background:#2a3350;border:1px solid #6b7498"></div><span style="font-size:5.5px;color:#6b7498" data-phone-i18n="tip_movement">Tip: Ask "were there things that made it hard to move freely?"</span></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:5px;padding:0 12px 8px">
+        <div style="flex:0.8;background:#1a2035;border:1px solid #2a3350;border-radius:6px;padding:6px 0;font-size:7.5px;font-weight:600;color:#e2e8f0;text-align:center" data-phone-i18n="record">⏺ Record</div>
+        <div style="flex:1;background:#3b4fd8;border-radius:6px;padding:6px 0;font-size:7.5px;font-weight:600;color:#fff;text-align:center" data-phone-i18n="translate_structure">Translate &amp; Structure</div>
+      </div>
+      <div class="p-bnav">
+        <div class="p-tab"><div class="p-tab-icon">⊟</div><div class="p-tab-lbl" data-phone-i18n="cases">Cases</div></div>
+        <div class="p-tab"><div class="p-tab-icon on">＋</div><div class="p-tab-lbl on" data-phone-i18n="intake">Intake</div></div>
+        <div class="p-tab"><div class="p-tab-icon">✦</div><div class="p-tab-lbl" data-phone-i18n="ask_ai">Ask AI</div></div>
+        <div class="p-tab"><div class="p-tab-icon">≡</div><div class="p-tab-lbl" data-phone-i18n="docs">Docs</div></div>
+      </div>
+    </div></div></div>
+    <div class="feature-panel">
+      <div class="feature-step-num" data-i18n="step_2_num">Step 2 of 7</div>
+      <h3 data-i18n="step_2_title">Live CTDC gap detection with trauma-informed tips</h3>
+      <p data-i18n="step_2_desc">As the caseworker types, TRACE checks notes against all 8 CTDC indicator categories in real time. Gaps show trauma-informed phrasing guidance — teaching best practice during the interview, not in a manual.</p>
+      <div class="feature-list">
+        <div class="feature-item"><div class="feature-dot">✓</div><div class="feature-item-text"><strong data-i18n="f2_1_title">Fully offline</strong> — <span data-i18n="f2_1_body">client-side keyword matching, no API call required</span></div></div>
+        <div class="feature-item"><div class="feature-dot">✓</div><div class="feature-item-text"><strong data-i18n="f2_2_title">8 CTDC categories</strong> — <span data-i18n="f2_2_body">recruitment, documents, movement, wages, exploitation, control, family, duration</span></div></div>
+        <div class="feature-item"><div class="feature-dot">✓</div><div class="feature-item-text"><strong data-i18n="f2_3_title">Hausa, French, Arabic</strong> — <span data-i18n="f2_3_body">notes accepted in any language; translate &amp; structure with one tap</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3: Ask AI -->
+  <div class="step-content" id="step-3">
+    <div class="phone-wrap"><div class="phone"><div class="phone-screen">
+      <div class="p-sbar"><span>9:41</span><span>●●● 🔋</span></div>
+      <div style="background:#0f1117;border-bottom:1px solid #2a3350;padding:6px 12px;display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:11px;font-weight:700;color:#e2e8f0">✦ <span data-phone-i18n="ask_ai">Ask AI</span></div>
+        <div style="font-size:8px;color:#3b4fd8;background:#3b4fd820;border-radius:4px;padding:2px 6px">Case #0043</div>
+      </div>
+      <div style="flex:1;padding:8px 12px;display:flex;flex-direction:column;gap:6px;overflow:hidden">
+        <div style="background:#3b4fd815;border:1px solid #3b4fd830;border-radius:8px 8px 8px 2px;padding:7px 9px;font-size:7.5px;color:#c7ceea;line-height:1.5" data-phone-i18n="ai_greeting">I can see Case #0043 — high risk, document confiscation confirmed, medical assessment still outstanding. What do you need?</div>
+        <div style="background:#1a2035;border:1px solid #2a3350;border-radius:2px 8px 8px 8px;padding:7px 9px;font-size:7.5px;color:#e2e8f0;line-height:1.5;margin-left:20px" data-phone-i18n="caseworker_q">Does the debt mentioned constitute debt bondage under CTDC?</div>
+        <div style="background:#3b4fd815;border:1px solid #3b4fd830;border-radius:8px 8px 8px 2px;padding:7px 9px;font-size:7.5px;color:#c7ceea;line-height:1.5" data-phone-i18n="ai_response">Yes — under CTDC indicator 3.2, debt bondage is present when movement is restricted as enforcement of a claimed debt. The transport fee described in the notes, combined with document confiscation, meets the threshold. I'd recommend noting this explicitly before generating the risk assessment.</div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:2px">
+          <div style="border:1px solid #2a3350;border-radius:50px;padding:3px 8px;font-size:6.5px;color:#6b7498" data-phone-i18n="chip_supervisor">Draft supervisor update</div>
+          <div style="border:1px solid #2a3350;border-radius:50px;padding:3px 8px;font-size:6.5px;color:#6b7498" data-phone-i18n="chip_referral">Most urgent referral?</div>
+        </div>
+      </div>
+      <div style="padding:6px 12px 8px;border-top:1px solid #2a3350;display:flex;gap:5px">
+        <div style="flex:1;background:#1a2035;border:1px solid #2a3350;border-radius:6px;padding:5px 8px;font-size:7px;color:#6b7498" data-phone-i18n="ask_placeholder">Ask about this case…</div>
+        <div style="width:28px;height:28px;background:#3b4fd8;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff">↑</div>
+      </div>
+      <div class="p-bnav">
+        <div class="p-tab"><div class="p-tab-icon">⊟</div><div class="p-tab-lbl" data-phone-i18n="cases">Cases</div></div>
+        <div class="p-tab"><div class="p-tab-icon">＋</div><div class="p-tab-lbl" data-phone-i18n="intake">Intake</div></div>
+        <div class="p-tab"><div class="p-tab-icon on">✦</div><div class="p-tab-lbl on" data-phone-i18n="ask_ai">Ask AI</div></div>
+        <div class="p-tab"><div class="p-tab-icon">≡</div><div class="p-tab-lbl" data-phone-i18n="docs">Docs</div></div>
+      </div>
+    </div></div></div>
+    <div class="feature-panel">
+      <div class="feature-step-num" data-i18n="step_3_num">Step 3 of 7</div>
+      <h3 data-i18n="step_3_title">Ask AI — a senior colleague, always available</h3>
+      <p data-i18n="step_3_desc">Not a chatbot. Ask AI opens with the active case already loaded and a greeting that shows it has read the file. Caseworkers can ask for second opinions, CTDC clarifications, or supervisor updates — grounded in IOM protocols.</p>
+      <div class="feature-list">
+        <div class="feature-item"><div class="feature-dot">✓</div><div class="feature-item-text"><strong data-i18n="f3_1_title">Case-aware greeting</strong> — <span data-i18n="f3_1_body">Claude reads the case before saying hello</span></div></div>
+        <div class="feature-item"><div class="feature-dot">✓</div><div class="feature-item-text"><strong data-i18n="f3_2_title">IOM-grounded system prompt</strong> — <span data-i18n="f3_2_body">references CTDC indicators, HTCDS standards, trauma-informed practice</span></div></div>
+        <div class="feature-item"><div class="feature-dot">✓</div><div class="feature-item-text"><strong data-i18n="f3_3_title">Quick-tap chips</strong> — <span data-i18n="f3_3_body">contextual prompts based on case risk level, no blank-page paralysis</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4: Documents -->
+  <div class="step-content" id="step-4">
+    <div class="phone-wrap"><div class="phone"><div class="phone-screen">
+      <div class="p-sbar"><span>9:41</span><span>●●● 🔋</span></div>
+      <div style="background:#0f1117;border-bottom:1px solid #2a3350;padding:6px 12px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <div style="font-size:10px;font-weight:700;color:#e2e8f0" data-phone-i18n="referral_letter">Referral Letter</div>
+          <div style="display:flex;gap:4px;align-items:center">
+            <div style="display:flex;gap:2px;border:1px solid #2a3350;border-radius:5px;padding:2px 3px">
+              <div style="background:#3b4fd8;border-radius:3px;padding:2px 5px;font-size:7px;font-weight:600;color:#fff">EN</div>
+              <div style="padding:2px 5px;font-size:7px;font-weight:600;color:#6b7498">FR</div>
+            </div>
+            <div style="font-size:10px;color:#6b7498">✕</div>
+          </div>
+        </div>
+      </div>
+      <div style="flex:1;padding:8px 12px;font-size:7px;color:#c7ceea;line-height:1.6;font-family:monospace;overflow:hidden">
+        <div>N'Djamena, 19 July 2026</div>
+        <div style="margin-top:4px;font-weight:700">IOM Chad — Protection Unit</div>
+        <div>Ref: TRACE-#0043 | CONFIDENTIAL</div>
+        <div style="margin-top:6px">We refer Case #0043, a female individual aged 16–18, for urgent protection services. CTDC indicators confirm document confiscation and recruitment by deception. Medical assessment is outstanding and requested as priority...</div>
+        <div style="margin-top:8px;color:#6b7498" data-phone-i18n="caseworker_sig">Caseworker signature: ___________</div>
+      </div>
+      <div style="border-top:1px solid #2a3350;background:#f59e0b08">
+        <div style="display:flex;align-items:center;gap:5px;padding:4px 10px;border-bottom:1px solid #f59e0b20">
+          <span style="font-size:8px;color:#f59e0b">⬡</span>
+          <span style="font-size:6.5px;color:#f59e0b;font-weight:500" data-phone-i18n="ai_review_pending">AI-generated · Review all content before use · Caseworker approval required</span>
+        </div>
+        <div style="display:flex;gap:5px;padding:5px 10px 7px">
+          <div style="flex:1;background:#1a2035;border:1px solid #2a3350;border-radius:6px;padding:5px 0;font-size:7.5px;font-weight:600;color:#e2e8f0;text-align:center" data-phone-i18n="copy">⎘ Copy</div>
+          <div style="flex:1;background:#1a2035;border:1px solid #2a3350;border-radius:6px;padding:5px 0;font-size:7.5px;font-weight:600;color:#e2e8f0;text-align:center" data-phone-i18n="download">↓ Download</div>
+        </div>
+      </div>
+      <div class="p-bnav">
+        <div class="p-tab"><div class="p-tab-icon on">⊟</div><div class="p-tab-lbl on" data-phone-i18n="cases">Cases</div></div>
+        <div class="p-tab"><div class="p-tab-icon">＋</div><div class="p-tab-lbl" data-phone-i18n="intake">Intake</div></div>
+        <div class="p-tab"><div class="p-tab-icon">✦</div><div class="p-tab-lbl" data-phone-i18n="ask_ai">Ask AI</div></div>
+        <div class="p-tab"><div class="p-tab-icon">≡</div><div class="p-tab-lbl" data-phone-i18n="docs">Docs</div></div>
+      </div>
+    </div></div></div>
+    <div class="feature-panel">
+      <div class="feature-step-num" data-i18n="step_4_num">Step 4 of 7</div>
+      <h3 data-i18n="step_4_title">Seven document types — AI-generated, caseworker-reviewed</h3>
+      <p data-i18n="step_4_desc">Referral letters, risk assessments, IOM HTCDS forms, family tracing requests, reintegration plans, safe exit plans, and case handoffs — streamed in seconds, always requiring caseworker sign-off before leaving the app.</p>
+      <div class="feature-list">
+        <div class="feature-item"><div class="feature-dot">✓</div><div class="feature-item-text"><strong data-i18n="f4_1_title">EN/FR toggle</strong> — <span data-i18n="f4_1_body">regenerates any document in French with one tap</span></div></div>
+        <div class="feature-item"><div class="feature-dot">✓</div><div class="feature-item-text"><strong data-i18n="f4_2_title">Attribution stamp</strong> — <span data-i18n="f4_2_body">every document shows AI-generated status; turns green once reviewed</span></div></div>
+        <div class="feature-item"><div class="feature-dot">✓</div><div class="feature-item-text"><strong data-i18n="f4_3_title">Supervisor-gated handoff</strong> — <span data-i18n="f4_3_body">case transfer documents visible only to supervisor-role users</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 5: Safe Card -->
+  <div class="step-content" id="step-5">
+    <div class="phone-wrap"><div class="phone"><div class="phone-screen">
+      <div class="p-sbar"><span>9:41</span><span>●●● 🔋</span></div>
+      <div style="background:#0f1117;border-bottom:1px solid #2a3350;padding:6px 12px;display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:10px;font-weight:700;color:#e2e8f0" data-phone-i18n="safe_info_card">Safe Info Card</div>
+        <div style="font-size:10px;color:#6b7498">✕</div>
+      </div>
+      <div style="background:#10b98115;border-bottom:1px solid #10b98130;padding:7px 12px;display:flex;align-items:center;gap:6px">
+        <div style="width:20px;height:20px;background:#10b981;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:700;flex-shrink:0">✓</div>
+        <span style="font-size:8px;font-weight:600;color:#10b981" data-phone-i18n="safe_to_share">Safe to share with survivor</span>
+      </div>
+      <div style="padding:10px 12px;display:flex;flex-direction:column;gap:8px;flex:1">
+        <div style="text-align:center;font-size:7.5px;color:#6b7498;font-style:italic" data-phone-i18n="emergency_contacts">Emergency contacts</div>
+        <div style="background:#1a2035;border:1px solid #2a3350;border-radius:7px;padding:7px 10px;display:flex;align-items:center;gap:8px">
+          <span style="font-size:18px">📞</span>
+          <div><div style="font-size:7px;color:#6b7498">IOM Chad</div><div style="font-size:12px;font-weight:700;color:#e2e8f0">+235 63 52 24 76</div></div>
+        </div>
+        <div style="background:#1a2035;border:1px solid #2a3350;border-radius:7px;padding:7px 10px;display:flex;align-items:center;gap:8px">
+          <span style="font-size:18px">🚔</span>
+          <div><div style="font-size:7px;color:#6b7498" data-phone-i18n="police_mineurs">Police des Mineurs</div><div style="font-size:12px;font-weight:700;color:#e2e8f0">+235 22 52 46 57</div></div>
+        </div>
+        <div style="background:#1a2035;border:1px solid #2a3350;border-radius:7px;padding:7px 10px;display:flex;align-items:center;gap:8px">
+          <span style="font-size:18px">🏠</span>
+          <div><div style="font-size:7px;color:#6b7498">UNHCR Chad</div><div style="font-size:12px;font-weight:700;color:#e2e8f0">+235 22 52 47 57</div></div>
+        </div>
+        <div style="background:#10b981;border-radius:8px;padding:10px 0;font-size:9px;font-weight:600;color:#fff;text-align:center" data-phone-i18n="play_for_survivor">▶ Play for survivor (French)</div>
+        <div style="font-size:6.5px;color:#6b7498;text-align:center" data-phone-i18n="audio_note">Reads aloud in French. Show numbers above if preferred.</div>
+      </div>
+    </div></div></div>
+    <div class="feature-panel">
+      <div class="feature-step-num" data-i18n="step_5_num">Step 5 of 7</div>
+      <h3 data-i18n="step_5_title">Safe info card — designed for low-literacy contexts</h3>
+      <p data-i18n="step_5_desc">Over 82% of displaced persons in Chad have little or no formal education. The safe info card shows emergency contacts as large, icon-anchored numbers — readable by someone with zero literacy. One tap plays it aloud in French.</p>
+      <div class="feature-list">
+        <div class="feature-item"><div class="feature-dot">✓</div><div class="feature-item-text"><strong data-i18n="f5_1_title">Audio playback</strong> — <span data-i18n="f5_1_body">Web Speech API reads rights and contacts aloud in French at a slow, clear pace</span></div></div>
+        <div class="feature-item"><div class="feature-dot">✓</div><div class="feature-item-text"><strong data-i18n="f5_2_title">Icon-anchored numbers</strong> — <span data-i18n="f5_2_body">phone, police, shelter — universally understood without text</span></div></div>
+        <div class="feature-item"><div class="feature-dot">✓</div><div class="feature-item-text"><strong data-i18n="f5_3_title">Caseworker-mediated</strong> — <span data-i18n="f5_3_body">survivors never touch the app; caseworker controls delivery</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 6: Case View / Risk -->
+  <div class="step-content" id="step-6">
+    <div class="phone-wrap"><div class="phone"><div class="phone-screen">
+      <div class="p-sbar"><span>9:41</span><span>●●● 🔋</span></div>
+      <div style="background:#0f1117;border-bottom:1px solid #2a3350;padding:6px 12px">
+        <div style="font-size:7px;color:#3b4fd8;margin-bottom:2px">‹ Cases</div>
+        <div style="font-size:11px;font-weight:700;color:#e2e8f0">Case #0043</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:2px">
+          <span style="font-size:7px;color:#6b7498">F · 16–18 · Active</span>
+          <span style="background:#ef444420;color:#ef4444;border-radius:50px;padding:2px 7px;font-size:7px;font-weight:700;display:inline-flex;align-items:center;gap:2px" data-phone-i18n="high_risk">HIGH ▾</span>
+        </div>
+        <div style="background:#1a2035;border:1px solid #2a3350;border-radius:6px;padding:5px 8px;margin-top:5px">
+          <div style="font-size:6px;font-weight:600;color:#6b7498;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px" data-phone-i18n="risk_indicators">Risk indicators</div>
+          <div style="display:flex;align-items:flex-start;gap:5px;margin-bottom:3px"><div style="width:6px;height:6px;border-radius:50%;background:#ef4444;flex-shrink:0;margin-top:2px"></div><span style="font-size:6.5px;color:#c7ceea" data-phone-i18n="ind1">Document confiscation confirmed in notes</span></div>
+          <div style="display:flex;align-items:flex-start;gap:5px;margin-bottom:3px"><div style="width:6px;height:6px;border-radius:50%;background:#ef4444;flex-shrink:0;margin-top:2px"></div><span style="font-size:6.5px;color:#c7ceea" data-phone-i18n="ind2">Recruitment by deception — false employment offer</span></div>
+          <div style="display:flex;align-items:flex-start;gap:5px"><div style="width:6px;height:6px;border-radius:50%;background:#ef4444;flex-shrink:0;margin-top:2px"></div><span style="font-size:6.5px;color:#c7ceea" data-phone-i18n="ind3">Unaccompanied minor — age 16–18</span></div>
+        </div>
+      </div>
+      <div style="display:flex;background:#1a2035;border-bottom:1px solid #2a3350">
+        <div style="flex:1;text-align:center;padding:5px 0;font-size:7.5px;color:#6b7498" data-phone-i18n="notes_tab">Notes</div>
+        <div style="flex:1;text-align:center;padding:5px 0;font-size:7.5px;color:#3b4fd8;border-bottom:2px solid #3b4fd8;font-weight:600" data-phone-i18n="tasks_tab">Tasks</div>
+        <div style="flex:1;text-align:center;padding:5px 0;font-size:7.5px;color:#6b7498" data-phone-i18n="docs_tab">Docs</div>
+      </div>
+      <div style="padding:7px 12px;flex:1;overflow:hidden">
+        <div style="display:flex;align-items:flex-start;gap:5px;margin-bottom:5px"><div style="width:11px;height:11px;border-radius:3px;border:1.5px solid #2a3350;flex-shrink:0;margin-top:1px"></div><div style="font-size:7px;color:#c7ceea" data-phone-i18n="task1">Medical assessment — within 48h <span style="background:#ef444420;color:#ef4444;font-size:5.5px;padding:1px 4px;border-radius:3px;font-weight:600">High</span></div></div>
+        <div style="display:flex;align-items:flex-start;gap:5px;margin-bottom:5px"><div style="width:11px;height:11px;border-radius:3px;background:#10b981;border:1.5px solid #10b981;flex-shrink:0;margin-top:1px"></div><div style="font-size:7px;color:#6b7498;text-decoration:line-through" data-phone-i18n="task2">Legal aid referral submitted</div></div>
+        <div style="display:flex;align-items:flex-start;gap:5px"><div style="width:11px;height:11px;border-radius:3px;border:1.5px solid #2a3350;flex-shrink:0;margin-top:1px"></div><div style="font-size:7px;color:#c7ceea" data-phone-i18n="task3">Psychosocial referral to AFPAD <span style="background:#f59e0b20;color:#f59e0b;font-size:5.5px;padding:1px 4px;border-radius:3px;font-weight:600">Med</span></div></div>
+      </div>
+      <div class="p-bnav">
+        <div class="p-tab"><div class="p-tab-icon on">⊟</div><div class="p-tab-lbl on" data-phone-i18n="cases">Cases</div></div>
+        <div class="p-tab"><div class="p-tab-icon">＋</div><div class="p-tab-lbl" data-phone-i18n="intake">Intake</div></div>
+        <div class="p-tab"><div class="p-tab-icon">✦</div><div class="p-tab-lbl" data-phone-i18n="ask_ai">Ask AI</div></div>
+        <div class="p-tab"><div class="p-tab-icon">≡</div><div class="p-tab-lbl" data-phone-i18n="docs">Docs</div></div>
+      </div>
+    </div></div></div>
+    <div class="feature-panel">
+      <div class="feature-step-num" data-i18n="step_6_num">Step 6 of 7</div>
+      <h3 data-i18n="step_6_title">Risk breakdown — explainable AI, not a black box</h3>
+      <p data-i18n="step_6_desc">Tapping the risk badge expands a panel showing exactly which CTDC indicators drove the score. Caseworkers build intuition over time. No unexplained verdicts — every risk assessment is transparent and reviewable.</p>
+      <div class="feature-list">
+        <div class="feature-item"><div class="feature-dot">✓</div><div class="feature-item-text"><strong data-i18n="f6_1_title">Tappable risk badge</strong> — <span data-i18n="f6_1_body">expands to show contributing indicators with evidence from notes</span></div></div>
+        <div class="feature-item"><div class="feature-dot">✓</div><div class="feature-item-text"><strong data-i18n="f6_2_title">Case timeline</strong> — <span data-i18n="f6_2_body">Notes tab shows vertical session history with risk-colored nodes</span></div></div>
+        <div class="feature-item"><div class="feature-dot">✓</div><div class="feature-item-text"><strong data-i18n="f6_3_title">Follow-up task manager</strong> — <span data-i18n="f6_3_body">prioritised tasks per case, persisted in local storage</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 7: Caseworker Care -->
+  <div class="step-content" id="step-7">
+    <div class="phone-wrap"><div class="phone"><div class="phone-screen">
+      <div class="p-sbar"><span>9:41</span><span>●●● 🔋</span></div>
+      <div style="position:relative">
+        <div style="background:#0f1117;padding:8px 12px;border-bottom:1px solid #2a3350;display:flex;justify-content:space-between;align-items:center">
+          <div style="font-size:11px;font-weight:700;color:#e2e8f0" data-phone-i18n="weekly_checkin">Weekly check-in</div>
+          <div style="font-size:8px;color:#10b981">💚</div>
+        </div>
+        <div style="padding:10px 12px">
+          <div style="font-size:9px;font-weight:700;color:#e2e8f0;margin-bottom:4px" data-phone-i18n="wellness_greeting">A quick check-in, Marie-Claire</div>
+          <div style="font-size:7.5px;color:#6b7498;margin-bottom:12px;line-height:1.5" data-phone-i18n="wellness_sub">This work is demanding. These answers stay on your device.</div>
+          <div style="margin-bottom:10px">
+            <div style="font-size:7.5px;color:#c7ceea;margin-bottom:5px" data-phone-i18n="q1">How are you managing emotionally this week?</div>
+            <div style="display:flex;gap:4px">
+              <div style="flex:1;text-align:center;background:#1a2035;border:1.5px solid #3b4fd8;border-radius:6px;padding:4px 2px;font-size:11px">😔</div>
+              <div style="flex:1;text-align:center;background:#1a2035;border:1px solid #2a3350;border-radius:6px;padding:4px 2px;font-size:11px">😐</div>
+              <div style="flex:1;text-align:center;background:#1a2035;border:1px solid #2a3350;border-radius:6px;padding:4px 2px;font-size:11px">🙂</div>
+              <div style="flex:1;text-align:center;background:#1a2035;border:1px solid #2a3350;border-radius:6px;padding:4px 2px;font-size:11px">😊</div>
+              <div style="flex:1;text-align:center;background:#1a2035;border:1px solid #2a3350;border-radius:6px;padding:4px 2px;font-size:11px">😄</div>
+            </div>
+          </div>
+          <div style="background:#1a2035;border:1px solid #10b98130;border-radius:7px;padding:7px 9px;margin-top:8px">
+            <div style="font-size:7px;color:#10b981;font-weight:600;margin-bottom:3px" data-phone-i18n="wellness_resources">Support resources</div>
+            <div style="font-size:7px;color:#c7ceea;margin-bottom:2px">IOM Staff Wellbeing · staffwellbeing.iom.int</div>
+            <div style="font-size:7px;color:#c7ceea">Headington Institute · headington.org</div>
+          </div>
+          <div style="display:flex;gap:5px;margin-top:10px">
+            <div style="flex:1;background:#1a2035;border:1px solid #2a3350;border-radius:6px;padding:6px 0;font-size:7.5px;font-weight:600;color:#e2e8f0;text-align:center" data-phone-i18n="skip">Skip this week</div>
+            <div style="flex:1;background:#10b981;border-radius:6px;padding:6px 0;font-size:7.5px;font-weight:600;color:#fff;text-align:center" data-phone-i18n="submit">Submit</div>
+          </div>
+        </div>
+      </div>
+    </div></div></div>
+    <div class="feature-panel">
+      <div class="feature-step-num" data-i18n="step_7_num">Step 7 of 7</div>
+      <h3 data-i18n="step_7_title">Caseworker wellbeing — because the human matters too</h3>
+      <p data-i18n="step_7_desc">Vicarious trauma and burnout are why experienced anti-trafficking caseworkers leave the field. TRACE checks in weekly — three trauma-informed questions, answers stored only on-device. Supervisors are alerted if scores are consistently low.</p>
+      <div class="feature-list">
+        <div class="feature-item"><div class="feature-dot">✓</div><div class="feature-item-text"><strong data-i18n="f7_1_title">Once per week</strong> — <span data-i18n="f7_1_body">ISO week gating, never intrusive, skippable</span></div></div>
+        <div class="feature-item"><div class="feature-dot">✓</div><div class="feature-item-text"><strong data-i18n="f7_2_title">Privacy-first</strong> — <span data-i18n="f7_2_body">data stays on device; one-tap screen blur hides case data from bystanders</span></div></div>
+        <div class="feature-item"><div class="feature-dot">✓</div><div class="feature-item-text"><strong data-i18n="f7_3_title">Real resources</strong> — <span data-i18n="f7_3_body">IOM Staff Wellbeing and Headington Institute linked directly</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step-nav">
+    <button class="step-nav-btn" id="prevBtn" onclick="changeStep(-1)" disabled data-i18n="prev">← Previous</button>
+    <div class="step-counter" id="stepCounter">1 / 7</div>
+    <button class="step-nav-btn" id="nextBtn" onclick="changeStep(1)" data-i18n="next">Next →</button>
+  </div>
+</section>
+
+<!-- BOTTOM CTA -->
+<div class="bottom-strip">
+  <h2 data-i18n="cta_title">See it live — 34 days to demo day</h2>
+  <p data-i18n="cta_body">TRACE v2 is live on Vercel. Open it on your phone for the full mobile experience.</p>
+  <div class="bottom-links">
+    <a href="https://trace-v2-git-v2-demo-trace-prototype.vercel.app/?v2" target="_blank" class="btn-primary" data-i18n="open_demo">Open live demo →</a>
+    <a href="https://github.com/ElkeDikoume/trace-prototype" target="_blank" class="btn-secondary" data-i18n="view_code">View source</a>
+  </div>
+</div>
+
+<script>
+const STRINGS = {
+  en: {
+    nav_cta: "Live demo →",
+    badge: "AI for Social Good · Lake Chad Basin",
+    hero_h1: 'The AI assistant that makes <span>anti-trafficking caseworkers</span> better at their work',
+    hero_p: "TRACE is a mobile-first case management platform for frontline caseworkers in conflict-affected regions. Not a data collection tool — a practice improvement platform.",
+    hero_demo: "Try the live demo", hero_tour: "Take the guided tour",
+    stat1: "of displaced persons in Chad have little or no education",
+    stat2: "children out of school in the Lake Chad Basin",
+    stat3: "document types generated in seconds, not hours",
+    stat4: "survivor data shared without caseworker review",
+    tour_title: "Guided feature tour", tour_sub: "Seven features that change how caseworkers work in the field",
+    step_1_num:"Step 1 of 7", step_2_num:"Step 2 of 7", step_3_num:"Step 3 of 7", step_4_num:"Step 4 of 7", step_5_num:"Step 5 of 7", step_6_num:"Step 6 of 7", step_7_num:"Step 7 of 7",
+    step_1_title:"AI daily brief — your caseload at a glance", step_1_desc:"Every morning, TRACE reads the full caseload and generates a prioritised briefing — what's urgent, what's overdue, what patterns have emerged. No scrolling through cases to figure out where to start.",
+    step_2_title:"Live CTDC gap detection with trauma-informed tips", step_2_desc:"As the caseworker types, TRACE checks notes against all 8 CTDC indicator categories in real time. Gaps show trauma-informed phrasing guidance — teaching best practice during the interview, not in a manual.",
+    step_3_title:"Ask AI — a senior colleague, always available", step_3_desc:"Not a chatbot. Ask AI opens with the active case already loaded and a greeting that shows it has read the file. Caseworkers can ask for second opinions, CTDC clarifications, or supervisor updates.",
+    step_4_title:"Seven document types — AI-generated, caseworker-reviewed", step_4_desc:"Referral letters, risk assessments, IOM HTCDS forms, family tracing requests, reintegration plans, safe exit plans, and case handoffs — streamed in seconds, always requiring caseworker sign-off.",
+    step_5_title:"Safe info card — designed for low-literacy contexts", step_5_desc:"Over 82% of displaced persons in Chad have little or no formal education. The safe info card shows emergency contacts as large, icon-anchored numbers — readable without literacy. One tap plays it aloud in French.",
+    step_6_title:"Risk breakdown — explainable AI, not a black box", step_6_desc:"Tapping the risk badge expands a panel showing exactly which CTDC indicators drove the score. Caseworkers build intuition over time. No unexplained verdicts.",
+    step_7_title:"Caseworker wellbeing — because the human matters too", step_7_desc:"Vicarious trauma and burnout are why experienced caseworkers leave the field. TRACE checks in weekly — three trauma-informed questions, answers stored only on-device.",
+    f1_1_title:"Cross-case pattern detection", f1_1_body:"flags linked indicators across cases without any API call",
+    f1_2_title:"Session-cached", f1_2_body:"generates once per session, never repeats unnecessarily",
+    f1_3_title:"Supervisor wellness alert", f1_3_body:"weekly check-in, alerts supervisor if caseworker scores are consistently low",
+    f2_1_title:"Fully offline", f2_1_body:"client-side keyword matching, no API call required",
+    f2_2_title:"8 CTDC categories", f2_2_body:"recruitment, documents, movement, wages, exploitation, control, family, duration",
+    f2_3_title:"Hausa, French, Arabic", f2_3_body:"notes accepted in any language; translate & structure with one tap",
+    f3_1_title:"Case-aware greeting", f3_1_body:"Claude reads the case before saying hello",
+    f3_2_title:"IOM-grounded system prompt", f3_2_body:"references CTDC indicators, HTCDS standards, trauma-informed practice",
+    f3_3_title:"Quick-tap chips", f3_3_body:"contextual prompts based on case risk level",
+    f4_1_title:"EN/FR toggle", f4_1_body:"regenerates any document in French with one tap",
+    f4_2_title:"Attribution stamp", f4_2_body:"every document shows AI-generated status; turns green once reviewed",
+    f4_3_title:"Supervisor-gated handoff", f4_3_body:"case transfer documents visible only to supervisor-role users",
+    f5_1_title:"Audio playback", f5_1_body:"Web Speech API reads rights and contacts aloud in French",
+    f5_2_title:"Icon-anchored numbers", f5_2_body:"phone, police, shelter — universally understood without text",
+    f5_3_title:"Caseworker-mediated", f5_3_body:"survivors never touch the app; caseworker controls delivery",
+    f6_1_title:"Tappable risk badge", f6_1_body:"expands to show contributing indicators with evidence from notes",
+    f6_2_title:"Case timeline", f6_2_body:"Notes tab shows vertical session history with risk-colored nodes",
+    f6_3_title:"Follow-up task manager", f6_3_body:"prioritised tasks per case, persisted in local storage",
+    f7_1_title:"Once per week", f7_1_body:"ISO week gating, never intrusive, skippable",
+    f7_2_title:"Privacy-first", f7_2_body:"data stays on device; one-tap screen blur hides case data from bystanders",
+    f7_3_title:"Real resources", f7_3_body:"IOM Staff Wellbeing and Headington Institute linked directly",
+    prev:"← Previous", next:"Next →",
+    cta_title:"See it live — Open Atlas AI · August 21, 2026", cta_body:"TRACE v2 is live on Vercel. Open it on your phone for the full mobile experience.",
+    open_demo:"Open live demo →", view_code:"View source",
+    tabs:["Dashboard","Intake & Gaps","Ask AI","Documents","Safe Card","Risk & Tasks","Caseworker Care"],
+    good_morning:"Good morning, Marie-Claire", caseload_today:"Here's your caseload today.", active:"Active", urgent:"Urgent", pending:"Pending",
+    todays_brief:"Today's brief", brief_text:"Cases #0043 and #0039 both show document confiscation. Case #0042 has 2 overdue tasks. Prioritise medical referral today.",
+    pattern_alert:"Pattern alert: document confiscation in 3 cases", recent_cases:"Recent cases", see_all:"See all", high:"High", medium:"Med",
+    cases:"Cases", intake:"Intake", ask_ai:"Ask AI", docs:"Docs",
+    new_intake:"New intake", age:"Age", sex:"Sex", female:"F", risk:"Risk",
+    ctdc_coverage:"CTDC coverage", recruitment:"Recruitment", documents:"Documents", movement:"Movement",
+    tip_movement:'Tip: Ask "were there things that made it hard to move freely?"',
+    record:"⏺ Record", translate_structure:"Translate & Structure",
+    ai_greeting:"I can see Case #0043 — high risk, document confiscation confirmed, medical assessment outstanding. What do you need?",
+    caseworker_q:"Does the debt mentioned constitute debt bondage under CTDC?",
+    ai_response:"Yes — under CTDC 3.2, debt bondage is present when movement is restricted as enforcement of a claimed debt. The transport fee + document confiscation meets the threshold.",
+    chip_supervisor:"Draft supervisor update", chip_referral:"Most urgent referral?", ask_placeholder:"Ask about this case…",
+    referral_letter:"Referral Letter", caseworker_sig:"Caseworker signature: ___________", ai_review_pending:"AI-generated · Review before use · Caseworker approval required", copy:"⎘ Copy", download:"↓ Download",
+    safe_info_card:"Safe Info Card", safe_to_share:"Safe to share with survivor", emergency_contacts:"Emergency contacts", police_mineurs:"Police des Mineurs",
+    play_for_survivor:"▶ Play for survivor (French)", audio_note:"Reads aloud in French. Show numbers above if preferred.",
+    high_risk:"HIGH ▾", risk_indicators:"Risk indicators", ind1:"Document confiscation confirmed in notes", ind2:"Recruitment by deception — false employment offer", ind3:"Unaccompanied minor — age 16–18",
+    notes_tab:"Notes", tasks_tab:"Tasks", docs_tab:"Docs", task1:"Medical assessment — within 48h", task2:"Legal aid referral submitted", task3:"Psychosocial referral to AFPAD",
+    weekly_checkin:"Weekly check-in", wellness_greeting:"A quick check-in, Marie-Claire", wellness_sub:"This work is demanding. These answers stay on your device.",
+    q1:"How are you managing emotionally this week?", wellness_resources:"Support resources", skip:"Skip this week", submit:"Submit"
+  },
+  fr: {
+    nav_cta:"Démo en direct →", badge:"IA pour le bien social · Bassin du lac Tchad",
+    hero_h1:'L\'assistant IA qui rend les <span>travailleurs de lutte contre la traite</span> meilleurs dans leur travail',
+    hero_p:"TRACE est une plateforme de gestion de cas mobile pour les travailleurs de terrain en zones de conflit. Pas un outil de collecte de données — une plateforme d'amélioration des pratiques.",
+    hero_demo:"Essayer la démo", hero_tour:"Visite guidée",
+    stat1:"des personnes déplacées au Tchad ont peu ou pas d'éducation",
+    stat2:"enfants non scolarisés dans le bassin du lac Tchad",
+    stat3:"types de documents générés en secondes",
+    stat4:"données sur les survivants partagées sans révision",
+    tour_title:"Visite guidée des fonctionnalités", tour_sub:"Sept fonctionnalités qui changent le travail des travailleurs sociaux sur le terrain",
+    step_1_num:"Étape 1 sur 7", step_2_num:"Étape 2 sur 7", step_3_num:"Étape 3 sur 7", step_4_num:"Étape 4 sur 7", step_5_num:"Étape 5 sur 7", step_6_num:"Étape 6 sur 7", step_7_num:"Étape 7 sur 7",
+    step_1_title:"Briefing IA quotidien — votre charge de cas en un coup d'œil", step_1_desc:"Chaque matin, TRACE analyse l'ensemble des dossiers et génère un briefing priorisé : ce qui est urgent, ce qui est en retard, les tendances émergentes.",
+    step_2_title:"Détection en temps réel des lacunes CTDC avec conseils", step_2_desc:"Pendant que le travailleur social saisit ses notes, TRACE vérifie en temps réel les 8 catégories d'indicateurs CTDC. Les lacunes affichent des conseils d'entretien adaptés au trauma.",
+    step_3_title:"Ask AI — un collègue senior, toujours disponible", step_3_desc:"Pas un chatbot. Ask AI s'ouvre avec le dossier actif déjà chargé. Les travailleurs sociaux peuvent demander des avis, des clarifications CTDC, ou des mises à jour pour leur superviseur.",
+    step_4_title:"Sept types de documents — générés par IA, validés par le travailleur social", step_4_desc:"Lettres de référence, évaluations des risques, formulaires HTCDS, demandes de recherche familiale, plans de réintégration, plans de sortie sécurisée et transferts de cas.",
+    step_5_title:"Carte d'information sécurisée — conçue pour les contextes de faible alphabétisation", step_5_desc:"Plus de 82% des personnes déplacées au Tchad ont peu ou pas d'éducation formelle. La carte affiche les contacts d'urgence avec de grandes icônes lisibles sans alphabétisation.",
+    step_6_title:"Analyse du risque — IA explicable, pas une boîte noire", step_6_desc:"Appuyer sur le badge de risque révèle exactement quels indicateurs CTDC ont déterminé le score. Les travailleurs sociaux développent leur intuition au fil du temps.",
+    step_7_title:"Bien-être des travailleurs sociaux — parce que l'humain compte aussi", step_7_desc:"Le traumatisme vicariant et l'épuisement poussent les travailleurs expérimentés à quitter le terrain. TRACE fait un bilan hebdomadaire — trois questions, réponses stockées uniquement sur l'appareil.",
+    f1_1_title:"Détection croisée des schémas", f1_1_body:"signale les indicateurs liés entre les dossiers sans appel API",
+    f1_2_title:"Mis en cache par session", f1_2_body:"généré une fois par session, jamais répété inutilement",
+    f1_3_title:"Alerte bien-être superviseur", f1_3_body:"bilan hebdomadaire, alerte le superviseur si les scores sont constamment bas",
+    f2_1_title:"Entièrement hors ligne", f2_1_body:"correspondance par mots-clés côté client, sans appel API",
+    f2_2_title:"8 catégories CTDC", f2_2_body:"recrutement, documents, mobilité, salaires, exploitation, contrôle, famille, durée",
+    f2_3_title:"Haoussa, français, arabe", f2_3_body:"notes acceptées dans toutes les langues ; traduction et structuration en un clic",
+    f3_1_title:"Salutation contextualisée", f3_1_body:"Claude lit le dossier avant de commencer",
+    f3_2_title:"Invite système basée sur IOM", f3_2_body:"référence les indicateurs CTDC, normes HTCDS, pratique adaptée au trauma",
+    f3_3_title:"Suggestions rapides", f3_3_body:"invites contextuelles selon le niveau de risque du dossier",
+    f4_1_title:"Basculement EN/FR", f4_1_body:"régénère tout document en français en un clic",
+    f4_2_title:"Tampon d'attribution", f4_2_body:"tout document indique son statut IA ; devient vert une fois révisé",
+    f4_3_title:"Transfert réservé aux superviseurs", f4_3_body:"documents de transfert visibles uniquement par les superviseurs",
+    f5_1_title:"Lecture audio", f5_1_body:"l'API Web Speech lit les droits et contacts à voix haute en français",
+    f5_2_title:"Numéros avec icônes", f5_2_body:"téléphone, police, abri — compréhensibles sans alphabétisation",
+    f5_3_title:"Médiatisé par le travailleur social", f5_3_body:"les survivants ne touchent jamais l'application",
+    f6_1_title:"Badge de risque cliquable", f6_1_body:"s'étend pour montrer les indicateurs contributifs avec preuves",
+    f6_2_title:"Chronologie du dossier", f6_2_body:"l'onglet Notes affiche l'historique des sessions avec nœuds colorés",
+    f6_3_title:"Gestionnaire de tâches de suivi", f6_3_body:"tâches priorisées par dossier, persistées en stockage local",
+    f7_1_title:"Une fois par semaine", f7_1_body:"cadence hebdomadaire, jamais intrusif, ignorable",
+    f7_2_title:"Confidentialité d'abord", f7_2_body:"données sur l'appareil ; flou d'écran en un clic",
+    f7_3_title:"Ressources réelles", f7_3_body:"IOM Staff Wellbeing et Headington Institute liés directement",
+    prev:"← Précédent", next:"Suivant →",
+    cta_title:"Voir en direct — 34 jours avant la démo", cta_body:"TRACE v2 est en ligne sur Vercel. Ouvrez-le sur votre téléphone pour l'expérience mobile complète.",
+    open_demo:"Ouvrir la démo →", view_code:"Voir le code source",
+    tabs:["Tableau de bord","Prise en charge","Ask AI","Documents","Carte sécurisée","Risque & Tâches","Bien-être"],
+    good_morning:"Bonjour, Marie-Claire", caseload_today:"Voici votre charge de cas aujourd'hui.", active:"Actifs", urgent:"Urgents", pending:"En attente",
+    todays_brief:"Briefing du jour", brief_text:"Les dossiers #0043 et #0039 montrent tous deux une confiscation de documents. Le dossier #0042 a 2 tâches en retard. Priorisez l'évaluation médicale aujourd'hui.",
+    pattern_alert:"Alerte de schéma : confiscation de documents dans 3 cas", recent_cases:"Dossiers récents", see_all:"Voir tout", high:"Élevé", medium:"Moy",
+    cases:"Dossiers", intake:"Prise en charge", ask_ai:"Ask AI", docs:"Docs",
+    new_intake:"Nouvelle prise en charge", age:"Âge", sex:"Sexe", female:"F", risk:"Risque",
+    ctdc_coverage:"Couverture CTDC", recruitment:"Recrutement", documents:"Documents", movement:"Mobilité",
+    tip_movement:'Conseil : Demandez "y avait-il des choses qui rendaient difficile de se déplacer librement ?"',
+    record:"⏺ Enregistrer", translate_structure:"Traduire et structurer",
+    ai_greeting:"Je vois le dossier #0043 — risque élevé, confiscation de documents confirmée, évaluation médicale en attente. Que faut-il faire ?",
+    caseworker_q:"La dette mentionnée constitue-t-elle une servitude pour dettes selon le CTDC ?",
+    ai_response:"Oui — selon l'indicateur CTDC 3.2, la servitude pour dettes est présente lorsque la mobilité est restreinte pour faire appliquer une dette. Les frais de transport + confiscation de documents répondent au seuil.",
+    chip_supervisor:"Rédiger une mise à jour superviseur", chip_referral:"Référence la plus urgente ?", ask_placeholder:"Posez une question sur ce dossier…",
+    referral_letter:"Lettre de référence", caseworker_sig:"Signature du travailleur social : ___________", ai_review_pending:"Généré par IA · Révision requise · Approbation du travailleur social requise", copy:"⎘ Copier", download:"↓ Télécharger",
+    safe_info_card:"Carte d'information sécurisée", safe_to_share:"Sûr à partager avec le survivant", emergency_contacts:"Contacts d'urgence", police_mineurs:"Police des Mineurs",
+    play_for_survivor:"▶ Lire pour le survivant (français)", audio_note:"Lecture à voix haute en français. Montrez les numéros ci-dessus si préféré.",
+    high_risk:"ÉLEVÉ ▾", risk_indicators:"Indicateurs de risque", ind1:"Confiscation de documents confirmée", ind2:"Recrutement par tromperie — fausse offre d'emploi", ind3:"Mineur non accompagné — 16–18 ans",
+    notes_tab:"Notes", tasks_tab:"Tâches", docs_tab:"Docs", task1:"Évaluation médicale — sous 48h", task2:"Référence aide juridique soumise", task3:"Référence psychosociale à AFPAD",
+    weekly_checkin:"Bilan hebdomadaire", wellness_greeting:"Un bilan rapide, Marie-Claire", wellness_sub:"Ce travail est exigeant. Ces réponses restent sur votre appareil.",
+    q1:"Comment gérez-vous émotionnellement cette semaine ?", wellness_resources:"Ressources de soutien", skip:"Passer cette semaine", submit:"Envoyer"
+  },
+  es: {
+    nav_cta:"Demo en vivo →", badge:"IA para el bien social · Cuenca del lago Chad",
+    hero_h1:'El asistente de IA que hace a los <span>trabajadores contra la trata</span> mejores en su trabajo',
+    hero_p:"TRACE es una plataforma de gestión de casos móvil para trabajadores de primera línea en zonas de conflicto. No es una herramienta de recopilación de datos — es una plataforma de mejora de prácticas.",
+    hero_demo:"Probar la demo", hero_tour:"Visita guiada",
+    stat1:"de desplazados en Chad tienen poca o ninguna educación",
+    stat2:"niños sin escolarizar en la cuenca del lago Chad",
+    stat3:"tipos de documentos generados en segundos",
+    stat4:"datos de supervivientes compartidos sin revisión",
+    tour_title:"Visita guiada de funciones", tour_sub:"Siete funciones que cambian cómo trabajan los trabajadores sociales en el campo",
+    step_1_num:"Paso 1 de 7", step_2_num:"Paso 2 de 7", step_3_num:"Paso 3 de 7", step_4_num:"Paso 4 de 7", step_5_num:"Paso 5 de 7", step_6_num:"Paso 6 de 7", step_7_num:"Paso 7 de 7",
+    step_1_title:"Informe diario de IA — su carga de casos de un vistazo", step_1_desc:"Cada mañana, TRACE analiza todos los casos y genera un informe priorizado: qué es urgente, qué está pendiente, qué patrones han surgido.",
+    step_2_title:"Detección en tiempo real de brechas CTDC con consejos", step_2_desc:"Mientras el trabajador escribe, TRACE verifica las notas contra las 8 categorías de indicadores CTDC en tiempo real. Las brechas muestran orientación de fraseado adaptada al trauma.",
+    step_3_title:"Ask AI — un colega senior, siempre disponible", step_3_desc:"No es un chatbot. Ask AI se abre con el caso activo ya cargado. Los trabajadores pueden pedir segundas opiniones, aclaraciones CTDC o actualizaciones para supervisores.",
+    step_4_title:"Siete tipos de documentos — generados por IA, revisados por el trabajador", step_4_desc:"Cartas de derivación, evaluaciones de riesgo, formularios IOM HTCDS, solicitudes de búsqueda familiar, planes de reintegración, planes de salida segura y traspasos de casos.",
+    step_5_title:"Tarjeta de información segura — diseñada para contextos de baja alfabetización", step_5_desc:"Más del 82% de los desplazados en Chad tienen poca o ninguna educación formal. La tarjeta muestra contactos de emergencia como números grandes con iconos — legibles sin alfabetización.",
+    step_6_title:"Análisis de riesgo — IA explicable, no una caja negra", step_6_desc:"Tocar el badge de riesgo expande un panel que muestra exactamente qué indicadores CTDC determinaron la puntuación.",
+    step_7_title:"Bienestar del trabajador — porque la persona también importa", step_7_desc:"El trauma vicario y el agotamiento son las razones por las que los trabajadores experimentados abandonan el campo. TRACE hace un seguimiento semanal — tres preguntas, respuestas solo en el dispositivo.",
+    f1_1_title:"Detección de patrones entre casos", f1_1_body:"señala indicadores vinculados sin llamada a la API",
+    f1_2_title:"Caché por sesión", f1_2_body:"se genera una vez por sesión, nunca se repite innecesariamente",
+    f1_3_title:"Alerta de bienestar al supervisor", f1_3_body:"seguimiento semanal, alerta si las puntuaciones son consistentemente bajas",
+    f2_1_title:"Totalmente sin conexión", f2_1_body:"coincidencia de palabras clave en el lado del cliente",
+    f2_2_title:"8 categorías CTDC", f2_2_body:"reclutamiento, documentos, movimiento, salarios, explotación, control, familia, duración",
+    f2_3_title:"Hausa, francés, árabe", f2_3_body:"notas aceptadas en cualquier idioma; traducir y estructurar con un toque",
+    f3_1_title:"Saludo contextual", f3_1_body:"Claude lee el caso antes de saludar",
+    f3_2_title:"Prompt del sistema basado en IOM", f3_2_body:"referencias a indicadores CTDC, estándares HTCDS, práctica informada por trauma",
+    f3_3_title:"Chips de acceso rápido", f3_3_body:"prompts contextuales según el nivel de riesgo del caso",
+    f4_1_title:"Selector EN/FR", f4_1_body:"regenera cualquier documento en francés con un toque",
+    f4_2_title:"Sello de atribución", f4_2_body:"cada documento muestra el estado IA; se vuelve verde una vez revisado",
+    f4_3_title:"Traspaso solo para supervisores", f4_3_body:"documentos de transferencia visibles solo para supervisores",
+    f5_1_title:"Reproducción de audio", f5_1_body:"la API Web Speech lee derechos y contactos en voz alta en francés",
+    f5_2_title:"Números con iconos", f5_2_body:"teléfono, policía, refugio — comprensibles sin alfabetización",
+    f5_3_title:"Mediado por el trabajador", f5_3_body:"los supervivientes nunca tocan la aplicación",
+    f6_1_title:"Badge de riesgo clicable", f6_1_body:"se expande para mostrar los indicadores con evidencia de las notas",
+    f6_2_title:"Línea de tiempo del caso", f6_2_body:"el historial de sesiones se muestra con nodos de colores por riesgo",
+    f6_3_title:"Gestor de tareas de seguimiento", f6_3_body:"tareas priorizadas por caso, persistidas en almacenamiento local",
+    f7_1_title:"Una vez a la semana", f7_1_body:"cadencia semanal, nunca intrusiva, se puede omitir",
+    f7_2_title:"Privacidad ante todo", f7_2_body:"datos en el dispositivo; desenfoque de pantalla con un toque",
+    f7_3_title:"Recursos reales", f7_3_body:"IOM Staff Wellbeing y Headington Institute enlazados directamente",
+    prev:"← Anterior", next:"Siguiente →",
+    cta_title:"Véalo en vivo — 34 días para el demo", cta_body:"TRACE v2 está en línea en Vercel. Ábralo en su teléfono para la experiencia móvil completa.",
+    open_demo:"Abrir demo →", view_code:"Ver código fuente",
+    tabs:["Panel","Registro","Ask AI","Documentos","Tarjeta segura","Riesgo y tareas","Bienestar"],
+    good_morning:"Buenos días, Marie-Claire", caseload_today:"Aquí está su carga de casos hoy.", active:"Activos", urgent:"Urgentes", pending:"Pendientes",
+    todays_brief:"Informe del día", brief_text:"Los casos #0043 y #0039 muestran confiscación de documentos. El caso #0042 tiene 2 tareas vencidas. Priorice la evaluación médica hoy.",
+    pattern_alert:"Alerta de patrón: confiscación de documentos en 3 casos", recent_cases:"Casos recientes", see_all:"Ver todo", high:"Alto", medium:"Med",
+    cases:"Casos", intake:"Registro", ask_ai:"Ask AI", docs:"Docs",
+    new_intake:"Nuevo registro", age:"Edad", sex:"Sexo", female:"F", risk:"Riesgo",
+    ctdc_coverage:"Cobertura CTDC", recruitment:"Reclutamiento", documents:"Documentos", movement:"Movimiento",
+    tip_movement:'Consejo: Pregunte "¿había cosas que dificultaban moverse libremente?"',
+    record:"⏺ Grabar", translate_structure:"Traducir y estructurar",
+    ai_greeting:"Veo el caso #0043 — riesgo alto, confiscación de documentos confirmada, evaluación médica pendiente. ¿Qué necesita?",
+    caseworker_q:"¿La deuda mencionada constituye servidumbre por deuda según el CTDC?",
+    ai_response:"Sí — bajo el indicador CTDC 3.2, la servidumbre por deuda existe cuando el movimiento se restringe como aplicación de una deuda. Las tarifas de transporte + confiscación cumplen el umbral.",
+    chip_supervisor:"Redactar actualización de supervisor", chip_referral:"¿Derivación más urgente?", ask_placeholder:"Pregunte sobre este caso…",
+    referral_letter:"Carta de derivación", caseworker_sig:"Firma del trabajador social: ___________", ai_review_pending:"Generado por IA · Revisar antes de usar · Aprobación requerida", copy:"⎘ Copiar", download:"↓ Descargar",
+    safe_info_card:"Tarjeta de información segura", safe_to_share:"Seguro para compartir con el superviviente", emergency_contacts:"Contactos de emergencia", police_mineurs:"Policía de Menores",
+    play_for_survivor:"▶ Reproducir para el superviviente (francés)", audio_note:"Se lee en francés. Muestre los números de arriba si se prefiere.",
+    high_risk:"ALTO ▾", risk_indicators:"Indicadores de riesgo", ind1:"Confiscación de documentos confirmada", ind2:"Reclutamiento por engaño — falsa oferta laboral", ind3:"Menor no acompañado — 16–18 años",
+    notes_tab:"Notas", tasks_tab:"Tareas", docs_tab:"Docs", task1:"Evaluación médica — en 48h", task2:"Derivación de ayuda legal enviada", task3:"Derivación psicosocial a AFPAD",
+    weekly_checkin:"Seguimiento semanal", wellness_greeting:"Un rápido seguimiento, Marie-Claire", wellness_sub:"Este trabajo es exigente. Las respuestas se guardan solo en su dispositivo.",
+    q1:"¿Cómo está gestionando emocionalmente esta semana?", wellness_resources:"Recursos de apoyo", skip:"Omitir esta semana", submit:"Enviar"
+  },
+  pt: {
+    nav_cta:"Demo ao vivo →", badge:"IA para o bem social · Bacia do lago Chade",
+    hero_h1:'O assistente de IA que torna os <span>trabalhadores contra o tráfico</span> melhores no seu trabalho',
+    hero_p:"TRACE é uma plataforma de gestão de casos mobile para trabalhadores de primeira linha em zonas de conflito. Não é uma ferramenta de recolha de dados — é uma plataforma de melhoria de práticas.",
+    hero_demo:"Experimentar a demo", hero_tour:"Visita guiada",
+    stat1:"de deslocados no Chade têm pouca ou nenhuma educação",
+    stat2:"crianças fora da escola na bacia do lago Chade",
+    stat3:"tipos de documentos gerados em segundos",
+    stat4:"dados de sobreviventes partilhados sem revisão",
+    tour_title:"Visita guiada de funcionalidades", tour_sub:"Sete funcionalidades que mudam a forma como os trabalhadores sociais trabalham no campo",
+    step_1_num:"Passo 1 de 7", step_2_num:"Passo 2 de 7", step_3_num:"Passo 3 de 7", step_4_num:"Passo 4 de 7", step_5_num:"Passo 5 de 7", step_6_num:"Passo 6 de 7", step_7_num:"Passo 7 de 7",
+    step_1_title:"Briefing diário de IA — a sua carga de casos de relance", step_1_desc:"Cada manhã, TRACE analisa todos os casos e gera um briefing priorizado: o que é urgente, o que está em atraso, que padrões surgiram.",
+    step_2_title:"Deteção em tempo real de lacunas CTDC com dicas", step_2_desc:"Enquanto o trabalhador escreve, TRACE verifica as notas em relação às 8 categorias de indicadores CTDC em tempo real. As lacunas mostram orientação de formulação adaptada ao trauma.",
+    step_3_title:"Ask AI — um colega sênior, sempre disponível", step_3_desc:"Não é um chatbot. O Ask AI abre com o caso ativo já carregado. Os trabalhadores podem pedir segundas opiniões, esclarecimentos CTDC ou atualizações para supervisores.",
+    step_4_title:"Sete tipos de documentos — gerados por IA, revistos pelo trabalhador", step_4_desc:"Cartas de encaminhamento, avaliações de risco, formulários IOM HTCDS, pedidos de rastreio familiar, planos de reintegração, planos de saída segura e transferências de casos.",
+    step_5_title:"Cartão de informação segura — concebido para contextos de baixa literacia", step_5_desc:"Mais de 82% dos deslocados no Chade têm pouca ou nenhuma educação formal. O cartão apresenta contactos de emergência como números grandes com ícones — legíveis sem literacia.",
+    step_6_title:"Análise de risco — IA explicável, não uma caixa negra", step_6_desc:"Tocar no badge de risco expande um painel que mostra exatamente quais indicadores CTDC determinaram a pontuação.",
+    step_7_title:"Bem-estar dos trabalhadores — porque a pessoa também importa", step_7_desc:"O trauma vicário e o esgotamento são as razões pelas quais trabalhadores experientes abandonam o terreno. TRACE faz um acompanhamento semanal — três perguntas, respostas apenas no dispositivo.",
+    f1_1_title:"Deteção de padrões entre casos", f1_1_body:"sinaliza indicadores ligados sem chamada à API",
+    f1_2_title:"Cache por sessão", f1_2_body:"gerado uma vez por sessão, nunca repetido desnecessariamente",
+    f1_3_title:"Alerta de bem-estar ao supervisor", f1_3_body:"acompanhamento semanal, alerta se as pontuações são consistentemente baixas",
+    f2_1_title:"Totalmente offline", f2_1_body:"correspondência de palavras-chave no lado do cliente",
+    f2_2_title:"8 categorias CTDC", f2_2_body:"recrutamento, documentos, movimento, salários, exploração, controlo, família, duração",
+    f2_3_title:"Hausa, francês, árabe", f2_3_body:"notas aceites em qualquer idioma; traduzir e estruturar com um toque",
+    f3_1_title:"Saudação contextual", f3_1_body:"Claude lê o caso antes de começar",
+    f3_2_title:"Prompt do sistema baseado na IOM", f3_2_body:"referencia indicadores CTDC, normas HTCDS, prática informada pelo trauma",
+    f3_3_title:"Chips de acesso rápido", f3_3_body:"prompts contextuais baseados no nível de risco do caso",
+    f4_1_title:"Seletor EN/FR", f4_1_body:"regenera qualquer documento em francês com um toque",
+    f4_2_title:"Carimbo de atribuição", f4_2_body:"cada documento mostra o estado IA; fica verde quando revisto",
+    f4_3_title:"Transferência só para supervisores", f4_3_body:"documentos de transferência visíveis apenas para supervisores",
+    f5_1_title:"Reprodução de áudio", f5_1_body:"a API Web Speech lê direitos e contactos em voz alta em francês",
+    f5_2_title:"Números com ícones", f5_2_body:"telefone, polícia, abrigo — compreensíveis sem literacia",
+    f5_3_title:"Mediado pelo trabalhador", f5_3_body:"os sobreviventes nunca tocam na aplicação",
+    f6_1_title:"Badge de risco clicável", f6_1_body:"expande para mostrar os indicadores com evidências das notas",
+    f6_2_title:"Linha do tempo do caso", f6_2_body:"o histórico de sessões é mostrado com nós coloridos por risco",
+    f6_3_title:"Gestor de tarefas de acompanhamento", f6_3_body:"tarefas priorizadas por caso, persistidas em armazenamento local",
+    f7_1_title:"Uma vez por semana", f7_1_body:"cadência semanal, nunca intrusiva, pode ser ignorada",
+    f7_2_title:"Privacidade em primeiro lugar", f7_2_body:"dados no dispositivo; desfoque de ecrã com um toque",
+    f7_3_title:"Recursos reais", f7_3_body:"IOM Staff Wellbeing e Headington Institute ligados diretamente",
+    prev:"← Anterior", next:"Seguinte →",
+    cta_title:"Veja ao vivo — 34 dias para o dia da demo", cta_body:"TRACE v2 está disponível no Vercel. Abra no seu telemóvel para a experiência móvel completa.",
+    open_demo:"Abrir demo →", view_code:"Ver código fonte",
+    tabs:["Painel","Registo","Ask AI","Documentos","Cartão seguro","Risco e tarefas","Bem-estar"],
+    good_morning:"Bom dia, Marie-Claire", caseload_today:"Aqui está a sua carga de casos hoje.", active:"Ativos", urgent:"Urgentes", pending:"Pendentes",
+    todays_brief:"Briefing do dia", brief_text:"Os casos #0043 e #0039 mostram confiscação de documentos. O caso #0042 tem 2 tarefas em atraso. Priorize a avaliação médica hoje.",
+    pattern_alert:"Alerta de padrão: confiscação de documentos em 3 casos", recent_cases:"Casos recentes", see_all:"Ver tudo", high:"Alto", medium:"Méd",
+    cases:"Casos", intake:"Registo", ask_ai:"Ask AI", docs:"Docs",
+    new_intake:"Novo registo", age:"Idade", sex:"Sexo", female:"F", risk:"Risco",
+    ctdc_coverage:"Cobertura CTDC", recruitment:"Recrutamento", documents:"Documentos", movement:"Movimento",
+    tip_movement:'Dica: Pergunte "havia coisas que dificultavam mover-se livremente?"',
+    record:"⏺ Gravar", translate_structure:"Traduzir e estruturar",
+    ai_greeting:"Vejo o caso #0043 — risco alto, confiscação de documentos confirmada, avaliação médica pendente. O que precisa?",
+    caseworker_q:"A dívida mencionada constitui servidão por dívida segundo o CTDC?",
+    ai_response:"Sim — sob o indicador CTDC 3.2, a servidão por dívida existe quando o movimento é restringido como aplicação de uma dívida. As taxas de transporte + confiscação cumprem o limiar.",
+    chip_supervisor:"Redigir atualização para supervisor", chip_referral:"Encaminhamento mais urgente?", ask_placeholder:"Pergunte sobre este caso…",
+    referral_letter:"Carta de encaminhamento", caseworker_sig:"Assinatura do trabalhador social: ___________", ai_review_pending:"Gerado por IA · Rever antes de usar · Aprovação necessária", copy:"⎘ Copiar", download:"↓ Transferir",
+    safe_info_card:"Cartão de informação segura", safe_to_share:"Seguro para partilhar com o sobrevivente", emergency_contacts:"Contactos de emergência", police_mineurs:"Polícia de Menores",
+    play_for_survivor:"▶ Reproduzir para o sobrevivente (francês)", audio_note:"Lê em voz alta em francês. Mostre os números acima se preferir.",
+    high_risk:"ALTO ▾", risk_indicators:"Indicadores de risco", ind1:"Confiscação de documentos confirmada", ind2:"Recrutamento por engano — falsa oferta de emprego", ind3:"Menor não acompanhado — 16–18 anos",
+    notes_tab:"Notas", tasks_tab:"Tarefas", docs_tab:"Docs", task1:"Avaliação médica — em 48h", task2:"Encaminhamento de apoio jurídico enviado", task3:"Encaminhamento psicossocial para AFPAD",
+    weekly_checkin:"Acompanhamento semanal", wellness_greeting:"Um rápido acompanhamento, Marie-Claire", wellness_sub:"Este trabalho é exigente. As respostas ficam apenas no seu dispositivo.",
+    q1:"Como está a gerir emocionalmente esta semana?", wellness_resources:"Recursos de apoio", skip:"Ignorar esta semana", submit:"Enviar"
+  }
+};
+
+let currentLang = 'en';
+let currentStep = 1;
+const totalSteps = 7;
+
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
+  applyTranslations();
+  buildTabs();
+}
+
+function applyTranslations() {
+  const s = STRINGS[currentLang];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (s[key] !== undefined) el.innerHTML = s[key];
+  });
+  document.querySelectorAll('[data-phone-i18n]').forEach(el => {
+    const key = el.getAttribute('data-phone-i18n');
+    if (s[key] !== undefined) el.innerHTML = s[key];
+  });
+}
+
+function buildTabs() {
+  const s = STRINGS[currentLang];
+  const tabs = s.tabs || STRINGS.en.tabs;
+  const container = document.getElementById('stepTabs');
+  container.innerHTML = '';
+  tabs.forEach((label, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'step-tab' + (i + 1 === currentStep ? ' active' : '');
+    btn.textContent = label;
+    btn.onclick = () => goToStep(i + 1);
+    container.appendChild(btn);
+  });
+}
+
+function goToStep(n) {
+  document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+  document.getElementById('step-' + n).classList.add('active');
+  currentStep = n;
+  document.getElementById('stepCounter').textContent = n + ' / ' + totalSteps;
+  document.getElementById('prevBtn').disabled = n === 1;
+  document.getElementById('nextBtn').disabled = n === totalSteps;
+  document.querySelectorAll('.step-tab').forEach((t, i) => {
+    t.classList.toggle('active', i + 1 === n);
+  });
+  document.getElementById('tour').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function changeStep(dir) { goToStep(currentStep + dir); }
+function scrollToTour() { document.getElementById('tour').scrollIntoView({ behavior: 'smooth' }); }
+
+buildTabs();
+applyTranslations();
+</script>
+</body>
+</html>
