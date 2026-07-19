@@ -65,6 +65,7 @@ function Shell() {
   const [cases, setCases] = useState([]);
   const [privacyMode, setPrivacyMode] = useState(false);
   const [wellnessOpen, setWellnessOpen] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(false);
   const resetRan = useRef(false);
 
   // ?reset — unchanged from earlier phases. Guarded so it runs once.
@@ -118,6 +119,13 @@ function Shell() {
   // Weekly caseworker wellness check-in — surfaced once per ISO week.
   useEffect(() => {
     if (profile && isWellnessDue()) setWellnessOpen(true);
+  }, [profile]);
+
+  // ?tour — auto-start the guided tour on load (for demos). Runs once the
+  // caseworker is authed and the Dashboard (with its data-tutorial targets) is
+  // mounted.
+  useEffect(() => {
+    if (profile && window.location.search.includes('tour')) setShowTutorial(true);
   }, [profile]);
 
   async function handleMicrosoft() {
@@ -267,6 +275,9 @@ function Shell() {
           onEnableSupervisor={enableSupervisor}
           onApprove={approveReferral}
           onFlag={flagReferral}
+          showTutorial={showTutorial}
+          onStartTour={() => setShowTutorial(true)}
+          onTutorialFinish={() => setShowTutorial(false)}
         />
       )}
       {screen === 'intakeStart' && (

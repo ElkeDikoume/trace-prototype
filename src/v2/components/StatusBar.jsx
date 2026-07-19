@@ -22,6 +22,7 @@ export default function StatusBar({ privacyMode = false, onPrivacyToggle }) {
         {onPrivacyToggle && (
           <button
             onClick={onPrivacyToggle}
+            data-tutorial="privacy-btn"
             aria-label={privacyMode ? 'Show case content' : 'Hide case content'}
             title={privacyMode ? 'Tap to reveal' : 'Tap to hide sensitive content'}
             className={`transition-colors duration-150 ${privacyMode ? 'text-tracev2-risk-medium' : 'text-tracev2-subtle hover:text-tracev2-muted'}`}

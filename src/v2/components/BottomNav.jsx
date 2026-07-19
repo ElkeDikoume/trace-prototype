@@ -29,10 +29,11 @@ const DocsIcon = (p) => (
   </svg>
 );
 
-function Tab({ label, active, onClick, children }) {
+function Tab({ label, active, onClick, children, dataTutorial }) {
   return (
     <button
       onClick={onClick}
+      data-tutorial={dataTutorial}
       className={`flex flex-1 flex-col items-center justify-center gap-0.5 py-2 transition-colors duration-150 ${
         active ? 'text-tracev2-accent' : 'text-tracev2-subtle hover:text-tracev2-text'
       }`}
@@ -53,6 +54,7 @@ export default function BottomNav({ active, onNavigate }) {
       {/* Emphasised centre action */}
       <button
         onClick={() => onNavigate('intake')}
+        data-tutorial="bottom-nav-intake"
         className="flex flex-1 flex-col items-center justify-center gap-0.5 py-1.5"
       >
         <span
@@ -69,10 +71,10 @@ export default function BottomNav({ active, onNavigate }) {
         </span>
       </button>
 
-      <Tab label="AI" active={active === 'ai'} onClick={() => onNavigate('ai')}>
+      <Tab label="AI" active={active === 'ai'} onClick={() => onNavigate('ai')} dataTutorial="bottom-nav-ai">
         <AiIcon />
       </Tab>
-      <Tab label="Docs" active={active === 'docs'} onClick={() => onNavigate('docs')}>
+      <Tab label="Docs" active={active === 'docs'} onClick={() => onNavigate('docs')} dataTutorial="bottom-nav-docs">
         <DocsIcon />
       </Tab>
     </nav>

@@ -78,7 +78,7 @@ export default function PatternAlertBanner({ cases = [] }) {
   if (patterns.length === 0 || dismissed) return null;
 
   return (
-    <div className="mt-2 rounded-xl border border-tracev2-risk-medium/50 bg-tracev2-risk-medium/8 overflow-hidden">
+    <div data-tutorial="pattern-alert" className="mt-2 rounded-xl border border-tracev2-risk-medium/50 bg-tracev2-risk-medium/8 overflow-hidden">
       <div className="flex w-full items-center justify-between">
         {/* Toggle collapse — spans the title area (dismiss is a sibling button
             so we never nest one <button> inside another). */}

@@ -98,7 +98,7 @@ export default function DailyBriefCard({ cases = [] }) {
   if (!text && !streaming && !error) return null;
 
   return (
-    <div className="mt-3 rounded-xl border border-tracev2-accent/30 bg-tracev2-accent/5 overflow-hidden">
+    <div data-tutorial="daily-brief" className="mt-3 rounded-xl border border-tracev2-accent/30 bg-tracev2-accent/5 overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-3.5 py-2.5">
         <div className="flex items-center gap-2">
