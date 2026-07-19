@@ -133,6 +133,21 @@ export default function DashboardScreen({
   const pending = cases.filter((c) => c.status === 'pending_referral');
   const wellnessAlert = supervisorMode ? getWellnessAlert() : null;
 
+  // Case search: filter the full caseload while typing; otherwise show the 5 most
+  // recent.
+  const [query, setQuery] = useState('');
+  const visibleCases = query.trim()
+    ? cases.filter((c) => {
+        const q = query.toLowerCase();
+        return (
+          c.id?.toLowerCase().includes(q) ||
+          c.riskLevel?.toLowerCase().includes(q) ||
+          c.status?.toLowerCase().includes(q) ||
+          c.notes?.toLowerCase().includes(q)
+        );
+      })
+    : cases.slice(0, 5);
+
   return (
     <div className="flex-1 overflow-y-auto scrollbar-thin px-4 pt-1 pb-4">
       {/* Header row */}
@@ -208,15 +223,43 @@ export default function DashboardScreen({
         </div>
       )}
 
-      {/* Recent cases */}
+      {/* Case search */}
+      <div className="mt-4 relative">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="absolute left-3 top-1/2 -translate-y-1/2 text-tracev2-subtle pointer-events-none">
+          <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2"/>
+          <path d="m21 21-4.35-4.35" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        </svg>
+        <input
+          type="text"
+          placeholder="Search cases…"
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+          className="w-full rounded-xl border border-tracev2-border bg-tracev2-card pl-8 pr-8 py-2 text-sm text-tracev2-text placeholder:text-tracev2-subtle focus:border-tracev2-accent/70 focus:outline-none"
+        />
+        {query && (
+          <button onClick={() => setQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-tracev2-subtle hover:text-tracev2-muted">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+          </button>
+        )}
+      </div>
+
+      {/* Recent cases / search results */}
       <div className="mt-5 flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-tracev2-text">Recent Cases</h2>
+        <h2 className="text-sm font-semibold text-tracev2-text">
+          {query.trim() ? `Results (${visibleCases.length})` : 'Recent Cases'}
+        </h2>
         <button onClick={onSeeAll} className="text-xs font-medium text-tracev2-accent hover:underline">
           See All
         </button>
       </div>
       <div className="mt-2 space-y-2">
-        {cases.length === 0 ? (
+        {query.trim() ? (
+          visibleCases.length === 0 ? (
+            <p className="text-center text-xs text-tracev2-subtle py-6">No cases match &ldquo;{query}&rdquo;</p>
+          ) : (
+            visibleCases.map((c) => <CaseCard key={c.id} c={c} onOpen={onOpenCase} />)
+          )
+        ) : cases.length === 0 ? (
           <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-tracev2-border px-3 py-8 text-center">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="text-tracev2-border">
               <path
@@ -229,7 +272,7 @@ export default function DashboardScreen({
             <p className="text-xs text-tracev2-subtle">No cases yet. Start a new intake.</p>
           </div>
         ) : (
-          cases.slice(0, 3).map((c) => <CaseCard key={c.id} c={c} onOpen={onOpenCase} />)
+          visibleCases.map((c) => <CaseCard key={c.id} c={c} onOpen={onOpenCase} />)
         )}
       </div>
     </div>

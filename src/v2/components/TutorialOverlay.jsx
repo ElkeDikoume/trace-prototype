@@ -190,9 +190,9 @@ export default function TutorialOverlay({ onFinish, onNavigate, onOpenAi, onOpen
           </p>
 
           {/* Hero: centered TRACE logo + tagline */}
-          <div className="mt-4 flex h-32 flex-col items-center justify-center gap-3 rounded-xl border border-tracev2-border bg-tracev2-card px-4">
-            <img src={traceLogo} alt="TRACE" className="h-12 w-12 object-contain" />
-            <p className="text-center text-xs leading-snug text-tracev2-muted">
+          <div className="mt-4 flex flex-col items-center gap-3 rounded-xl border border-tracev2-border bg-tracev2-card py-6">
+            <img src={traceLogo} alt="TRACE" className="h-14 w-14 rounded-xl bg-white p-2 object-contain shadow-lg" />
+            <p className="text-center text-sm font-medium text-tracev2-text px-4">
               AI that makes the hardest work in the world a little easier.
             </p>
           </div>

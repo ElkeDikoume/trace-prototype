@@ -74,7 +74,7 @@ export default function BottomNav({ active, onNavigate }) {
       <Tab label="AI" active={active === 'ai'} onClick={() => onNavigate('ai')} dataTutorial="bottom-nav-ai">
         <AiIcon />
       </Tab>
-      <Tab label="Docs" active={active === 'docs'} onClick={() => onNavigate('docs')} dataTutorial="bottom-nav-docs">
+      <Tab label="Records" active={active === 'docs'} onClick={() => onNavigate('docs')} dataTutorial="bottom-nav-docs">
         <DocsIcon />
       </Tab>
     </nav>

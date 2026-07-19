@@ -20,7 +20,6 @@ import DashboardScreen from './screens/DashboardScreen.jsx';
 import IntakeStartScreen from './screens/IntakeStartScreen.jsx';
 import ActiveIntakeScreen from './screens/ActiveIntakeScreen.jsx';
 import CaseViewScreen from './screens/CaseViewScreen.jsx';
-import DocsScreen from './screens/DocsScreen.jsx';
 import WellnessCheckModal, { isWellnessDue } from './components/WellnessCheckModal.jsx';
 
 import { ThemeProvider, useTheme } from './lib/ThemeContext.jsx';
@@ -50,7 +49,7 @@ export default function TraceV2App() {
   );
 }
 
-// Screens once authed: 'dashboard' | 'intakeStart' | 'activeIntake' | 'caseView' | 'docs'
+// Screens once authed: 'dashboard' | 'intakeStart' | 'activeIntake' | 'caseView'
 function Shell() {
   const { theme } = useTheme();
   const { i18n } = useTranslation();
@@ -244,7 +243,11 @@ function Shell() {
     if (tab === 'cases') setScreen('dashboard');
     else if (tab === 'intake') setScreen('intakeStart');
     else if (tab === 'ai') setAiOpen(true);
-    else if (tab === 'docs') setScreen('docs');
+    else if (tab === 'docs') {
+      // "Records" opens the first case's document view rather than a standalone screen.
+      setSelectedCaseId(cases[0]?.id || mockCases[0].id);
+      setScreen('caseView');
+    }
   }
 
   const selectedCase = cases.find((c) => c.id === selectedCaseId) || null;
@@ -272,11 +275,7 @@ function Shell() {
   };
 
   const activeTab =
-    screen === 'intakeStart' || screen === 'activeIntake'
-      ? 'intake'
-      : screen === 'docs'
-        ? 'docs'
-        : 'cases';
+    screen === 'intakeStart' || screen === 'activeIntake' ? 'intake' : 'cases';
 
   if (!profile) {
     return (
@@ -332,7 +331,6 @@ function Shell() {
           demoDocOpen={demoDocOpen}
         />
       )}
-      {screen === 'docs' && <DocsScreen />}
 
       </div>{/* end privacy wrapper */}
 
