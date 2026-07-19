@@ -79,11 +79,14 @@ export default function PatternAlertBanner({ cases = [] }) {
 
   return (
     <div className="mt-2 rounded-xl border border-tracev2-risk-medium/50 bg-tracev2-risk-medium/8 overflow-hidden">
-      <button
-        onClick={() => setCollapsed((c) => !c)}
-        className="flex w-full items-center justify-between px-3.5 py-2.5 text-start"
-      >
-        <div className="flex items-center gap-2">
+      <div className="flex w-full items-center justify-between">
+        {/* Toggle collapse — spans the title area (dismiss is a sibling button
+            so we never nest one <button> inside another). */}
+        <button
+          onClick={() => setCollapsed((c) => !c)}
+          className="flex flex-1 items-center gap-2 px-3.5 py-2.5 text-start"
+          aria-label="Toggle pattern alerts"
+        >
           {/* Triangle alert */}
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="flex-shrink-0 text-tracev2-risk-medium">
             <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -93,10 +96,10 @@ export default function PatternAlertBanner({ cases = [] }) {
           <span className="text-[11px] font-semibold uppercase tracking-wide text-tracev2-risk-medium">
             Pattern alert{patterns.length > 1 ? `s (${patterns.length})` : ''}
           </span>
-        </div>
-        <div className="flex items-center gap-2">
+        </button>
+        <div className="flex items-center gap-2 pr-3.5">
           <button
-            onClick={(e) => { e.stopPropagation(); setDismissed(true); }}
+            onClick={() => setDismissed(true)}
             className="text-tracev2-subtle hover:text-tracev2-muted"
             aria-label="Dismiss alerts"
           >
@@ -104,14 +107,20 @@ export default function PatternAlertBanner({ cases = [] }) {
               <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
           </button>
-          <svg
-            width="14" height="14" viewBox="0 0 24 24" fill="none"
-            className={`text-tracev2-subtle transition-transform duration-150 ${collapsed ? '-rotate-90' : ''}`}
+          <button
+            onClick={() => setCollapsed((c) => !c)}
+            className="text-tracev2-subtle hover:text-tracev2-muted"
+            aria-label={collapsed ? 'Expand pattern alerts' : 'Collapse pattern alerts'}
           >
-            <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+            <svg
+              width="14" height="14" viewBox="0 0 24 24" fill="none"
+              className={`transition-transform duration-150 ${collapsed ? '-rotate-90' : ''}`}
+            >
+              <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
         </div>
-      </button>
+      </div>
 
       {!collapsed && (
         <div className="border-t border-tracev2-risk-medium/20 px-3.5 py-2.5 space-y-2">

@@ -19,6 +19,8 @@ export default function DocumentModal({ open, docType, caseData, targetService, 
   const [reviewed, setReviewed] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const [outputLang, setOutputLang] = useState('EN');
+  const [progress, setProgress] = useState(0);
+  const [progressVisible, setProgressVisible] = useState(false);
   const abortRef = useRef(null);
 
   const isSafeCard = docType === 'safe_card';
@@ -61,6 +63,25 @@ export default function DocumentModal({ open, docType, caseData, targetService, 
     }
   }, [open]);
   useEffect(() => () => window.speechSynthesis?.cancel(), []);
+
+  // Top-of-body progress bar: creeps 0 -> 90% over 8s while streaming, then
+  // snaps to 100% and fades out once the stream ends.
+  useEffect(() => {
+    if (streaming) {
+      setProgressVisible(true);
+      setProgress(0);
+      // Next tick so the 0 -> 90 width change actually transitions.
+      const id = setTimeout(() => setProgress(90), 30);
+      return () => clearTimeout(id);
+    }
+    if (progressVisible) {
+      setProgress(100);
+      const id = setTimeout(() => setProgressVisible(false), 500);
+      return () => clearTimeout(id);
+    }
+    return undefined;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [streaming]);
 
   if (!open) return null;
 
@@ -140,7 +161,18 @@ export default function DocumentModal({ open, docType, caseData, targetService, 
       </div>
 
       {/* Document body */}
-      <div className="flex-1 overflow-y-auto scrollbar-thin p-3">
+      <div className="relative flex-1 overflow-y-auto scrollbar-thin p-3">
+        {/* Streaming progress bar — creeps to 90% over 8s, snaps to 100% + fades out on completion */}
+        {progressVisible && (
+          <div className="absolute inset-x-0 top-0 z-10 h-0.5 bg-tracev2-border/20">
+            <div
+              className={`h-full bg-tracev2-accent ${
+                progress >= 100 ? 'opacity-0 transition-all duration-300 ease-out' : 'transition-[width] duration-[8000ms] ease-out'
+              }`}
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        )}
         {isSafeCard ? (
           error ? (
             <p className="rounded-xl border border-tracev2-border bg-tracev2-card p-3.5 text-sm text-tracev2-risk-high">⚠️ {error}</p>
@@ -194,11 +226,19 @@ export default function DocumentModal({ open, docType, caseData, targetService, 
           <div className="min-h-full rounded-xl border border-tracev2-border bg-tracev2-card p-3.5">
             {error ? (
               <p className="text-sm text-tracev2-risk-high">⚠️ {error}</p>
+            ) : streaming && !text ? (
+              <div className="flex min-h-[40vh] flex-col items-center justify-center gap-3">
+                <div className="flex items-center gap-1.5">
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-tracev2-accent [animation-delay:-0.3s]" />
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-tracev2-accent [animation-delay:-0.15s]" />
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-tracev2-accent" />
+                </div>
+                <span className="animate-pulse text-xs font-medium text-tracev2-muted">Generating…</span>
+              </div>
             ) : (
               <pre className="whitespace-pre-wrap break-words font-mono text-[12.5px] leading-relaxed text-tracev2-text">
                 {text}
                 {streaming && <span className="ml-0.5 inline-block h-3.5 w-[2px] translate-y-0.5 animate-pulse bg-current align-middle" />}
-                {streaming && !text && <span className="text-tracev2-subtle">Generating…</span>}
               </pre>
             )}
           </div>

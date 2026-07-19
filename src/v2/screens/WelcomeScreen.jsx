@@ -3,8 +3,9 @@
 // then a graceful crossfade into the auth options: Sign in with Microsoft
 // (real MSAL when VITE_AZURE_CLIENT_ID is set, otherwise a "not configured"
 // toast) and a "Continue as demo user" link.
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import traceLogo from '../../assets/trace-logo.png';
+import { useToast } from '../lib/ToastContext.jsx';
 
 const HOLD_MS = 1500;
 
@@ -21,18 +22,49 @@ function MicrosoftLogo() {
 
 export default function WelcomeScreen({ onMicrosoft, onDemo, signingIn }) {
   const [phase, setPhase] = useState('splash'); // 'splash' | 'auth'
+  const { show } = useToast();
+  const tapRef = useRef({ count: 0, timer: null });
 
   useEffect(() => {
     const id = setTimeout(() => setPhase('auth'), HOLD_MS);
     return () => clearTimeout(id);
   }, []);
 
+  // Hidden demo reset: triple-tap the logo → clear all local state and reload.
+  function handleLogoTap() {
+    const s = tapRef.current;
+    s.count += 1;
+    clearTimeout(s.timer);
+    if (s.count >= 3) {
+      s.count = 0;
+      show('Demo reset…', 'info');
+      setTimeout(() => {
+        try {
+          localStorage.clear();
+          sessionStorage.clear();
+        } catch {
+          /* no-op */
+        }
+        window.location.replace(window.location.pathname + '?v2');
+      }, 800);
+      return;
+    }
+    s.timer = setTimeout(() => {
+      s.count = 0;
+    }, 1200);
+  }
+
   return (
     <div className="flex flex-1 flex-col items-center justify-center bg-tracev2-bg px-8 text-center">
       {/* Logo with breathing halo */}
       <div className="relative flex items-center justify-center">
         <span className="tracev2-halo absolute h-28 w-28 rounded-full bg-tracev2-accent blur-2xl" aria-hidden="true" />
-        <div className="tracev2-fade-in relative flex h-20 w-20 items-center justify-center rounded-2xl bg-white p-3 shadow-xl shadow-tracev2-accent/20">
+        <button
+          type="button"
+          onClick={handleLogoTap}
+          aria-label="TRACE"
+          className="tracev2-fade-in relative flex h-20 w-20 items-center justify-center rounded-2xl bg-white p-3 shadow-xl shadow-tracev2-accent/20"
+        >
           <img
             src={traceLogo}
             alt="TRACE"
@@ -41,7 +73,7 @@ export default function WelcomeScreen({ onMicrosoft, onDemo, signingIn }) {
               e.currentTarget.style.display = 'none';
             }}
           />
-        </div>
+        </button>
       </div>
 
       <h1 className="tracev2-fade-up mt-6 text-4xl font-bold tracking-tight text-tracev2-text" style={{ animationDelay: '0.15s' }}>

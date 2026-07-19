@@ -49,3 +49,26 @@
 .animate-tracev2-fadeIn {
   animation: tracev2-fadeIn 0.18s ease-out both;
 }
+
+/* Banner drop-in (used by the offline banner). */
+@keyframes tracev2-slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.animate-tracev2-slideDown {
+  animation: tracev2-slideDown 0.25s ease-out both;
+}
+
+/* Print: hide interactive chrome (nav/print buttons) so only the case summary
+   prints. Used by the CasePrintScreen export overlay. */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}

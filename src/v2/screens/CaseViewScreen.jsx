@@ -5,10 +5,12 @@
 import { useState } from 'react';
 import DocumentModal from '../components/DocumentModal.jsx';
 import ServiceFinderModal from '../components/ServiceFinderModal.jsx';
+import CasePrintScreen from './CasePrintScreen.jsx';
 import { RISK_BANNER, RISK_LABEL, RISK_TEXT, RISK_DOT } from '../theme.js';
 import { DOC_TYPES } from '../lib/documents.js';
 import { toggleTask, getSessions } from '../lib/caseStore.js';
 import { streamCaseChat } from '../lib/claudeStream.js';
+import { mockRiskIndicators } from '../mockData.js';
 
 const TABS = [
   { id: 'overview', label: 'Overview' },
@@ -22,14 +24,29 @@ function sexLabel(s) {
   return s || 'Not recorded';
 }
 
-function riskIndicators(caseData) {
-  const indicators = caseData?.ctdcIndicators || [];
-  const s = caseData?.structuredData || {};
-  const extra = [];
-  if (s.control_method) extra.push(`Control method: ${s.control_method}`);
-  if (s.recruitment_method) extra.push(`Recruitment: ${s.recruitment_method}`);
-  if (s.exploitation_type) extra.push(`Exploitation type: ${s.exploitation_type}`);
-  return [...indicators, ...extra].slice(0, 8);
+// Canonical CTDC indicator categories (name + one-line description + the
+// keywords used to detect them within a case's free-text indicators).
+const CTDC_CATEGORIES = [
+  { name: 'Recruitment by deception', description: 'Lured with false promises of work, marriage, or a better life.', keywords: ['deception', 'false promise', 'deceptive', 'fraudulent', 'lured'] },
+  { name: 'Debt bondage', description: 'Forced to work off an inflated or fabricated debt.', keywords: ['debt', 'bondage'] },
+  { name: 'Document confiscation', description: 'ID or travel documents withheld by a third party.', keywords: ['document', 'passport', 'confiscat', 'withheld by', 'id retention'] },
+  { name: 'Restricted movement', description: 'Unable to leave the workplace or residence freely.', keywords: ['unable to leave', 'movement', 'confin', 'restricted', 'not allowed to leave'] },
+  { name: 'Withheld / unpaid wages', description: 'Paid little or nothing for the work performed.', keywords: ['unpaid', 'underpaid', 'wages', 'not paid', 'no pay'] },
+  { name: 'Isolation from support', description: 'Cut off from family, community, or outside contact.', keywords: ['isolation', 'isolated', 'family and community', 'no contact', 'cut off'] },
+  { name: 'Threats or coercion', description: 'Controlled through threats, violence, or intimidation.', keywords: ['threat', 'coerc', 'violence', 'intimidat', 'abuse'] },
+  { name: 'Minor / heightened vulnerability', description: 'A child or otherwise vulnerable at the time of recruitment.', keywords: ['minor', 'child', 'vulnerab'] }
+];
+
+// Mark each canonical category present/absent by matching the case's indicators
+// (falling back to the mock indicators when none are recorded).
+function ctdcBreakdown(caseData) {
+  const source = caseData?.ctdcIndicators?.length ? caseData.ctdcIndicators : mockRiskIndicators;
+  const lower = (source || []).map((i) => String(i).toLowerCase());
+  return CTDC_CATEGORIES.map((cat) => ({
+    name: cat.name,
+    description: cat.description,
+    present: lower.some((ind) => cat.keywords.some((kw) => ind.includes(kw)))
+  }));
 }
 
 function Row({ label, value }) {
@@ -47,6 +64,7 @@ export default function CaseViewScreen({ caseData, supervisorMode = false, onBac
   const [expandedSession, setExpandedSession] = useState(0);
   const [doc, setDoc] = useState({ open: false, type: null });
   const [riskOpen, setRiskOpen] = useState(false);
+  const [showPrint, setShowPrint] = useState(false);
   const [serviceFinder, setServiceFinder] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [translating, setTranslating] = useState(false);
@@ -117,34 +135,53 @@ export default function CaseViewScreen({ caseData, supervisorMode = false, onBac
             </svg>
           </button>
           <div className="text-sm font-semibold tabular-nums text-tracev2-text">{caseData?.id}</div>
-          <button onClick={() => setRiskOpen((o) => !o)} className="flex items-center gap-1" aria-label="Risk indicators">
-            <span className={`flex items-center gap-1 rounded-full border border-tracev2-border bg-tracev2-card px-2 py-0.5 text-[10px] font-semibold ${RISK_TEXT[risk]}`}>
-              <span className={`h-1.5 w-1.5 rounded-full ${RISK_DOT[risk]}`} />
-              {RISK_LABEL[risk]}
-            </span>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" className={`text-tracev2-subtle transition-transform duration-150 ${riskOpen ? 'rotate-180' : ''}`}>
-              <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowPrint(true)}
+              aria-label="Export case summary"
+              className="flex items-center gap-1 rounded-full border border-tracev2-border bg-tracev2-card px-2 py-0.5 text-[10px] font-semibold text-tracev2-muted transition-colors duration-150 hover:border-tracev2-accent/60 hover:text-tracev2-text"
+            >
+              <span aria-hidden="true">⎙</span>
+              Export
+            </button>
+            <button onClick={() => setRiskOpen((o) => !o)} className="flex items-center gap-1" aria-label="Risk indicators">
+              <span className={`flex items-center gap-1 rounded-full border border-tracev2-border bg-tracev2-card px-2 py-0.5 text-[10px] font-semibold ${RISK_TEXT[risk]}`}>
+                <span className={`h-1.5 w-1.5 rounded-full ${RISK_DOT[risk]}`} />
+                {RISK_LABEL[risk]}
+              </span>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" className={`text-tracev2-subtle transition-transform duration-150 ${riskOpen ? 'rotate-180' : ''}`}>
+                <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         {riskOpen && (
-          <div className="mt-2 rounded-xl border border-tracev2-border bg-tracev2-card p-3">
-            <p className="text-[11px] font-semibold uppercase tracking-wide text-tracev2-subtle mb-2">Risk indicators</p>
-            {riskIndicators(caseData).length === 0 ? (
-              <p className="text-xs text-tracev2-subtle">No CTDC indicators recorded.</p>
-            ) : (
-              <div className="space-y-1.5">
-                {riskIndicators(caseData).map((ind, i) => (
-                  <div key={i} className="flex items-start gap-2">
-                    <span className={`mt-0.5 h-2 w-2 flex-shrink-0 rounded-full ${caseData.riskLevel === 'high' ? 'bg-tracev2-risk-high' : caseData.riskLevel === 'medium' ? 'bg-tracev2-risk-medium' : 'bg-tracev2-risk-low'}`} />
-                    <span className="text-xs leading-snug text-tracev2-muted">{ind}</span>
+          <div className="mt-2 animate-tracev2-fadeIn rounded-xl border border-tracev2-border bg-tracev2-card p-3">
+            <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-tracev2-subtle">CTDC indicator breakdown</p>
+            <div className="space-y-2">
+              {ctdcBreakdown(caseData).map((cat) => (
+                <div key={cat.name} className="flex items-start gap-2">
+                  {cat.present ? (
+                    <span className="mt-0.5 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-tracev2-risk-low text-white">
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                        <path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </span>
+                  ) : (
+                    <span className="mt-0.5 flex h-4 w-4 flex-shrink-0 items-center justify-center">
+                      <span className="h-2 w-2 rounded-full bg-tracev2-border" />
+                    </span>
+                  )}
+                  <div className="min-w-0">
+                    <div className={`text-xs font-medium ${cat.present ? 'text-tracev2-text' : 'text-tracev2-subtle'}`}>{cat.name}</div>
+                    <div className="text-[10px] leading-snug text-tracev2-subtle">{cat.description}</div>
                   </div>
-                ))}
-              </div>
-            )}
-            <p className="mt-2.5 text-[10px] text-tracev2-subtle border-t border-tracev2-border pt-2">
-              Risk level assigned by TRACE based on CTDC indicator framework. Requires caseworker verification.
+                </div>
+              ))}
+            </div>
+            <p className="mt-2.5 border-t border-tracev2-border pt-2 text-[10px] text-tracev2-subtle">
+              Risk level assigned by TRACE based on the CTDC indicator framework. Requires caseworker verification.
             </p>
           </div>
         )}
@@ -417,6 +454,10 @@ export default function CaseViewScreen({ caseData, supervisorMode = false, onBac
           setServiceFinder(false);
         }}
       />
+
+      {showPrint && (
+        <CasePrintScreen caseData={{ ...caseData, follow_up_tasks: tasks }} onBack={() => setShowPrint(false)} />
+      )}
     </div>
   );
 }

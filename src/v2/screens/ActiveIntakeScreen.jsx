@@ -36,6 +36,24 @@ const INTAKE_LANGUAGES = [
   'Bambara'
 ];
 
+// Lightweight, offline heuristic language detection for the intake note. Runs
+// on the raw text after the caseworker pauses typing — purely informational, it
+// never changes the Translate & Structure behaviour (Claude still detects the
+// true source language server-side).
+const FR_STOPWORDS = ['de', 'la', 'le', 'les', 'des', 'du', 'une', 'est', 'avec', 'pour', 'dans'];
+const HA_MARKERS = ['da', 'na', 'ta', 'ba', 'ne', 'ce', 'sun', 'ya', 'shi', 'wani'];
+
+function detectLanguage(text) {
+  if (!text || !text.trim()) return null;
+  const words = text.toLowerCase().match(/[a-zà-ÿ]+/g) || [];
+  const frCount = words.filter((w) => FR_STOPWORDS.includes(w)).length;
+  if (frCount >= 3) return { code: 'FR', label: 'French' };
+  const haCount = words.filter((w) => HA_MARKERS.includes(w)).length;
+  if (haCount >= 2) return { code: 'HA', label: 'Hausa' };
+  if (/[؀-ۿ]/.test(text)) return { code: 'AR', label: 'Arabic' };
+  return null;
+}
+
 export default function ActiveIntakeScreen({ caseId, initialNotes = '', riskLevel = 'medium', ageRange = '', sex = '', supervisorMode = false, onBack, onSaved }) {
   const { t } = useTranslation();
   const { show } = useToast();
@@ -52,6 +70,7 @@ export default function ActiveIntakeScreen({ caseId, initialNotes = '', riskLeve
   const [fields, setFields] = useState([]);
   const [structured, setStructured] = useState(null);
   const [riskOpen, setRiskOpen] = useState(false);
+  const [detectedLang, setDetectedLang] = useState(null);
 
   const recognitionRef = useRef(null);
   const baseNotesRef = useRef('');
@@ -59,6 +78,12 @@ export default function ActiveIntakeScreen({ caseId, initialNotes = '', riskLeve
   // Live risk badge reflects the structured result once available.
   const displayRisk = structured?.risk_level || riskLevel;
   const displayIndicators = structured?.ctdc_indicators?.length ? structured.ctdc_indicators : mockRiskIndicators;
+
+  // Debounced language auto-detection: recompute 1.5s after typing stops.
+  useEffect(() => {
+    const id = setTimeout(() => setDetectedLang(detectLanguage(notes)), 1500);
+    return () => clearTimeout(id);
+  }, [notes]);
 
   useEffect(() => {
     return () => {
@@ -284,6 +309,15 @@ export default function ActiveIntakeScreen({ caseId, initialNotes = '', riskLeve
 
         {/* Live CTDC gap detection */}
         <GapDetector notes={notes} />
+
+        {/* Debounced language auto-detection badge (informational only) */}
+        {detectedLang && (
+          <div className="mt-2 flex justify-end">
+            <span className="inline-flex items-center gap-1 rounded-full border border-tracev2-accent/40 bg-tracev2-accent/10 px-2 py-0.5 text-[10px] font-medium text-tracev2-accent animate-tracev2-fadeIn">
+              Detected: {detectedLang.label} → EN
+            </span>
+          </div>
+        )}
 
         {/* Action buttons */}
         <div className="mt-3 flex gap-2">

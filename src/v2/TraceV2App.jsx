@@ -12,6 +12,7 @@ import StatusBar from './components/StatusBar.jsx';
 import AiStrip from './components/AiStrip.jsx';
 import AiChatScreen from './screens/AiChatScreen.jsx';
 import BottomNav from './components/BottomNav.jsx';
+import OfflineBanner from './components/OfflineBanner.jsx';
 import WelcomeScreen from './screens/WelcomeScreen.jsx';
 import DashboardScreen from './screens/DashboardScreen.jsx';
 import IntakeStartScreen from './screens/IntakeStartScreen.jsx';
@@ -250,6 +251,8 @@ function Shell() {
   return (
     <PhoneFrame theme={theme} dir={dir}>
       <StatusBar privacyMode={privacyMode} onPrivacyToggle={() => setPrivacyMode((p) => !p)} />
+
+      <OfflineBanner />
 
       {/* Privacy overlay — blurs all case content when active */}
       <div className={`flex flex-1 flex-col transition-all duration-200 ${privacyMode ? 'blur-xl select-none pointer-events-none' : ''}`}>
