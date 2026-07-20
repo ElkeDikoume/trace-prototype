@@ -11,6 +11,10 @@ const SAFE_CONTACTS = [
   { org: 'UNHCR Chad', number: '+235 22 52 47 57' }
 ];
 
+// Standalone static page (public/emergency.html) with the same contacts — the
+// safe card's QR code points here so a survivor can reach it without the app.
+const EMERGENCY_PAGE_URL = 'https://trace-prototype-ten.vercel.app/emergency';
+
 export default function DocumentModal({ open, docType, caseData, targetService, demoContent, onClose }) {
   const [text, setText] = useState('');
   const [streaming, setStreaming] = useState(false);
@@ -218,6 +222,18 @@ export default function DocumentModal({ open, docType, caseData, targetService, 
                     </div>
                   ))}
                 </div>
+              </div>
+
+              {/* QR to the standalone emergency page (no app needed) */}
+              <div className="mt-4 flex flex-col items-center gap-2">
+                <img
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(EMERGENCY_PAGE_URL)}&bgcolor=1a2035&color=ffffff&margin=4`}
+                  alt="Emergency contacts QR"
+                  className="h-[80px] w-[80px] rounded-lg"
+                />
+                <p className="text-center text-[10px] leading-snug text-tracev2-subtle">
+                  Scan for emergency contacts — no app needed
+                </p>
               </div>
 
               {/* Play for survivor */}

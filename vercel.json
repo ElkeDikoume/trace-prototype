@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/emergency", "destination": "/emergency.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
