@@ -5,15 +5,29 @@
 import { RISK_BORDER, recordStatus } from '../theme.js';
 import { hasIncompleteTasks } from '../lib/caseStore.js';
 
+// Placeholder characters upstream code substitutes for a missing value —
+// mapRow in lib/cases.js uses '—' for an absent age range, for instance. Left
+// unguarded, a case with no demographics renders a lone '—' or '·'.
+const PLACEHOLDERS = ['.', '·', '—', '–', '-', 'null', 'undefined'];
+
+function part(v) {
+  const s = typeof v === 'string' ? v.trim() : v ? String(v).trim() : '';
+  return s && !PLACEHOLDERS.includes(s) ? s : null;
+}
+
+// Location first, then whatever demographics are recorded. Every part is
+// guarded and the separator only appears between surviving parts, so a case
+// missing all of them renders nothing at all.
+export function caseSubtitle(c) {
+  return [part(c?.location), part(c?.ageRange), part(c?.sex === 'F' ? 'Female' : c?.sex === 'M' ? 'Male' : c?.sex)]
+    .filter(Boolean)
+    .join(' · ');
+}
+
 export default function CaseCard({ c, onOpen, showArrow = false }) {
   const incompleteTasks = hasIncompleteTasks(c);
   const status = recordStatus(c.status);
-
-  // Subtitle: location first, then whatever demographics are recorded. Built by
-  // filtering so a case missing a field never renders a stray separator.
-  const subtitle = [c.location, c.ageRange, c.sex === 'F' ? 'Female' : c.sex === 'M' ? 'Male' : c.sex]
-    .filter(Boolean)
-    .join(' · ');
+  const subtitle = caseSubtitle(c);
 
   return (
     <button

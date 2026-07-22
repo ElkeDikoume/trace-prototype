@@ -6,7 +6,7 @@
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import traceLogo from '../../assets/trace-logo.png';
-import CaseCard from '../components/CaseCard.jsx';
+import CaseCard, { caseSubtitle } from '../components/CaseCard.jsx';
 import HeaderControls from '../components/HeaderControls.jsx';
 import PatternAlertBanner from '../components/PatternAlertBanner.jsx';
 import InfoButton from '../components/InfoButton.jsx';
@@ -49,11 +49,7 @@ function PendingCard({ c, onApprove, onFlag }) {
           {RISK_LABEL[c.riskLevel]}
         </span>
       </div>
-      <p className="mt-1 text-xs text-tracev2-muted">
-        {[c.location, c.ageRange, c.sex === 'F' ? 'Female' : c.sex === 'M' ? 'Male' : c.sex]
-          .filter(Boolean)
-          .join(' · ')}
-      </p>
+      {caseSubtitle(c) && <p className="mt-1 text-xs text-tracev2-muted">{caseSubtitle(c)}</p>}
 
       {flagging ? (
         <div className="mt-2">

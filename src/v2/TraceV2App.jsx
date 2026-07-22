@@ -64,7 +64,7 @@ const FAQ = [
   },
   {
     q: 'What languages does TRACE support?',
-    a: 'Voice intake supports Hausa, Kanuri, Arabic, French, and English. Generated documents can be produced in English or French. UI language can be set in Settings.'
+    a: 'Voice intake supports Hausa, Arabic, French, and English. Generated documents can be produced in English or French. UI language can be set in Settings.'
   },
   {
     q: 'How does risk flagging work?',
