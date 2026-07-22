@@ -28,3 +28,6 @@ yarn-error.log*
 # Internal hackathon notes — contains private judge strategy notes,
 # not for the public repo
 TRACE_Progress_Handoff_v2.md
+
+# Pitch deck — large binary, kept out of the repo
+TRACE Gamma.pptx
