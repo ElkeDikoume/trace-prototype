@@ -76,6 +76,7 @@ function Shell() {
   const [showTutorial, setShowTutorial] = useState(false);
   const [demoDocOpen, setDemoDocOpen] = useState(null); // { caseId, docType, content }
   const [submittedCase, setSubmittedCase] = useState(null); // case shown on the submission screen
+  const [recording, setRecording] = useState(false); // mic open on the intake screen — hides the bottom nav
   const resetRan = useRef(false);
 
   // ?reset — clears local state, then reloads straight into the guided tour.
@@ -348,6 +349,7 @@ function Shell() {
           supervisorMode={supervisorMode}
           onBack={() => setScreen('dashboard')}
           onSaved={handleSavedCase}
+          onRecordingChange={setRecording}
         />
       )}
       {screen === 'records' && <RecordsScreen />}
@@ -369,8 +371,9 @@ function Shell() {
 
       </div>{/* end privacy wrapper */}
 
-      {/* Persistent chrome — intentionally outside privacy wrapper */}
-      <BottomNav active={activeTab} onNavigate={handleNav} />
+      {/* Persistent chrome — intentionally outside privacy wrapper. Hidden
+          while recording so nothing competes with the mic control. */}
+      {!recording && <BottomNav active={activeTab} onNavigate={handleNav} />}
 
       {aiOpen && (
         <AiChatScreen caseContext={aiScoped ? aiContext : null} cases={cases} onClose={() => setAiOpen(false)} />

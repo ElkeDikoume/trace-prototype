@@ -54,7 +54,10 @@ function detectLanguage(text) {
   return null;
 }
 
-export default function ActiveIntakeScreen({ caseId, initialNotes = '', riskLevel = 'medium', ageRange = '', sex = '', supervisorMode = false, onBack, onSaved }) {
+// Static bar heights (%) for the recording waveform — decorative only.
+const WAVEFORM_BARS = [30, 55, 80, 45, 95, 60, 100, 40, 75, 50, 85, 35, 65, 90, 45];
+
+export default function ActiveIntakeScreen({ caseId, initialNotes = '', riskLevel = 'medium', ageRange = '', sex = '', supervisorMode = false, onBack, onSaved, onRecordingChange }) {
   const { t } = useTranslation();
   const { show } = useToast();
 
@@ -72,6 +75,10 @@ export default function ActiveIntakeScreen({ caseId, initialNotes = '', riskLeve
   const [riskOpen, setRiskOpen] = useState(false);
   const [detectedLang, setDetectedLang] = useState(null);
 
+  // Language shown in the recording header: the explicit choice, else whatever
+  // the note text has been detected as.
+  const recordingLang = intakeLang === 'Auto-detect' ? detectedLang?.label || 'Auto-detect' : intakeLang;
+
   const recognitionRef = useRef(null);
   const baseNotesRef = useRef('');
 
@@ -85,6 +92,12 @@ export default function ActiveIntakeScreen({ caseId, initialNotes = '', riskLeve
     return () => clearTimeout(id);
   }, [notes]);
 
+  // The shell hides the bottom nav while the mic is open, so it needs to know.
+  useEffect(() => {
+    onRecordingChange?.(recording);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recording]);
+
   useEffect(() => {
     return () => {
       try {
@@ -92,7 +105,9 @@ export default function ActiveIntakeScreen({ caseId, initialNotes = '', riskLeve
       } catch {
         /* no-op */
       }
+      onRecordingChange?.(false); // leaving the screen must always restore the nav
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function toggleRecord() {
@@ -319,19 +334,68 @@ export default function ActiveIntakeScreen({ caseId, initialNotes = '', riskLeve
           </div>
         )}
 
+        {/* Recording surface — header, waveform and live transcript appear only
+            while the mic is open. The transcript copy below is static demo
+            text; the real Web Speech transcript fills the note field above. */}
+        {recording && (
+          <div className="mt-3">
+            <p className="text-center text-xs text-slate-400">
+              Recording · {recordingLang} · Case {caseId} — New intake
+            </p>
+
+            <div className="mt-2 flex h-10 items-end justify-center gap-1" aria-hidden="true">
+              {WAVEFORM_BARS.map((h, i) => (
+                <span
+                  key={i}
+                  className="w-1 animate-pulse rounded-full bg-red-400/80"
+                  style={{ height: `${h}%`, animationDelay: `${i * 80}ms` }}
+                />
+              ))}
+            </div>
+
+            <div className="mx-4 mt-2 max-h-48 overflow-y-auto rounded-2xl border border-slate-200 bg-slate-50">
+              <p className="px-4 py-3 text-sm leading-relaxed text-slate-700">
+                Fatima Hassan, 34 years old, three children — the youngest is 2. They&apos;ve been here since the
+                flooding in June, came from Koura Village. Her husband is working in Diffa, sends money when he can.
+                The shelter is temporary, she&apos;s worried about the next rain season…{' '}
+                <span className="text-slate-400">The main concern is—</span>
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Record button — tap to start, tap to stop */}
+        <div className="mt-3 flex flex-col items-center">
+          <span className="relative flex">
+            {/* Pulsing ring sits behind the button so the red fill stays solid */}
+            {recording && (
+              <span className="pointer-events-none absolute -inset-1 animate-pulse rounded-full ring-4 ring-red-300" />
+            )}
+            <button
+              onClick={toggleRecord}
+              aria-label={recording ? 'Stop recording' : 'Start recording'}
+              aria-pressed={recording}
+              className={`relative flex h-24 w-24 items-center justify-center rounded-full text-white transition-colors duration-150 ${
+                recording ? 'bg-red-500' : 'bg-blue-600 hover:bg-blue-700'
+              }`}
+            >
+              {recording ? (
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <rect x="6" y="6" width="12" height="12" rx="2" />
+                </svg>
+              ) : (
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <rect x="9" y="3" width="6" height="11" rx="3" stroke="currentColor" strokeWidth="1.8" />
+                  <path d="M5 11a7 7 0 0 0 14 0M12 18v3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                </svg>
+              )}
+            </button>
+          </span>
+          {recording && <p className="mt-2 text-xs text-slate-400">← Slide to cancel</p>}
+        </div>
+
         {/* Action buttons */}
         <div className="mt-3 flex gap-2">
-          <button
-            onClick={toggleRecord}
-            className={`flex flex-1 items-center justify-center gap-2 rounded-xl border py-3 text-sm font-medium transition-colors duration-150 ${
-              recording
-                ? 'border-tracev2-risk-high bg-tracev2-risk-high/15 text-tracev2-risk-high'
-                : 'border-tracev2-border bg-tracev2-card text-tracev2-text hover:border-tracev2-muted'
-            }`}
-          >
-            <span className={`h-2.5 w-2.5 rounded-full bg-tracev2-risk-high ${recording ? 'animate-pulse' : ''}`} />
-            {recording ? 'Stop' : 'Record'}
-          </button>
           <button
             onClick={handleStructure}
             disabled={!notes.trim() || structuring || saved}
