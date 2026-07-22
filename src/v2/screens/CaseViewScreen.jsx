@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import DocumentModal from '../components/DocumentModal.jsx';
 import ServiceFinderModal from '../components/ServiceFinderModal.jsx';
 import CasePrintScreen from './CasePrintScreen.jsx';
-import { RISK_BANNER, RISK_LABEL, RISK_TEXT, RISK_DOT } from '../theme.js';
+import { RISK_BANNER, RISK_PANEL, RISK_LABEL, RISK_TEXT, RISK_DOT } from '../theme.js';
 import { DOC_TYPES } from '../lib/documents.js';
 import { toggleTask, getSessions } from '../lib/caseStore.js';
 import { streamCaseChat } from '../lib/claudeStream.js';
@@ -58,13 +58,14 @@ function Row({ label, value }) {
   );
 }
 
-export default function CaseViewScreen({ caseData, supervisorMode = false, onBack, onAddSessionNote, onTasksChanged, demoDocOpen }) {
+export default function CaseViewScreen({ caseData, supervisorMode = false, onBack, onAddSessionNote, onTasksChanged, onAskAi, demoDocOpen }) {
   const [tab, setTab] = useState('overview');
   const [tasks, setTasks] = useState(caseData?.follow_up_tasks || []);
   const [expandedSession, setExpandedSession] = useState(0);
   const [doc, setDoc] = useState({ open: false, type: null });
   const [demoDocContent, setDemoDocContent] = useState(null);
   const [riskOpen, setRiskOpen] = useState(false);
+  const [riskFactorsOpen, setRiskFactorsOpen] = useState(false);
   const [showPrint, setShowPrint] = useState(false);
   const [serviceFinder, setServiceFinder] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
@@ -75,6 +76,17 @@ export default function CaseViewScreen({ caseData, supervisorMode = false, onBac
   const s = caseData?.structuredData || {};
   const risk = caseData?.riskLevel || s.risk_level || 'medium';
   const indicators = (s.ctdc_indicators?.length ? s.ctdc_indicators : caseData?.ctdcIndicators) || [];
+  // Specific risk factors behind the banner's risk level: the case's own
+  // riskFactors list where recorded, else its CTDC indicators, else the control
+  // methods captured at intake.
+  const riskFactors = caseData?.riskFactors?.length
+    ? caseData.riskFactors
+    : indicators.length
+      ? indicators
+      : (s.control_method || '')
+          .split(';')
+          .map((f) => f.trim())
+          .filter(Boolean);
 
   // Scripted demo: auto-open the document modal with pre-written content when the
   // guided walkthrough requests it for this case.
@@ -217,9 +229,41 @@ export default function CaseViewScreen({ caseData, supervisorMode = false, onBac
       <div key={tab} className="flex-1 overflow-y-auto scrollbar-thin px-4 py-3 animate-tracev2-fadeIn">
         {tab === 'overview' && (
           <div>
-            {/* Risk banner */}
-            <div className={`rounded-xl px-3.5 py-2.5 text-sm font-semibold ${RISK_BANNER[risk]}`}>
-              {RISK_LABEL[risk]}
+            {/* Risk banner — collapsed to the risk label, expands to the case's
+                specific risk factors (its CTDC indicators). */}
+            <div className={`overflow-hidden rounded-xl ${RISK_BANNER[risk]}`}>
+              <button
+                onClick={() => setRiskFactorsOpen((o) => !o)}
+                aria-expanded={riskFactorsOpen}
+                className="flex w-full items-center justify-between px-3.5 py-2.5 text-start text-sm font-semibold"
+              >
+                {RISK_LABEL[risk]}
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden="true"
+                  className={`transition-transform duration-200 ${riskFactorsOpen ? 'rotate-180' : ''}`}
+                >
+                  <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+
+              {riskFactorsOpen && (
+                <div className={`animate-tracev2-fadeIn px-3.5 py-3 ${RISK_PANEL[risk]}`}>
+                  <p className="text-[11px] font-semibold uppercase tracking-wide opacity-70">Risk factors</p>
+                  {riskFactors.length > 0 ? (
+                    <ul className="mt-1.5 list-disc space-y-1 ps-4 text-sm leading-snug">
+                      {riskFactors.map((f) => (
+                        <li key={f}>{f}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="mt-1.5 text-sm">No specific risk factors recorded for this case yet.</p>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Follow-up tasks checklist */}
@@ -251,6 +295,16 @@ export default function CaseViewScreen({ caseData, supervisorMode = false, onBac
                 </ul>
               </div>
             )}
+
+            {/* Case-scoped entry to the AI consultation — the AI tab opens the
+                generic chat instead. */}
+            <button
+              onClick={() => onAskAi?.(caseData)}
+              data-tutorial="case-ask-ai"
+              className="mt-3 w-full rounded-xl border border-violet-200 bg-violet-50 px-4 py-3 text-center text-sm font-medium text-violet-700 transition-colors duration-150 hover:bg-violet-100"
+            >
+              Ask TRACE AI about this case →
+            </button>
 
             {/* Structured data */}
             <div className="mt-3 rounded-xl border border-tracev2-border bg-tracev2-card p-3">

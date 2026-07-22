@@ -7,6 +7,12 @@ import { hasIncompleteTasks } from '../lib/caseStore.js';
 export default function CaseCard({ c, onOpen, showArrow = false }) {
   const incompleteTasks = hasIncompleteTasks(c);
 
+  // Subtitle: location first, then whatever demographics are recorded. Built by
+  // filtering so a case missing a field never renders a stray separator.
+  const subtitle = [c.location, c.ageRange, c.sex === 'F' ? 'Female' : c.sex === 'M' ? 'Male' : c.sex]
+    .filter(Boolean)
+    .join(' · ');
+
   return (
     <button
       onClick={() => onOpen?.(c.id)}
@@ -33,9 +39,7 @@ export default function CaseCard({ c, onOpen, showArrow = false }) {
                 {statusLabel(c.status)}
               </span>
             </div>
-            <p className="mt-1 text-xs text-tracev2-muted">
-              {c.ageRange} · {c.sex === 'F' ? 'Female' : c.sex === 'M' ? 'Male' : c.sex}
-            </p>
+            {subtitle && <p className="mt-1 text-xs text-tracev2-muted">{subtitle}</p>}
           </div>
           <span className="text-[10px] text-tracev2-subtle whitespace-nowrap">{c.lastUpdated}</span>
         </div>

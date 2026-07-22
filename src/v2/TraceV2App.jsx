@@ -9,7 +9,6 @@ import { useTranslation } from 'react-i18next';
 
 import PhoneFrame from './components/PhoneFrame.jsx';
 import StatusBar from './components/StatusBar.jsx';
-import AiStrip from './components/AiStrip.jsx';
 import AiChatScreen from './screens/AiChatScreen.jsx';
 import BottomNav from './components/BottomNav.jsx';
 import OfflineBanner from './components/OfflineBanner.jsx';
@@ -20,6 +19,7 @@ import DashboardScreen from './screens/DashboardScreen.jsx';
 import IntakeStartScreen from './screens/IntakeStartScreen.jsx';
 import ActiveIntakeScreen from './screens/ActiveIntakeScreen.jsx';
 import CaseViewScreen from './screens/CaseViewScreen.jsx';
+import RecordsScreen from './screens/RecordsScreen.jsx';
 import WellnessCheckModal, { isWellnessDue } from './components/WellnessCheckModal.jsx';
 
 import { ThemeProvider, useTheme } from './lib/ThemeContext.jsx';
@@ -49,7 +49,7 @@ export default function TraceV2App() {
   );
 }
 
-// Screens once authed: 'dashboard' | 'intakeStart' | 'activeIntake' | 'caseView'
+// Screens once authed: 'dashboard' | 'intakeStart' | 'activeIntake' | 'caseView' | 'records'
 function Shell() {
   const { theme } = useTheme();
   const { i18n } = useTranslation();
@@ -65,6 +65,9 @@ function Shell() {
   const [selectedCaseId, setSelectedCaseId] = useState(null);
   const [supervisorMode, setSupervisorMode] = useState(false);
   const [aiOpen, setAiOpen] = useState(false);
+  // true when the chat was opened from inside a case (grounded in that case);
+  // false when opened from the AI tab, which gets the generic opening state.
+  const [aiScoped, setAiScoped] = useState(false);
   const [cases, setCases] = useState([]);
   const [privacyMode, setPrivacyMode] = useState(false);
   const [wellnessOpen, setWellnessOpen] = useState(false);
@@ -72,14 +75,15 @@ function Shell() {
   const [demoDocOpen, setDemoDocOpen] = useState(null); // { caseId, docType, content }
   const resetRan = useRef(false);
 
-  // ?reset — unchanged from earlier phases. Guarded so it runs once.
+  // ?reset — clears local state, then reloads straight into the guided tour.
+  // Guarded so it runs once.
   useEffect(() => {
     if (resetRan.current) return;
     resetRan.current = true;
     if (window.location.search.includes('reset')) {
       navigator.serviceWorker?.getRegistrations?.().then((regs) => regs.forEach((r) => r.unregister()));
       localStorage.clear();
-      window.location.replace(window.location.pathname + '?v2');
+      window.location.replace(window.location.pathname + '?v2&tour');
     }
   }, []);
 
@@ -179,6 +183,12 @@ function Shell() {
     setDemoDocOpen({ caseId, docType, content });
   }
 
+  // "Ask TRACE AI" from inside a case — grounded in that case's context.
+  function openCaseAi() {
+    setAiScoped(true);
+    setAiOpen(true);
+  }
+
   // Tapping a case card opens the 3-tab case view.
   function openCaseView(caseId) {
     setSelectedCaseId(caseId);
@@ -242,12 +252,13 @@ function Shell() {
   function handleNav(tab) {
     if (tab === 'cases') setScreen('dashboard');
     else if (tab === 'intake') setScreen('intakeStart');
-    else if (tab === 'ai') setAiOpen(true);
-    else if (tab === 'docs') {
-      // "Records" opens the first case's document view rather than a standalone screen.
-      setSelectedCaseId(cases[0]?.id || mockCases[0].id);
-      setScreen('caseView');
+    else if (tab === 'ai') {
+      // The AI tab is the generic entry point — no case pre-loaded.
+      setAiScoped(false);
+      setAiOpen(true);
     }
+    // "Records" is a standalone document archive — no case needs to be open.
+    else if (tab === 'docs') setScreen('records');
   }
 
   const selectedCase = cases.find((c) => c.id === selectedCaseId) || null;
@@ -274,8 +285,13 @@ function Shell() {
     riskIndicators: contextCase?.ctdcIndicators?.length ? contextCase.ctdcIndicators : mockRiskIndicators
   };
 
-  const activeTab =
-    screen === 'intakeStart' || screen === 'activeIntake' ? 'intake' : 'cases';
+  const activeTab = aiOpen
+    ? 'ai'
+    : screen === 'intakeStart' || screen === 'activeIntake'
+      ? 'intake'
+      : screen === 'records'
+        ? 'docs'
+        : 'cases';
 
   if (!profile) {
     return (
@@ -321,6 +337,7 @@ function Shell() {
           onSaved={handleSavedCase}
         />
       )}
+      {screen === 'records' && <RecordsScreen />}
       {screen === 'caseView' && selectedCase && (
         <CaseViewScreen
           caseData={selectedCase}
@@ -328,6 +345,7 @@ function Shell() {
           onBack={() => setScreen('dashboard')}
           onAddSessionNote={addSessionNote}
           onTasksChanged={() => loadCases()}
+          onAskAi={openCaseAi}
           demoDocOpen={demoDocOpen}
         />
       )}
@@ -335,10 +353,11 @@ function Shell() {
       </div>{/* end privacy wrapper */}
 
       {/* Persistent chrome — intentionally outside privacy wrapper */}
-      <AiStrip onOpen={() => setAiOpen(true)} />
       <BottomNav active={activeTab} onNavigate={handleNav} />
 
-      {aiOpen && <AiChatScreen caseContext={aiContext} onClose={() => setAiOpen(false)} />}
+      {aiOpen && (
+        <AiChatScreen caseContext={aiScoped ? aiContext : null} cases={cases} onClose={() => setAiOpen(false)} />
+      )}
 
       <WellnessCheckModal
         open={wellnessOpen}
@@ -349,16 +368,7 @@ function Shell() {
       {/* Guided demo walkthrough — rendered at shell level so it persists across
           the screens it navigates through. */}
       {showTutorial && (
-        <TutorialOverlay
-          onFinish={finishTour}
-          onNavigate={(screen, id) => {
-            setSelectedCaseId(id);
-            setScreen(screen);
-          }}
-          onOpenAi={() => setAiOpen(true)}
-          onOpenDocModal={openDemoDoc}
-          cases={cases}
-        />
+        <TutorialOverlay onClose={finishTour} />
       )}
     </PhoneFrame>
   );

@@ -1,297 +1,229 @@
-// Scripted demo walkthrough for v2. Step 0 is an intro card; steps 1–5 drive the
-// real app — navigating to live screens and showing scripted (no-API) content so
-// the demo is reliable. Scenario: "You're Marie-Claire, a caseworker in
-// N'Djamena. Falmata, 16, was brought in this morning. Here's how TRACE helps."
-//
-// Steps 1–2 spotlight a real element (dark overlay + accent ring) with an info
-// card; steps 3–5 float an info card over the full-screen AiChat / DocumentModal.
-import { useEffect, useState } from 'react';
+// Onboarding walkthrough for v2 — a self-contained 6-step card over a blurred
+// app backdrop. Unlike the earlier scripted tour, no step drives the live app:
+// each step explains one capability, so the walkthrough never depends on screen
+// state or the API. Step 0 also sets the caseworker's UI language.
+import { useState } from 'react';
+import i18n from '../lib/i18n.js';
 import traceLogo from '../../assets/trace-logo.png';
 
-const TOTAL = 5;
+const TOTAL_STEPS = 6; // 0–5
 
-// Scripted AI consultation injected into AiChatScreen (via window global).
-const DEMO_AI_MESSAGES = [
-  { role: 'user', content: "Why was Falmata's case flagged HIGH RISK?" },
-  {
-    role: 'assistant',
-    content:
-      "Three CTDC indicators are confirmed in the notes: document confiscation (indicator 2.1), recruitment by deception — false employment offer (indicator 1.2), and the survivor is an unaccompanied minor aged 16–18 (indicator 6.3). The combination of all three automatically triggers a HIGH RISK classification. I'd prioritise the medical assessment today — it's the only outstanding urgent task."
-  }
+// Step 0 language choices. Hausa and Swahili have no UI translation bundle yet —
+// picking one records the preference and falls back to English strings.
+const LANGUAGES = [
+  { code: 'en', flag: '🇬🇧', name: 'English' },
+  { code: 'fr', flag: '🇫🇷', name: 'Français' },
+  { code: 'ha', flag: '🌍', name: 'Hausa' },
+  { code: 'sw', flag: '🇰🇪', name: 'Swahili' }
 ];
 
-// Scripted safe information card injected into DocumentModal for step 5.
-const DEMO_SAFE_CARD_CONTENT = `Vous êtes en sécurité. Vous avez le droit à l'aide.
+function Icon({ emoji, tone }) {
+  return (
+    <span className={`flex h-14 w-14 items-center justify-center rounded-full text-2xl ${tone}`} aria-hidden="true">
+      {emoji}
+    </span>
+  );
+}
 
-Ce qui se passe maintenant : notre équipe va vous accompagner à chaque étape. Un médecin va vous examiner aujourd'hui. Nous resterons en contact avec vous.
+function Pill({ children }) {
+  return (
+    <span className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs text-gray-600">{children}</span>
+  );
+}
 
-Si vous vous sentez en danger, appelez immédiatement :
-📞 IOM Tchad : +235 63 52 24 76
-📞 Police des Mineurs : +235 22 52 46 57
-📞 UNHCR Tchad : +235 22 52 47 57
+function Bullet({ children }) {
+  return (
+    <li className="flex items-start gap-2 text-xs leading-snug text-gray-600">
+      <span className="mt-1.5 h-1 w-1 flex-shrink-0 rounded-full bg-gray-400" />
+      <span>{children}</span>
+    </li>
+  );
+}
 
-Vous n'êtes pas seule.`;
-
-// Scripted referral letter injected into DocumentModal (via demoContent).
-const DEMO_DOC_CONTENT = `N'Djamena, 19 July 2026
-
-IOM Chad — Protection Unit
-Ref: TRACE-#0043 | CONFIDENTIAL
-
-We refer Case #0043, female, aged 16–18, for urgent protection services. Three CTDC trafficking indicators are confirmed: document confiscation, recruitment by deception, and unaccompanied minor status. A medical assessment is urgently required within 48 hours.
-
-Caseworker: Marie-Claire D. | Reviewed and approved for release.`;
-
-// Per-step display content. `kind` controls placement:
-//   spotlight       — dark overlay + accent ring on `selector`, card at bottom
-//   floating-bottom — no overlay, card floats above the AiChat input bar
-//   floating-top    — no overlay, card floats below the DocumentModal header
-const STEP_CONTENT = {
-  1: {
-    kind: 'spotlight',
-    selector: '[data-tutorial="daily-brief"]',
-    heading: 'Your morning briefing — written by AI',
-    body: "Before you open a single case, TRACE has already read your full caseload. Falmata's case is flagged HIGH RISK. Document confiscation confirmed. Medical assessment overdue. You know where to start.",
-    label: '1 of 5'
-  },
-  2: {
-    kind: 'spotlight',
-    selector: '[data-tutorial="case-notes"]',
-    heading: 'Intake in any language — structured in seconds',
-    body: "Falmata's notes were taken in Hausa. TRACE detects the language automatically and translates into English — then fills 19 IOM form fields without manual data entry. The caseworker speaks the language of the survivor. TRACE handles the rest.",
-    example: {
-      hausa: 'An kwace mata takardunta, an ce za ta biya kudin…',
-      english: 'Her documents were confiscated. She was told she must pay…'
-    },
-    label: '2 of 5'
-  },
-  3: {
-    kind: 'floating-bottom',
-    heading: 'Ask AI — a senior colleague, always available',
-    body: "The AI already read Falmata's file before you asked. Ask for second opinions, CTDC clarifications, or a draft supervisor update.",
-    label: '3 of 5'
-  },
-  4: {
-    kind: 'floating-top',
-    heading: 'Documents in seconds — in English or French',
-    body: 'Referral letters, risk assessments, IOM HTCDS forms, safe exit plans. Every document is AI-drafted and caseworker-reviewed before it leaves the app.',
-    label: '4 of 5'
-  },
-  5: {
-    kind: 'floating-top',
-    heading: 'Safety information — spoken aloud in French',
-    body: "82% of displaced persons in this region have little formal education. Survivors can't read a safe exit plan. One tap reads emergency contacts aloud in French using the device's own voice — no app required on the survivor's side.",
-    label: '5 of 5'
-  }
-};
-
-export default function TutorialOverlay({ onFinish, onNavigate, onOpenAi, onOpenDocModal }) {
+export default function TutorialOverlay({ onClose, onFinish }) {
   const [step, setStep] = useState(0);
-  const [rect, setRect] = useState(null);
+  const [lang, setLang] = useState(() => {
+    const stored = localStorage.getItem('trace_lang');
+    return LANGUAGES.some((l) => l.code === stored) ? stored : 'en';
+  });
 
-  // Per-step side effects: navigate the real app, then (for spotlight steps)
-  // poll for the target element and measure it. Polling absorbs the async gap
-  // between navigation and the target mounting.
-  useEffect(() => {
-    if (step === 0) {
-      setRect(null);
-      return undefined;
-    }
-    let cancelled = false;
-    const timers = [];
-    const schedule = (fn, ms) => {
-      const t = setTimeout(fn, ms);
-      timers.push(t);
-      return t;
-    };
+  const finish = onClose || onFinish;
 
-    const spotlight = (selector) => {
-      let tries = 0;
-      const find = () => {
-        if (cancelled) return;
-        const el = document.querySelector(selector);
-        if (el) {
-          el.scrollIntoView({ block: 'center' });
-          schedule(() => {
-            if (cancelled) return;
-            const r = el.getBoundingClientRect();
-            setRect({ top: r.top, left: r.left, width: r.width, height: r.height });
-          }, 70);
-        } else if (tries++ < 40) {
-          schedule(find, 60);
-        } else {
-          setRect(null);
-        }
-      };
-      find();
-    };
-
-    const clickWhenReady = (selector, after) => {
-      let tries = 0;
-      const go = () => {
-        if (cancelled) return;
-        const el = document.querySelector(selector);
-        if (el) {
-          el.click();
-          after?.();
-        } else if (tries++ < 40) {
-          schedule(go, 60);
-        }
-      };
-      go();
-    };
-
-    setRect(null);
-
-    // The AI screen consumes this global on mount; keep it set only while on the
-    // AI step so it never leaks into a real chat session (StrictMode-safe: the
-    // overlay owns the lifecycle, AiChatScreen only reads).
-    if (step !== 3 && typeof window !== 'undefined') window.__traceDemoMessages = null;
-
-    if (step === 1) {
-      onNavigate?.('dashboard');
-      spotlight('[data-tutorial="daily-brief"]');
-    } else if (step === 2) {
-      onNavigate?.('caseView', '#0043');
-      // Switch to the Notes tab so its content (the spotlight target) renders.
-      clickWhenReady('[data-tutorial="tab-notes"]', () => spotlight('[data-tutorial="case-notes"]'));
-    } else if (step === 3) {
-      window.__traceDemoMessages = DEMO_AI_MESSAGES;
-      onOpenAi?.();
-    } else if (step === 4) {
-      onOpenDocModal?.('#0043', 'referral', DEMO_DOC_CONTENT);
-    } else if (step === 5) {
-      onOpenDocModal?.('#0043', 'safe_card', DEMO_SAFE_CARD_CONTENT);
-    }
-
-    return () => {
-      cancelled = true;
-      timers.forEach(clearTimeout);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step]);
+  function chooseLanguage(code) {
+    setLang(code);
+    localStorage.setItem('trace_lang', code);
+    i18n.changeLanguage(code);
+  }
 
   function next() {
-    if (step < TOTAL) setStep(step + 1);
-    else onFinish?.();
+    if (step < TOTAL_STEPS - 1) setStep(step + 1);
+    else finish?.();
   }
 
-  // ---- Step 0: intro card ----
-  if (step === 0) {
-    return (
-      <div
-        className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto p-5"
-        style={{ background: 'rgba(0,0,0,0.85)' }}
-      >
-        <div className="w-full max-w-sm rounded-2xl border border-tracev2-border bg-tracev2-bg p-5 shadow-2xl">
-          <h2 className="text-lg font-bold text-tracev2-text">Welcome to TRACE</h2>
-          <p className="mt-1 text-sm leading-relaxed text-tracev2-muted">
-            An AI assistant that makes anti-trafficking caseworkers better at their work.
-          </p>
-
-          {/* Hero: centered TRACE logo + tagline */}
-          <div className="mt-4 flex flex-col items-center gap-3 rounded-xl border border-tracev2-border bg-tracev2-card py-6">
-            <img src={traceLogo} alt="TRACE" className="h-14 w-14 rounded-xl bg-white p-2 object-contain shadow-lg" />
-            <p className="text-center text-sm font-medium text-tracev2-text px-4">
-              AI that makes the hardest work in the world a little easier.
-            </p>
-          </div>
-
-          <div className="mt-4 space-y-2">
-            <div className="flex items-start gap-2 text-xs leading-snug text-tracev2-muted">
-              <span className="mt-1 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-tracev2-accent" />
-              <span>82% of displaced persons in the Lake Chad Basin have little formal education</span>
-            </div>
-            <div className="flex items-start gap-2 text-xs leading-snug text-tracev2-muted">
-              <span className="mt-1 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-tracev2-accent" />
-              <span>Caseworkers manage 50+ complex cases — with paper forms</span>
-            </div>
-          </div>
-
-          <button
-            onClick={next}
-            className="mt-5 w-full rounded-lg bg-tracev2-accent py-2.5 text-sm font-semibold text-white transition-colors duration-150 hover:bg-tracev2-accent/90"
-          >
-            Start tour →
-          </button>
-          <button
-            onClick={onFinish}
-            className="mt-2 w-full text-center text-xs text-tracev2-subtle hover:text-tracev2-muted"
-          >
-            Skip
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // ---- Steps 1–4: scripted walkthrough ----
-  const content = STEP_CONTENT[step];
-  const isSpotlight = content.kind === 'spotlight';
-
-  // Info-card anchor. All cards sit at the bottom so they never cover the
-  // content they describe: floating-bottom clears the AiChat input bar;
-  // floating-top clears the DocumentModal action bar (and keeps the short
-  // referral letter fully visible above it); spotlight sits at the very bottom.
-  const cardPos =
-    content.kind === 'floating-top'
-      ? { bottom: 156 }
-      : content.kind === 'floating-bottom'
-        ? { bottom: 118 }
-        : { bottom: 24 };
+  const ctaLabel = step === 0 ? 'Continue →' : step === TOTAL_STEPS - 1 ? 'Start using TRACE →' : 'Next →';
 
   return (
-    <div className="fixed inset-0 z-[100] pointer-events-none">
-      {/* Spotlight dimming + accent ring (spotlight steps only) */}
-      {isSpotlight &&
-        (rect ? (
-          <div
-            className="fixed rounded-lg transition-all duration-200"
-            style={{
-              top: rect.top - 4,
-              left: rect.left - 4,
-              width: rect.width + 8,
-              height: rect.height + 8,
-              boxShadow: '0 0 0 9999px rgba(0,0,0,0.75)',
-              border: '2px solid #3b4fd8'
-            }}
-          />
-        ) : (
-          <div className="fixed inset-0" style={{ background: 'rgba(0,0,0,0.75)' }} />
-        ))}
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+      <div className="mx-4 flex w-full max-w-sm flex-col rounded-2xl bg-white p-6 shadow-xl" style={{ maxHeight: '82vh' }}>
+        <div className="flex-1 overflow-y-auto py-2">
+          {/* ---- Step 0: language ---- */}
+          {step === 0 && (
+            <>
+              <h2 className="text-lg font-bold text-gray-900">Choose your language</h2>
+              <p className="mt-1 text-sm text-gray-500">TRACE is designed for the Lake Chad Basin.</p>
 
-      {/* Info card */}
-      <div
-        className="pointer-events-auto fixed left-1/2 w-[calc(100%-24px)] max-w-sm -translate-x-1/2 rounded-xl border border-tracev2-border bg-tracev2-card p-4 shadow-2xl"
-        style={cardPos}
-      >
-        <div className="text-sm font-semibold text-tracev2-text">{content.heading}</div>
-        <p className="mt-1 text-xs leading-relaxed text-tracev2-muted">{content.body}</p>
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                {LANGUAGES.map((l) => (
+                  <button
+                    key={l.code}
+                    onClick={() => chooseLanguage(l.code)}
+                    aria-pressed={lang === l.code}
+                    className={`flex items-center gap-2 rounded-xl border px-3 py-3 text-start transition-colors duration-150 ${
+                      lang === l.code ? 'border-blue-600 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <span className="text-xl" aria-hidden="true">
+                      {l.flag}
+                    </span>
+                    <span className={`text-sm font-medium ${lang === l.code ? 'text-blue-700' : 'text-gray-700'}`}>
+                      {l.name}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
 
-        {content.example && (
-          <div className="mt-2 rounded-lg border border-tracev2-border bg-tracev2-bg p-2 text-xs">
-            <div className="text-tracev2-muted">
-              <span className="text-tracev2-subtle">Hausa →</span> &ldquo;{content.example.hausa}&rdquo;
-            </div>
-            <div className="mt-1 text-tracev2-text">
-              <span className="text-tracev2-subtle">English →</span> &ldquo;{content.example.english}&rdquo;
-            </div>
-          </div>
-        )}
+          {/* ---- Step 1: welcome ---- */}
+          {step === 1 && (
+            <>
+              <h2 className="text-center text-lg font-bold text-gray-900">Welcome to TRACE</h2>
+              <p className="mt-1 text-center text-sm leading-relaxed text-gray-500">
+                An AI assistant that makes anti-trafficking caseworkers better at their work.
+              </p>
 
-        <div className="mt-3 flex items-center justify-between">
-          <span className="text-[10px] tabular-nums text-tracev2-subtle">{content.label}</span>
-          <div className="flex items-center gap-2">
-            <button onClick={onFinish} className="text-xs text-tracev2-subtle hover:text-tracev2-muted">
-              Skip
-            </button>
+              {/* Hero: the logo alone, tagline below the card */}
+              <div className="mt-4 flex items-center justify-center rounded-xl border border-gray-200 bg-gray-50 py-7">
+                <img src={traceLogo} alt="TRACE" className="h-24 w-24 rounded-2xl bg-white object-contain p-3 shadow" />
+              </div>
+              <p className="mt-3 text-center text-sm font-bold leading-relaxed text-gray-800">
+                Capture assessments. Generate reports. Trigger cluster alerts. All from the field.
+              </p>
+
+              <ul className="mt-4 space-y-2">
+                <Bullet>82% of displaced persons in the Lake Chad Basin have little formal education</Bullet>
+                <Bullet>Caseworkers manage 50+ complex cases — with paper forms</Bullet>
+              </ul>
+            </>
+          )}
+
+          {/* ---- Step 2: intake ---- */}
+          {step === 2 && (
+            <>
+              <Icon emoji="🎙️" tone="bg-indigo-100 text-indigo-700" />
+              <h2 className="mt-3 text-lg font-bold text-gray-900">Capture in any language</h2>
+              <p className="mt-1 text-sm text-gray-500">No forms. No typing. Just speak.</p>
+              <p className="mt-3 text-sm leading-relaxed text-gray-700">
+                Tap the + Intake button and speak your field observations in Hausa, Swahili, Arabic, French, or English.
+                TRACE transcribes, translates, and structures your notes into a VCA automatically — ready for cluster
+                reporting.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Pill>3 minutes → full VCA report</Pill>
+                <Pill>Auto-detects language</Pill>
+              </div>
+            </>
+          )}
+
+          {/* ---- Step 3: Ask TRACE AI ---- */}
+          {step === 3 && (
+            <>
+              <Icon emoji="✦" tone="bg-violet-100 text-violet-700" />
+              <h2 className="mt-3 text-lg font-bold text-gray-900">Your AI field intelligence system</h2>
+              <p className="mt-1 text-sm text-gray-500">Not a chatbot. A case-aware decision tool.</p>
+
+              <div className="mt-4 space-y-2 rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm">
+                <div className="flex justify-end">
+                  <span className="max-w-[85%] rounded-2xl bg-blue-600 px-3 py-2 text-white">
+                    Draft a situation report for case #0043
+                  </span>
+                </div>
+                <div className="flex justify-start">
+                  <span className="max-w-[90%] whitespace-pre-line rounded-2xl border border-gray-200 bg-white px-3 py-2 text-gray-800">
+                    {`Generating situation report for Koura Village, Diffa Region...
+Flood risk · 340 households · HIGH priority.
+Report drafted in English — ready to share with OCHA.`}
+                  </span>
+                </div>
+              </div>
+
+              <p className="mt-4 text-xs font-semibold text-gray-700">TRACE AI can also:</p>
+              <ul className="mt-1.5 space-y-1.5">
+                <Bullet>Generate VCA reports, referral letters, cluster alerts</Bullet>
+                <Bullet>Answer questions about any case in your caseload</Bullet>
+                <Bullet>Identify cross-case patterns across your operating area</Bullet>
+              </ul>
+            </>
+          )}
+
+          {/* ---- Step 4: records ---- */}
+          {step === 4 && (
+            <>
+              <Icon emoji="📋" tone="bg-emerald-100 text-emerald-700" />
+              <h2 className="mt-3 text-lg font-bold text-gray-900">All your documents in one place</h2>
+              <p className="mt-1 text-sm text-gray-500">Every report TRACE generates is saved automatically.</p>
+              <p className="mt-3 text-sm leading-relaxed text-gray-700">
+                Tap Records in the bottom nav to find VCA reports, situation reports, referral letters, and cluster
+                alerts — searchable by case, date, or type. Generate a new document for any case in seconds.
+              </p>
+            </>
+          )}
+
+          {/* ---- Step 5: alerts ---- */}
+          {step === 5 && (
+            <>
+              <Icon emoji="🔔" tone="bg-rose-100 text-rose-700" />
+              <h2 className="mt-3 text-lg font-bold text-gray-900">Cluster alerts — sent and received</h2>
+              <p className="mt-1 text-sm text-gray-500">Stay connected to your operating area.</p>
+              <p className="mt-3 text-sm leading-relaxed text-gray-700">
+                TRACE receives cluster alerts from WASH, Protection, Health, and other sector leads — geo-filtered to
+                your area. You can also trigger outbound alerts from any case, notifying cluster coordinators of
+                situations on the ground.
+              </p>
+            </>
+          )}
+        </div>
+
+        {/* Progress dots */}
+        <div className="flex flex-shrink-0 justify-center gap-1.5 pt-3">
+          {Array.from({ length: TOTAL_STEPS }, (_, i) => (
+            <span
+              key={i}
+              className={`h-1.5 rounded-full transition-all duration-200 ${
+                i === step ? 'w-4 bg-blue-600' : i < step ? 'w-1.5 bg-blue-300' : 'w-1.5 bg-gray-200'
+              }`}
+            />
+          ))}
+        </div>
+
+        {/* Footer */}
+        <div className="mt-2 flex flex-shrink-0 items-center justify-between border-t border-gray-100 pt-4">
+          {step > 0 ? (
             <button
-              onClick={next}
-              className="rounded-lg bg-tracev2-accent px-3 py-1 text-xs font-semibold text-white hover:bg-tracev2-accent/90"
+              onClick={() => setStep(step - 1)}
+              className="rounded-lg px-2 py-2 text-sm text-tracev2-muted transition-colors duration-150 hover:text-gray-700"
             >
-              {step === TOTAL ? 'Finish tour' : 'Next'}
+              ← Back
             </button>
-          </div>
+          ) : (
+            <span />
+          )}
+          <button
+            onClick={next}
+            className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors duration-150 hover:bg-blue-700"
+          >
+            {ctaLabel}
+          </button>
         </div>
       </div>
     </div>

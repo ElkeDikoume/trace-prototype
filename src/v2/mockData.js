@@ -18,6 +18,7 @@ export const mockCases = [
     riskLevel: 'high',
     status: 'Urgent',
     lastUpdated: 'this morning',
+    location: 'Koura Village, Diffa',
     notes:
       'Sunanta Falmata, tana da shekaru 16. An kwace mata takardunta, an ce za ta biya kuɗin tafiya kafin a bar ta ta tafi. An yi mata alkawarin aikin gida a birnin N\'Djamena, amma tun da ta zo ba a biya ta ba. Ba a bar ta ta fita ita kaɗai ba, tana kwana a gidan mai aiki. Tana matuƙar jin tsoro, ba ta iya barci. Ba ta san inda mutumin da ya kawo ta yake ba, kuma ba ta taɓa ganin iyalinta ba tun watanni uku.',
     structuredData: {
@@ -48,6 +49,16 @@ export const mockCases = [
       'Unpaid or underpaid labour',
       'Isolation from family and community'
     ],
+    // Site-level risk factors surfaced by the collapsible risk banner on the
+    // case Overview tab (preferred over the CTDC indicators when present).
+    riskFactors: [
+      'No early warning system in place',
+      'No evacuation route identified',
+      '340 households without WASH access',
+      'Repeat flood event — 2nd occurrence in 18 months',
+      'No shelter pre-positioning in region',
+      'Village DRR committee not yet convened'
+    ],
     follow_up_tasks: [
       { task: 'Complete medical assessment and psychosocial screening', due: 'Overdue', priority: 'high', done: false },
       { task: 'Refer to child-protection focal point and notify supervisor', due: 'Today', priority: 'high', done: false },
@@ -62,6 +73,7 @@ export const mockCases = [
     riskLevel: 'high',
     status: 'Urgent',
     lastUpdated: '12 min ago',
+    location: 'Toumour Pastoral Camp, Diffa',
     notes:
       'Kana magana da ita a wurin karɓa. Ta ce an yi mata alkawari na aiki a gida a waje. Mutumin da ya turo ta ya riƙe takardunta. Ba ta da barci sosai, tana jin tsoro. Ba ta san inda abokan tafiyarta biyu suke ba. Ta ce tana yin aiki tsawon sa\'o\'i 16 kowace rana ba tare da biyan kuɗi ba. Uwargidanta ta hana ta fita daga gidan.',
     structuredData: {
@@ -92,6 +104,13 @@ export const mockCases = [
       'Unpaid or underpaid labour',
       'Isolation from family and community'
     ],
+    riskFactors: [
+      'Active displacement — 847 individuals',
+      'Malnutrition risk: no MUAC screening completed',
+      'No WASH infrastructure on site',
+      'Security incident reported in surrounding area',
+      '3 overdue tasks including family tracing'
+    ],
     follow_up_tasks: [
       { task: 'Refer to child-protection focal point and notify supervisor', due: 'Today', priority: 'high', done: false },
       { task: 'Arrange emergency safe shelter placement', due: 'Today', priority: 'high', done: false },
@@ -107,10 +126,11 @@ export const mockCases = [
     riskLevel: 'medium',
     status: 'In progress',
     lastUpdated: '1 h ago',
+    location: 'Garin Wanzam, Maradi',
     notes:
       'Ya zo da kansa a matsuguni. Ya ce wani "jami\'in" ya dauke shi aiki a gonaki. An ce masa zai biya kuɗin tafiyarsa daga albashi — amma ba a biya shi ba watanni uku. Yana da bashi na CFA 85,000. Ba shi da takardar shaida ta aiki kuma yana zaune a sansanin da mai gonaki ya samar. Ya nemi taimako na shari\'a da matsuguni mai aminci.',
     structuredData: {
-      detected_language: 'Kanuri (auto-detected)',
+      detected_language: 'Swahili (auto-detected)',
       case_type: 'Suspected trafficking — labour exploitation',
       age_range: '25–30',
       sex: 'M',
@@ -135,6 +155,11 @@ export const mockCases = [
       'Tied housing — accommodation controlled by employer',
       'No written employment contract or legal work authorisation'
     ],
+    riskFactors: [
+      'Protection concerns flagged by community leader',
+      'GBV referral pathway not activated',
+      'No female caseworker available on site'
+    ],
     follow_up_tasks: [
       { task: 'Connect with legal-aid partner for wage recovery and contract review', due: 'This week', priority: 'high', done: true },
       { task: 'Arrange safe transitional accommodation away from worksite', due: 'Within 48 h', priority: 'high', done: false },
@@ -149,6 +174,7 @@ export const mockCases = [
     riskLevel: 'low',
     status: 'Active',
     lastUpdated: '3 h ago',
+    location: 'Bosso North Quarter, Diffa',
     notes:
       'Session de suivi. Hébergement temporaire sécurisé depuis la semaine dernière. Bonne communication avec la référente psychosociale. Explore les options de formation professionnelle en couture et en coiffure. Aucune nouvelle préoccupation de sécurité signalée.',
     structuredData: {
@@ -171,6 +197,10 @@ export const mockCases = [
       'Prior document withholding (resolved)',
       'Prior unpaid labour (resolved)'
     ],
+    riskFactors: [
+      'Overcrowded host community site',
+      'No documentation for 12 households'
+    ],
     follow_up_tasks: [
       { task: 'Enrol in vocational training programme (tailoring or hairdressing)', due: 'Next 2 weeks', priority: 'medium', done: false },
       { task: 'Confirm national ID replacement application submitted', due: 'This week', priority: 'medium', done: true },
@@ -184,6 +214,7 @@ export const mockCases = [
     riskLevel: 'medium',
     status: 'Pending',
     lastUpdated: 'Yesterday',
+    location: 'Baroua, Diffa',
     notes:
       'Intake commenced. Survivor presented with a community health worker. Preliminary account indicates labour exploitation at an agricultural site — wages withheld, excessive hours, and restricted movement on the compound. Full session pending interpreter (Fulfulde). Documents presented but authenticity under review.',
     structuredData: {
@@ -208,6 +239,7 @@ export const mockCases = [
       'Restricted movement on worksite',
       'Documents of unclear status'
     ],
+    riskFactors: ['Pending intake documentation', 'No follow-up scheduled'],
     follow_up_tasks: [
       { task: 'Book Fulfulde interpreter and reschedule full intake session', due: 'Within 48 h', priority: 'high', done: false },
       { task: 'Verify document authenticity with national identification office', due: 'This week', priority: 'medium', done: false }
@@ -252,6 +284,155 @@ export const mockCases = [
       { task: 'Arrange trauma-informed child psychologist session', due: 'Within 48 h', priority: 'high', done: false },
       { task: 'Initiate search for guardian / family tracing via Red Cross', due: 'This week', priority: 'high', done: false }
     ]
+  }
+];
+
+// Archive of previously generated documents, shown on the Records tab. Stands
+// alone from any open case — each entry keeps its own case reference and the
+// text as it was generated.
+export const mockDocuments = [
+  {
+    id: 'doc-0043-vca',
+    docType: 'VCA Report',
+    caseId: '#0043',
+    generatedAt: 'Today · 09:14',
+    content: `VULNERABILITY AND CAPACITY ASSESSMENT (VCA)
+Case reference: #0043
+Assessment date: today
+Prepared by: TRACE (AI-generated — caseworker review required)
+
+1. SITE AND POPULATION
+Location assessed: Koura Village. Repeat flood-affected settlement, second event in 18 months.
+Households without WASH access: 340.
+
+2. VULNERABILITY FACTORS
+- No early warning system in place.
+- No evacuation route identified or communicated to residents.
+- No shelter pre-positioning in the region.
+- Village DRR committee not yet convened.
+
+3. CAPACITIES
+Community leadership is present and responsive. Prior flood response established informal
+household-to-household alert practice that can be formalised.
+
+4. RECOMMENDED ACTIONS
+a. Convene the village DRR committee within 7 days.
+b. Map and mark one primary and one secondary evacuation route.
+c. Escalate WASH coverage gap to the sector lead.
+
+End of report.`
+  },
+  {
+    id: 'doc-0042-sitrep',
+    docType: 'Situation Report',
+    caseId: '#0042',
+    generatedAt: 'Today · 08:02',
+    content: `SITUATION REPORT
+Case reference: #0042
+Reporting period: last 24 hours
+Prepared by: TRACE (AI-generated — caseworker review required)
+
+OVERVIEW
+Active displacement affecting 847 individuals at Toumour pastoral camp. Population arrived
+over a 72-hour window and remains unregistered in part.
+
+KEY CONCERNS
+- Malnutrition risk: no MUAC screening completed to date.
+- No WASH infrastructure on site.
+- Security incident reported in the surrounding area; movement outside the camp discouraged.
+- Three follow-up tasks overdue, including family tracing.
+
+ACTIONS TAKEN
+Child-protection focal point notified. Emergency shelter placement requested.
+
+NEXT STEPS
+Complete MUAC screening for all under-fives within 48 hours. Confirm WASH partner deployment.
+Escalate the security incident to the area coordinator.
+
+End of report.`
+  },
+  {
+    id: 'doc-0039-referral',
+    docType: 'Referral Letter',
+    caseId: '#0039',
+    generatedAt: 'Yesterday · 16:45',
+    content: `REFERRAL LETTER
+Case reference: #0039
+Date: yesterday
+Prepared by: TRACE (AI-generated — caseworker review required)
+
+To: Protection Partner Agency, Garin Wanzam
+Re: Referral for protection assessment and legal aid
+
+Dear colleagues,
+
+We are referring case #0039 for protection assessment and legal-aid support. The case concerns
+an adult male reporting labour exploitation at an agricultural site, including three months of
+withheld wages and an imposed transport debt of CFA 85,000.
+
+Protection concerns have been flagged by a community leader. The GBV referral pathway has not
+yet been activated and no female caseworker is available on site, which limits our capacity to
+complete a full assessment locally.
+
+Services requested: legal aid for wage recovery, protection assessment, and safe transitional
+accommodation away from the worksite.
+
+Caseworker sign-off: ______________________`
+  },
+  {
+    id: 'doc-0037-risk',
+    docType: 'Risk Assessment Report',
+    caseId: '#0037',
+    generatedAt: '2 days ago · 11:30',
+    content: `RISK ASSESSMENT REPORT
+Case reference: #0037
+Date: 2 days ago
+Prepared by: TRACE (AI-generated — caseworker review required)
+
+1. CASE OVERVIEW
+Survivor in post-identification recovery following prior labour exploitation. Temporary safe
+housing secured through the partner network.
+
+2. INDICATORS IDENTIFIED
+- Prior document withholding (resolved — documents recovered).
+- Prior unpaid labour (resolved).
+
+3. RISK LEVEL: LOW
+Justification: the survivor is no longer in the exploitative situation, housing is stable, and
+engagement with psychosocial support is consistent. No new safety concerns reported.
+
+4. RESIDUAL CONCERNS
+Overcrowded host community site. No documentation for 12 households at the same site.
+
+5. RECOMMENDED ACTIONS
+Continue monthly psychosocial check-ins. Confirm national ID replacement. Proceed with the
+vocational training pathway.
+
+End of report.`
+  },
+  {
+    id: 'doc-0031-summary',
+    docType: 'Case Summary',
+    caseId: '#0031',
+    generatedAt: 'Last week · 14:20',
+    content: `CASE SUMMARY
+Case reference: #0031
+Date: last week
+Prepared by: TRACE (AI-generated — caseworker review required)
+
+Case #0031 concerns an adult male, 30–40, who presented at the reception point accompanied by a
+community health worker. Intake was commenced but is not complete — a Fulfulde interpreter is
+required for the full session.
+
+The preliminary account indicates labour exploitation at an agricultural worksite: wages
+withheld, excessive hours, and restricted movement within the compound. Documents were presented
+but their authenticity is under review. Risk is assessed as medium pending full disclosure.
+
+Current status: intake documentation pending, no follow-up session yet scheduled. Recommended
+next steps are to book the interpreter and reschedule the full intake within 48 hours, and to
+verify the presented documents with the national identification office.
+
+End of summary.`
   }
 ];
 

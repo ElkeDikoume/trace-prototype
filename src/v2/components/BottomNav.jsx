@@ -7,14 +7,16 @@ const CasesIcon = (p) => (
     <path d="M3 9h18M8 4v16" stroke="currentColor" strokeWidth="1.8" />
   </svg>
 );
+// Sparkle — the AI tab is a command center, not a chat thread.
 const AiIcon = (p) => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" {...p}>
     <path
-      d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v7A2.5 2.5 0 0 1 17.5 15H10l-4 3.5V15h-.5A2.5 2.5 0 0 1 4 12.5v-7Z"
+      d="M12 3l2.2 5.3L19.5 10l-5.3 1.7L12 17l-2.2-5.3L4.5 10l5.3-1.7L12 3Z"
       stroke="currentColor"
       strokeWidth="1.8"
       strokeLinejoin="round"
     />
+    <path d="M18 16l.8 2 2.2.8-2.2.8L18 22l-.8-2.4-2.2-.8 2.2-.8.8-2Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
   </svg>
 );
 const DocsIcon = (p) => (

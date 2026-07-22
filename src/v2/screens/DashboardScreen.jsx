@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 import traceLogo from '../../assets/trace-logo.png';
 import CaseCard from '../components/CaseCard.jsx';
 import HeaderControls from '../components/HeaderControls.jsx';
-import DailyBriefCard from '../components/DailyBriefCard.jsx';
 import PatternAlertBanner from '../components/PatternAlertBanner.jsx';
 import { getWellnessAlert } from '../components/WellnessCheckModal.jsx';
 import { RISK_LABEL } from '../theme.js';
@@ -50,7 +49,9 @@ function PendingCard({ c, onApprove, onFlag }) {
         </span>
       </div>
       <p className="mt-1 text-xs text-tracev2-muted">
-        {c.ageRange} · {c.sex === 'F' ? 'Female' : c.sex === 'M' ? 'Male' : c.sex}
+        {[c.location, c.ageRange, c.sex === 'F' ? 'Female' : c.sex === 'M' ? 'Male' : c.sex]
+          .filter(Boolean)
+          .join(' · ')}
       </p>
 
       {flagging ? (
@@ -133,6 +134,12 @@ export default function DashboardScreen({
   const pending = cases.filter((c) => c.status === 'pending_referral');
   const wellnessAlert = supervisorMode ? getWellnessAlert() : null;
 
+  // Risk distribution across the full caseload (for the segmented bar).
+  const high = cases.filter((c) => c.riskLevel === 'high').length;
+  const medium = cases.filter((c) => c.riskLevel === 'medium').length;
+  const low = cases.filter((c) => c.riskLevel === 'low').length;
+  const total = cases.length || 1;
+
   // Case search: filter the full caseload while typing; otherwise show the 5 most
   // recent.
   const [query, setQuery] = useState('');
@@ -192,8 +199,20 @@ export default function DashboardScreen({
         <StatPill value={stats.pending} label="Pending" tone="neutral" />
       </div>
 
-      {/* AI daily brief */}
-      <DailyBriefCard cases={cases} />
+      {/* Risk distribution */}
+      <div className="mt-2">
+        <div className="flex h-1.5 overflow-hidden rounded-full bg-tracev2-border">
+          <div className="bg-tracev2-risk-high" style={{ width: `${(high / total) * 100}%` }} />
+          <div className="bg-tracev2-risk-medium" style={{ width: `${(medium / total) * 100}%` }} />
+          <div className="bg-tracev2-risk-low" style={{ width: `${(low / total) * 100}%` }} />
+        </div>
+        <div className="mt-1 flex justify-between text-[10px] text-tracev2-subtle">
+          <span>High {high}</span>
+          <span>Medium {medium}</span>
+          <span>Low {low}</span>
+        </div>
+      </div>
+
 
       {/* Cross-case pattern alerts */}
       <PatternAlertBanner cases={cases} />

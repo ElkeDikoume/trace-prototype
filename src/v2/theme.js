@@ -51,3 +51,11 @@ export const RISK_BANNER = {
   medium: 'bg-tracev2-risk-medium/15 text-tracev2-risk-medium border border-tracev2-risk-medium/30',
   low: 'bg-tracev2-risk-low/15 text-tracev2-risk-low border border-tracev2-risk-low/30'
 };
+
+// Expanded body of that banner (the risk-factor list) — same tone as the
+// header, on a light panel so the factors read as content, not chrome.
+export const RISK_PANEL = {
+  high: 'bg-red-50 text-red-900',
+  medium: 'bg-amber-50 text-amber-900',
+  low: 'bg-slate-100 text-slate-800'
+};
