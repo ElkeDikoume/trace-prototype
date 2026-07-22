@@ -20,6 +20,7 @@ import IntakeStartScreen from './screens/IntakeStartScreen.jsx';
 import ActiveIntakeScreen from './screens/ActiveIntakeScreen.jsx';
 import CaseViewScreen from './screens/CaseViewScreen.jsx';
 import RecordsScreen from './screens/RecordsScreen.jsx';
+import SubmissionScreen from './screens/SubmissionScreen.jsx';
 import WellnessCheckModal, { isWellnessDue } from './components/WellnessCheckModal.jsx';
 
 import { ThemeProvider, useTheme } from './lib/ThemeContext.jsx';
@@ -49,7 +50,8 @@ export default function TraceV2App() {
   );
 }
 
-// Screens once authed: 'dashboard' | 'intakeStart' | 'activeIntake' | 'caseView' | 'records'
+// Screens once authed:
+// 'dashboard' | 'intakeStart' | 'activeIntake' | 'caseView' | 'records' | 'submission'
 function Shell() {
   const { theme } = useTheme();
   const { i18n } = useTranslation();
@@ -73,6 +75,7 @@ function Shell() {
   const [wellnessOpen, setWellnessOpen] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [demoDocOpen, setDemoDocOpen] = useState(null); // { caseId, docType, content }
+  const [submittedCase, setSubmittedCase] = useState(null); // case shown on the submission screen
   const resetRan = useRef(false);
 
   // ?reset — clears local state, then reloads straight into the guided tour.
@@ -301,6 +304,16 @@ function Shell() {
     );
   }
 
+  // Submission confirmation takes over the whole frame — no status bar, no
+  // bottom nav — so it reads as a hard stop after sending a record.
+  if (screen === 'submission') {
+    return (
+      <PhoneFrame theme={theme} dir={dir}>
+        <SubmissionScreen caseData={submittedCase} onBackToRecords={() => setScreen('records')} />
+      </PhoneFrame>
+    );
+  }
+
   return (
     <PhoneFrame theme={theme} dir={dir}>
       <StatusBar privacyMode={privacyMode} onPrivacyToggle={() => setPrivacyMode((p) => !p)} />
@@ -346,6 +359,10 @@ function Shell() {
           onAddSessionNote={addSessionNote}
           onTasksChanged={() => loadCases()}
           onAskAi={openCaseAi}
+          onSubmitRecord={(c) => {
+            setSubmittedCase(c);
+            setScreen('submission');
+          }}
           demoDocOpen={demoDocOpen}
         />
       )}

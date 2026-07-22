@@ -80,7 +80,7 @@ function Row({ label, value }) {
   );
 }
 
-export default function CaseViewScreen({ caseData, supervisorMode = false, onBack, onAddSessionNote, onTasksChanged, onAskAi, demoDocOpen }) {
+export default function CaseViewScreen({ caseData, supervisorMode = false, onBack, onAddSessionNote, onTasksChanged, onAskAi, onSubmitRecord, demoDocOpen }) {
   const [tab, setTab] = useState('overview');
   const [tasks, setTasks] = useState(caseData?.follow_up_tasks || []);
   const [expandedSession, setExpandedSession] = useState(0);
@@ -291,6 +291,13 @@ export default function CaseViewScreen({ caseData, supervisorMode = false, onBac
                 </div>
               )}
             </div>
+
+            <button
+              onClick={() => onSubmitRecord?.(caseData)}
+              className="mt-3 w-full rounded-2xl bg-green-600 py-3.5 text-sm font-semibold text-white transition-colors duration-150 hover:bg-green-700"
+            >
+              Submit record
+            </button>
 
             {/* Follow-up tasks checklist */}
             {tasks.length > 0 && (
