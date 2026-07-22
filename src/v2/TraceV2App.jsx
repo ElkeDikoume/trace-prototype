@@ -21,6 +21,7 @@ import ActiveIntakeScreen from './screens/ActiveIntakeScreen.jsx';
 import CaseViewScreen from './screens/CaseViewScreen.jsx';
 import RecordsScreen from './screens/RecordsScreen.jsx';
 import SubmissionScreen from './screens/SubmissionScreen.jsx';
+import SettingsScreen from './screens/SettingsScreen.jsx';
 import WellnessCheckModal, { isWellnessDue } from './components/WellnessCheckModal.jsx';
 
 import { ThemeProvider, useTheme } from './lib/ThemeContext.jsx';
@@ -50,8 +51,68 @@ export default function TraceV2App() {
   );
 }
 
+// Help — reached from the "?" in the bottom nav. Short enough to live here
+// rather than in its own file.
+const FAQ = [
+  {
+    q: 'How do I start a new intake?',
+    a: 'Tap the microphone button at the centre of the bottom navigation bar. Speak your field observations in any language — TRACE handles the rest.'
+  },
+  {
+    q: "Why can't I see my records?",
+    a: "Records are stored on this device. If you've cleared your data or switched devices, previous records won't appear. Always submit records to the cluster before clearing data."
+  },
+  {
+    q: 'What languages does TRACE support?',
+    a: 'Voice intake supports Hausa, Kanuri, Arabic, French, and English. Generated documents can be produced in English or French. UI language can be set in Settings.'
+  },
+  {
+    q: 'How does risk flagging work?',
+    a: 'TRACE matches case details against a set of DRR and protection indicators. Risk level (HIGH / MEDIUM / LOW) is a decision-support signal, not a classification. Always apply your professional judgment.'
+  },
+  {
+    q: 'What is the demo mode?',
+    a: 'Demo mode loads a pre-filled case so you can explore TRACE without entering real data. Access it from the splash screen. Tap ?reset in the URL to restart.'
+  }
+];
+
+function HelpScreen({ onBack }) {
+  return (
+    // Copy here is hardcoded English, so pin LTR like the tour card.
+    <div dir="ltr" className="flex flex-1 flex-col overflow-y-auto bg-white text-slate-900">
+      <div className="sticky top-0 z-10 flex items-center gap-2 border-b border-slate-200 bg-white px-3 py-3">
+        <button onClick={onBack} aria-label="Back" className="text-slate-500 transition-colors hover:text-slate-800">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path d="M15 6l-6 6 6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+        <h1 className="text-base font-bold">Help</h1>
+      </div>
+
+      <p className="px-4 pt-4 text-sm leading-relaxed text-slate-600">
+        TRACE is designed for humanitarian field workers in low-connectivity environments. It works fully offline —
+        records sync when you reconnect.
+      </p>
+
+      <div className="mt-2">
+        {FAQ.map((item) => (
+          <div key={item.q} className="border-b border-slate-100 px-4 py-4">
+            <p className="text-sm font-semibold text-slate-800">{item.q}</p>
+            <p className="mt-1 text-sm leading-relaxed text-slate-500">{item.a}</p>
+          </div>
+        ))}
+      </div>
+
+      <p className="pb-6 pt-4 text-center text-xs text-slate-400">
+        For technical support, contact your cluster focal point.
+      </p>
+    </div>
+  );
+}
+
 // Screens once authed:
 // 'dashboard' | 'intakeStart' | 'activeIntake' | 'caseView' | 'records' | 'submission'
+// | 'settings' | 'help'
 function Shell() {
   const { theme } = useTheme();
   const { i18n } = useTranslation();
@@ -331,6 +392,7 @@ function Shell() {
           supervisorMode={supervisorMode}
           onOpenCase={openCaseView}
           onSeeAll={() => setScreen('intakeStart')}
+          onOpenSettings={() => setScreen('settings')}
           onEnableSupervisor={enableSupervisor}
           onApprove={approveReferral}
           onFlag={flagReferral}
@@ -353,6 +415,8 @@ function Shell() {
         />
       )}
       {screen === 'records' && <RecordsScreen />}
+      {screen === 'settings' && <SettingsScreen onBack={() => setScreen('dashboard')} />}
+      {screen === 'help' && <HelpScreen onBack={() => setScreen('dashboard')} />}
       {screen === 'caseView' && selectedCase && (
         <CaseViewScreen
           caseData={selectedCase}
@@ -373,7 +437,7 @@ function Shell() {
 
       {/* Persistent chrome — intentionally outside privacy wrapper. Hidden
           while recording so nothing competes with the mic control. */}
-      {!recording && <BottomNav active={activeTab} onNavigate={handleNav} />}
+      {!recording && <BottomNav active={activeTab} onNavigate={handleNav} onOpenHelp={() => setScreen('help')} />}
 
       {aiOpen && (
         <AiChatScreen caseContext={aiScoped ? aiContext : null} cases={cases} onClose={() => setAiOpen(false)} />

@@ -4,6 +4,7 @@
 // sessions, Documents streams AI-generated documents.
 import { useEffect, useState } from 'react';
 import DocumentModal from '../components/DocumentModal.jsx';
+import InfoButton from '../components/InfoButton.jsx';
 import ServiceFinderModal from '../components/ServiceFinderModal.jsx';
 import CasePrintScreen from './CasePrintScreen.jsx';
 import { RISK_BANNER, RISK_PANEL, RISK_LABEL, RISK_TEXT, RISK_DOT } from '../theme.js';
@@ -258,12 +259,15 @@ export default function CaseViewScreen({ caseData, supervisorMode = false, onBac
             {/* Risk banner — collapsed to the risk label, expands to the case's
                 specific risk factors (its CTDC indicators). */}
             <div className={`overflow-hidden rounded-xl ${RISK_BANNER[risk]}`}>
+              <div className="flex items-center pe-3.5">
               <button
                 onClick={() => setRiskFactorsOpen((o) => !o)}
                 aria-expanded={riskFactorsOpen}
-                className="flex w-full items-center justify-between px-3.5 py-2.5 text-start text-sm font-semibold"
+                className="flex flex-1 items-center justify-between px-3.5 py-2.5 text-start text-sm font-semibold"
               >
-                {RISK_LABEL[risk]}
+                <span className="flex items-center">
+                  {RISK_LABEL[risk]}
+                </span>
                 <svg
                   width="14"
                   height="14"
@@ -275,6 +279,8 @@ export default function CaseViewScreen({ caseData, supervisorMode = false, onBac
                   <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
+              <InfoButton label="Risk level is calculated from DRR and protection indicators matched against this case's data. It is a decision-support signal — not a formal classification. Apply your professional judgment before taking action." />
+              </div>
 
               {riskFactorsOpen && (
                 <div className={`animate-tracev2-fadeIn px-3.5 py-3 ${RISK_PANEL[risk]}`}>
@@ -302,7 +308,10 @@ export default function CaseViewScreen({ caseData, supervisorMode = false, onBac
             {/* Follow-up tasks checklist */}
             {tasks.length > 0 && (
               <div className="mt-3 rounded-xl border border-tracev2-border bg-tracev2-card p-3">
-                <h3 className="text-[11px] font-semibold uppercase tracking-wide text-tracev2-subtle">Follow-up tasks</h3>
+                <h3 className="flex items-center text-[11px] font-semibold uppercase tracking-wide text-tracev2-subtle">
+                  Follow-up tasks
+                  <InfoButton label="Tasks are generated automatically based on the assessment and risk level. You can add custom tasks from the case menu. Completed tasks are logged in the case history." />
+                </h3>
                 <ul className="mt-1.5 space-y-1.5">
                   {tasks.map((tk, i) => (
                     <li key={i}>

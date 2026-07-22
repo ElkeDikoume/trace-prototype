@@ -9,6 +9,7 @@ import traceLogo from '../../assets/trace-logo.png';
 import CaseCard from '../components/CaseCard.jsx';
 import HeaderControls from '../components/HeaderControls.jsx';
 import PatternAlertBanner from '../components/PatternAlertBanner.jsx';
+import InfoButton from '../components/InfoButton.jsx';
 import { getWellnessAlert } from '../components/WellnessCheckModal.jsx';
 import { RISK_LABEL, RECORD_STATUS_ORDER } from '../theme.js';
 
@@ -106,7 +107,8 @@ export default function DashboardScreen({
   onSeeAll,
   onEnableSupervisor,
   onApprove,
-  onFlag
+  onFlag,
+  onOpenSettings
 }) {
   const { t } = useTranslation();
   const tapRef = useRef({ count: 0, timer: null });
@@ -190,6 +192,21 @@ export default function DashboardScreen({
           )}
         </div>
         <div className="flex items-center gap-2">
+          <button
+            onClick={onOpenSettings}
+            aria-label="Settings"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-tracev2-muted transition-colors hover:text-tracev2-text"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="12" r="3.2" stroke="currentColor" strokeWidth="1.8" />
+              <path
+                d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1Z"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
           <HeaderControls />
           <div
             className="flex h-9 w-9 items-center justify-center rounded-full bg-tracev2-accent/20 text-xs font-semibold text-tracev2-accent ring-1 ring-tracev2-accent/30"
@@ -207,7 +224,10 @@ export default function DashboardScreen({
       <p className="text-xs text-tracev2-subtle">Here&apos;s your caseload today.</p>
 
       {/* Stat pills */}
-      <div className="mt-3 flex gap-2">
+      <div className="mt-3 flex items-center justify-end">
+        <InfoButton label="These figures reflect cases recorded on this device. In full deployment, they pull from the cluster coordination system in real time." />
+      </div>
+      <div className="mt-1 flex gap-2">
         <StatPill value={stats.active} label="Active" tone="green" />
         <StatPill value={stats.urgent} label="Urgent" tone="red" />
         <StatPill value={stats.pending} label="Pending" tone="neutral" />
@@ -278,8 +298,9 @@ export default function DashboardScreen({
 
       {/* Recent cases / search results */}
       <div className="mt-5 flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-tracev2-text">
+        <h2 className="flex items-center text-sm font-semibold text-tracev2-text">
           {query.trim() ? `Results (${visibleCases.length})` : 'Recent Cases'}
+          <InfoButton label="Cases are sorted by status — draft and in-progress records appear first. Tap any case to open it. Use the microphone button to start a new intake." />
         </h2>
         <button onClick={onSeeAll} className="text-xs font-medium text-tracev2-accent hover:underline">
           See All

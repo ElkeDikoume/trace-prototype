@@ -10,6 +10,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { buildCaseContextBlock, streamCaseChat } from '../lib/claudeStream.js';
 import { useToast } from '../lib/ToastContext.jsx';
 import DailyBriefCard from '../components/DailyBriefCard.jsx';
+import InfoButton from '../components/InfoButton.jsx';
 import { DOC_KINDS, MOCK_DOCUMENTS, DocumentPreviewModal } from './RecordsScreen.jsx';
 
 const CONSULT_SYSTEM = `You are TRACE AI, a senior anti-trafficking case consultation assistant supporting frontline IOM caseworkers in the Lake Chad Basin. You have full context of the active case below.
@@ -398,7 +399,10 @@ function CommandCenter({ cases, onAsk, onClose }) {
         <DailyBriefCard cases={cases} />
 
         {/* Quick actions */}
-        <h3 className="mt-5 text-xs font-semibold uppercase tracking-widest text-tracev2-subtle">What do you need?</h3>
+        <h3 className="mt-5 flex items-center text-xs font-semibold uppercase tracking-widest text-tracev2-subtle">
+          What do you need?
+          <InfoButton label="These actions are grounded in your active case data and live cluster information from DTM and ReliefWeb. Responses are decision support — verify before acting on them in the field." />
+        </h3>
         <div className="mt-2 grid grid-cols-2 gap-2">
           {QUICK_ACTIONS.map((a) => (
             <button
