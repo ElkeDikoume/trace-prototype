@@ -18,6 +18,28 @@ const TABS = [
   { id: 'documents', label: 'Documents' }
 ];
 
+// Field photos are demo-only: the buttons are inert, and both entries are
+// mock. The auto-tag is built from the case itself so it stays truthful on
+// every case, not just #0043.
+const FIELD_PHOTOS = [
+  { label: 'Flood damage — north perimeter', needsReview: true },
+  { label: 'WASH access point — blocked', needsReview: false }
+];
+
+const PHOTO_DATE = '21 Jul 2026';
+
+const CameraIcon = ({ size = 16 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path
+      d="M4 7h3l1.5-2h7L17 7h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1Z"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinejoin="round"
+    />
+    <circle cx="12" cy="13" r="3.5" stroke="currentColor" strokeWidth="1.8" />
+  </svg>
+);
+
 function sexLabel(s) {
   if (s === 'F') return 'Female';
   if (s === 'M') return 'Male';
@@ -79,6 +101,10 @@ export default function CaseViewScreen({ caseData, supervisorMode = false, onBac
   // Specific risk factors behind the banner's risk level: the case's own
   // riskFactors list where recorded, else its CTDC indicators, else the control
   // methods captured at intake.
+  // "Koura Village · #0043 · 21 Jul 2026" — the settlement name only, dropping
+  // the region suffix carried in the case's location.
+  const photoTag = [caseData?.location?.split(',')[0]?.trim(), caseData?.id, PHOTO_DATE].filter(Boolean).join(' · ');
+
   const riskFactors = caseData?.riskFactors?.length
     ? caseData.riskFactors
     : indicators.length
@@ -451,6 +477,60 @@ export default function CaseViewScreen({ caseData, supervisorMode = false, onBac
                 </button>
               </div>
             )}
+
+            {/* Field photos — demo only; nothing here uploads or opens a file. */}
+            <div className="mb-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-tracev2-text">Field Photos</h3>
+                <button
+                  aria-label="Take a field photo"
+                  className="rounded-full bg-slate-100 p-2 text-slate-600 transition-colors hover:bg-slate-200"
+                >
+                  <CameraIcon size={16} />
+                </button>
+              </div>
+
+              <div className="mt-2 space-y-2">
+                {FIELD_PHOTOS.map((p) => (
+                  <div
+                    key={p.label}
+                    className="flex items-center gap-3 rounded-xl border border-tracev2-border bg-tracev2-card p-3"
+                  >
+                    <span className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-lg bg-slate-200 text-slate-500">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.8" />
+                        <circle cx="8.5" cy="10" r="1.5" stroke="currentColor" strokeWidth="1.6" />
+                        <path d="M21 16l-5-5-6 6-2-2-5 5" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+                      </svg>
+                    </span>
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        {/* Spec called for text-slate-800; the card is dark, so
+                            use the app's text colour to keep it legible. */}
+                        <span className="text-sm font-medium text-tracev2-text">{p.label}</span>
+                        {p.needsReview && (
+                          <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-700">Needs review</span>
+                        )}
+                      </div>
+                      <p className="mt-0.5 text-xs text-slate-400">
+                        📍 {photoTag}
+                      </p>
+                      <div className="mt-1.5 flex items-center gap-3">
+                        <button className="text-xs text-blue-600 hover:underline">View</button>
+                        <button className="text-xs text-slate-500 hover:underline">Attach to report</button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <button className="mt-2 flex w-full flex-col items-center gap-1 rounded-2xl border-2 border-dashed border-slate-300 py-4 text-slate-400 transition-colors hover:border-blue-400 hover:text-blue-500">
+                <CameraIcon size={20} />
+                <span className="text-sm font-medium">Add field photo</span>
+                <span className="text-xs">Auto-tagged with case ID, date, and location</span>
+              </button>
+            </div>
 
             <div className="space-y-2">
               {DOC_TYPES.filter((d) => !d.isMeta && (!d.supervisorOnly || supervisorMode)).map((d) => (
