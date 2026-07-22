@@ -8,13 +8,14 @@ import traceLogo from '../../assets/trace-logo.png';
 
 const TOTAL_STEPS = 6; // 0–5
 
-// Step 0 language choices. Hausa and Swahili have no UI translation bundle yet —
-// picking one records the preference and falls back to English strings.
+// Step 0 language choices. Hausa has no UI translation bundle yet — picking it
+// records the preference and falls back to English strings. Arabic has one, and
+// switches the whole shell to RTL.
 const LANGUAGES = [
   { code: 'en', flag: '🇬🇧', name: 'English' },
   { code: 'fr', flag: '🇫🇷', name: 'Français' },
   { code: 'ha', flag: '🌍', name: 'Hausa' },
-  { code: 'sw', flag: '🇰🇪', name: 'Swahili' }
+  { code: 'ar', flag: '🇹🇩', name: 'Arabic' }
 ];
 
 function Icon({ emoji, tone }) {
@@ -124,7 +125,7 @@ export default function TutorialOverlay({ onClose, onFinish }) {
               <h2 className="mt-3 text-lg font-bold text-gray-900">Capture in any language</h2>
               <p className="mt-1 text-sm text-gray-500">No forms. No typing. Just speak.</p>
               <p className="mt-3 text-sm leading-relaxed text-gray-700">
-                Tap the + Intake button and speak your field observations in Hausa, Swahili, Arabic, French, or English.
+                Tap the + Intake button and speak your field observations in Hausa, Arabic, French, or English.
                 TRACE transcribes, translates, and structures your notes into a VCA automatically — ready for cluster
                 reporting.
               </p>

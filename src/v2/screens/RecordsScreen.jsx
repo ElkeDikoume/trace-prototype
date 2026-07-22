@@ -42,7 +42,7 @@ const LANGUAGES = [
   { id: 'en', label: 'English', primary: true },
   { id: 'fr', label: 'Français', primary: true },
   { id: 'ha', label: 'Hausa', primary: false },
-  { id: 'sw', label: 'Swahili', primary: false }
+  { id: 'ar', label: 'Arabic', primary: false }
 ];
 
 // Pre-populated archive, most recent first. Exported so other surfaces (the AI
@@ -112,7 +112,7 @@ Recommended actions: documentation clinic, monitor site density monthly.`
     location: 'Baroua, Diffa',
     date: '14 Jul 2026',
     preview: `Reporting period week of 14 July 2026. Site: Baroua, Diffa Region.
-Intake documentation pending; no follow-up session yet scheduled. Fulfulde
+Intake documentation pending; no follow-up session yet scheduled. Arabic
 interpreter required before the assessment can be completed. No new arrivals
 recorded this period. Recommended: book interpreter within 48h.`
   }

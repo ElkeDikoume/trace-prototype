@@ -130,7 +130,7 @@ export const mockCases = [
     notes:
       'Ya zo da kansa a matsuguni. Ya ce wani "jami\'in" ya dauke shi aiki a gonaki. An ce masa zai biya kuɗin tafiyarsa daga albashi — amma ba a biya shi ba watanni uku. Yana da bashi na CFA 85,000. Ba shi da takardar shaida ta aiki kuma yana zaune a sansanin da mai gonaki ya samar. Ya nemi taimako na shari\'a da matsuguni mai aminci.',
     structuredData: {
-      detected_language: 'Swahili (auto-detected)',
+      detected_language: 'Arabic (auto-detected)',
       case_type: 'Suspected trafficking — labour exploitation',
       age_range: '25–30',
       sex: 'M',
@@ -216,9 +216,9 @@ export const mockCases = [
     lastUpdated: 'Yesterday',
     location: 'Baroua, Diffa',
     notes:
-      'Intake commenced. Survivor presented with a community health worker. Preliminary account indicates labour exploitation at an agricultural site — wages withheld, excessive hours, and restricted movement on the compound. Full session pending interpreter (Fulfulde). Documents presented but authenticity under review.',
+      'Intake commenced. Survivor presented with a community health worker. Preliminary account indicates labour exploitation at an agricultural site — wages withheld, excessive hours, and restricted movement on the compound. Full session pending interpreter (Arabic). Documents presented but authenticity under review.',
     structuredData: {
-      detected_language: 'Fulfulde (interpreter pending)',
+      detected_language: 'Arabic (interpreter pending)',
       case_type: 'Suspected trafficking — labour exploitation (intake incomplete)',
       age_range: '30–40',
       sex: 'M',
@@ -232,7 +232,7 @@ export const mockCases = [
         'Documents of unclear status'
       ],
       summary:
-        'Intake initiated but not yet complete. A Fulfulde interpreter is required for the full session. Preliminary account from a community health worker escort indicates labour exploitation at an agricultural worksite, including wage withholding and restricted compound access. Documents presented for verification. Risk assessed as medium pending full disclosure.'
+        'Intake initiated but not yet complete. An Arabic interpreter is required for the full session. Preliminary account from a community health worker escort indicates labour exploitation at an agricultural worksite, including wage withholding and restricted compound access. Documents presented for verification. Risk assessed as medium pending full disclosure.'
     },
     ctdcIndicators: [
       'Wages withheld (preliminary report)',
@@ -241,7 +241,7 @@ export const mockCases = [
     ],
     riskFactors: ['Pending intake documentation', 'No follow-up scheduled'],
     follow_up_tasks: [
-      { task: 'Book Fulfulde interpreter and reschedule full intake session', due: 'Within 48 h', priority: 'high', done: false },
+      { task: 'Book Arabic interpreter and reschedule full intake session', due: 'Within 48 h', priority: 'high', done: false },
       { task: 'Verify document authenticity with national identification office', due: 'This week', priority: 'medium', done: false }
     ]
   },
@@ -421,7 +421,7 @@ Date: last week
 Prepared by: TRACE (AI-generated — caseworker review required)
 
 Case #0031 concerns an adult male, 30–40, who presented at the reception point accompanied by a
-community health worker. Intake was commenced but is not complete — a Fulfulde interpreter is
+community health worker. Intake was commenced but is not complete — an Arabic interpreter is
 required for the full session.
 
 The preliminary account indicates labour exploitation at an agricultural worksite: wages
