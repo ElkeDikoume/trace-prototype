@@ -1,11 +1,13 @@
-// A single case card. Left border colour encodes risk level; never shows a
-// real name — case ID + coarse demographics only. An amber dot flags a case
-// with incomplete follow-up tasks.
-import { RISK_BORDER, STATUS_STYLE, statusLabel } from '../theme.js';
+// A single case card. The record status badge leads — it is the first thing a
+// caseworker reads, ahead of the case number. Left border colour encodes risk
+// level; never shows a real name — case ID + location + coarse demographics
+// only. An amber dot flags a case with incomplete follow-up tasks.
+import { RISK_BORDER, recordStatus } from '../theme.js';
 import { hasIncompleteTasks } from '../lib/caseStore.js';
 
 export default function CaseCard({ c, onOpen, showArrow = false }) {
   const incompleteTasks = hasIncompleteTasks(c);
+  const status = recordStatus(c.status);
 
   // Subtitle: location first, then whatever demographics are recorded. Built by
   // filtering so a case missing a field never renders a stray separator.
@@ -21,28 +23,30 @@ export default function CaseCard({ c, onOpen, showArrow = false }) {
       } px-3.5 py-3 transition-transform duration-100 hover:border-tracev2-accent/50 active:scale-[0.98]`}
     >
       <div className="flex items-center gap-2">
-        <div className="flex min-w-0 flex-1 items-start justify-between gap-2">
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <span className="font-semibold text-sm tabular-nums text-tracev2-text">{c.id}</span>
-              {incompleteTasks && (
-                <span
-                  className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-tracev2-risk-medium"
-                  title="Incomplete follow-up tasks"
-                />
-              )}
-              <span
-                className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                  STATUS_STYLE[c.status] || 'text-tracev2-text bg-slate-400/10'
-                }`}
-              >
-                {statusLabel(c.status)}
-              </span>
-            </div>
-            {subtitle && <p className="mt-1 text-xs text-tracev2-muted">{subtitle}</p>}
+        <div className="min-w-0 flex-1">
+          {/* Status badge leads the card */}
+          <div className="flex items-center justify-between gap-2">
+            <span
+              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold ${status.chip}`}
+            >
+              <span className={`h-1.5 w-1.5 rounded-full ${status.dot} ${status.pulse ? 'animate-pulse' : ''}`} />
+              {status.label}
+            </span>
+            <span className="whitespace-nowrap text-[10px] text-tracev2-subtle">{c.lastUpdated}</span>
           </div>
-          <span className="text-[10px] text-tracev2-subtle whitespace-nowrap">{c.lastUpdated}</span>
+
+          <div className="mt-1.5 flex items-center gap-2">
+            <span className="text-xs font-medium tabular-nums text-tracev2-muted">{c.id}</span>
+            {incompleteTasks && (
+              <span
+                className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-tracev2-risk-medium"
+                title="Incomplete follow-up tasks"
+              />
+            )}
+          </div>
+          {subtitle && <p className="mt-0.5 text-xs text-tracev2-muted">{subtitle}</p>}
         </div>
+
         {/* Right-edge chevron on every card */}
         <svg
           width="16"

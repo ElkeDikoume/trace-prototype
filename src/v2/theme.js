@@ -38,6 +38,29 @@ export const STATUS_STYLE = {
   pending_referral: 'text-tracev2-risk-medium/90 bg-tracev2-risk-medium/10'
 };
 
+// Record workflow status — the prominent badge on a case card. `pulse` marks
+// the in-progress states, whose dot animates. Ordered draft → submitted; the
+// list sorts by this order.
+export const RECORD_STATUS = {
+  draft: { label: 'Draft', chip: 'bg-amber-50 text-amber-700 border-amber-200', dot: 'bg-amber-500', pulse: true },
+  structured: { label: 'Structured', chip: 'bg-blue-50 text-blue-700 border-blue-200', dot: 'bg-blue-500', pulse: true },
+  synced: { label: 'Synced', chip: 'bg-indigo-50 text-indigo-700 border-indigo-200', dot: 'bg-indigo-500', pulse: false },
+  submitted: { label: 'Submitted', chip: 'bg-green-50 text-green-700 border-green-200', dot: 'bg-green-500', pulse: false }
+};
+
+export const RECORD_STATUS_ORDER = ['draft', 'structured', 'synced', 'submitted'];
+
+// Cases synced from Supabase still carry the older status vocabulary
+// ('Active', 'pending_referral', …) — show those in a neutral badge rather
+// than dropping the badge entirely.
+export const recordStatus = (s) =>
+  RECORD_STATUS[s] || {
+    label: statusLabel(s) || 'Unknown',
+    chip: 'bg-slate-100 text-slate-600 border-slate-300',
+    dot: 'bg-slate-400',
+    pulse: false
+  };
+
 // Human-readable label for a (possibly logical) status value.
 export const STATUS_LABEL = {
   active: 'Active',

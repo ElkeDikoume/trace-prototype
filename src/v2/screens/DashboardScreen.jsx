@@ -10,7 +10,7 @@ import CaseCard from '../components/CaseCard.jsx';
 import HeaderControls from '../components/HeaderControls.jsx';
 import PatternAlertBanner from '../components/PatternAlertBanner.jsx';
 import { getWellnessAlert } from '../components/WellnessCheckModal.jsx';
-import { RISK_LABEL } from '../theme.js';
+import { RISK_LABEL, RECORD_STATUS_ORDER } from '../theme.js';
 
 function greeting() {
   const h = new Date().getHours();
@@ -125,10 +125,15 @@ export default function DashboardScreen({
     }, 1200);
   }
 
+  // Records that have left the caseworker's hands count as active; anything
+  // still being worked counts as pending. Legacy Supabase statuses are kept in
+  // the same buckets so synced cases still register.
+  const ACTIVE_STATUSES = ['synced', 'submitted', 'Active', 'In progress', 'active'];
+  const PENDING_STATUSES = ['draft', 'structured', 'Pending', 'pending_referral'];
   const stats = {
-    active: cases.filter((c) => c.status === 'Active' || c.status === 'In progress' || c.status === 'active').length,
+    active: cases.filter((c) => ACTIVE_STATUSES.includes(c.status)).length,
     urgent: cases.filter((c) => c.riskLevel === 'high').length,
-    pending: cases.filter((c) => c.status === 'Pending' || c.status === 'pending_referral').length
+    pending: cases.filter((c) => PENDING_STATUSES.includes(c.status)).length
   };
 
   const pending = cases.filter((c) => c.status === 'pending_referral');
@@ -143,7 +148,7 @@ export default function DashboardScreen({
   // Case search: filter the full caseload while typing; otherwise show the 5 most
   // recent.
   const [query, setQuery] = useState('');
-  const visibleCases = query.trim()
+  const matched = query.trim()
     ? cases.filter((c) => {
         const q = query.toLowerCase();
         return (
@@ -154,6 +159,15 @@ export default function DashboardScreen({
         );
       })
     : cases.slice(0, 5);
+
+  // Work-first ordering: draft → structured → synced → submitted. Unknown
+  // statuses sort last. Applied after the 5-most-recent slice, so which cases
+  // appear is still driven by recency.
+  const statusRank = (c) => {
+    const i = RECORD_STATUS_ORDER.indexOf(c.status);
+    return i === -1 ? RECORD_STATUS_ORDER.length : i;
+  };
+  const visibleCases = [...matched].sort((a, b) => statusRank(a) - statusRank(b));
 
   return (
     <div className="flex-1 overflow-y-auto scrollbar-thin px-4 pt-1 pb-4">
@@ -271,6 +285,8 @@ export default function DashboardScreen({
           See All
         </button>
       </div>
+      {/* Sync status — static demo copy. */}
+      <p className="mt-1 text-xs text-slate-400">2 records pending sync · Last synced 14 min ago</p>
       <div className="mt-2 space-y-2">
         {query.trim() ? (
           visibleCases.length === 0 ? (

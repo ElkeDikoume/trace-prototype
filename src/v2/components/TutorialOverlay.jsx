@@ -64,7 +64,9 @@ export default function TutorialOverlay({ onClose, onFinish }) {
   const ctaLabel = step === 0 ? 'Continue →' : step === TOTAL_STEPS - 1 ? 'Start using TRACE →' : 'Next →';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+    // The tour copy is hardcoded English, so pin it LTR — picking Arabic flips
+    // the app behind the overlay to RTL, but the card itself must not mirror.
+    <div dir="ltr" className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
       <div className="mx-4 flex w-full max-w-sm flex-col rounded-2xl bg-white p-6 shadow-xl" style={{ maxHeight: '82vh' }}>
         <div className="flex-1 overflow-y-auto py-2">
           {/* ---- Step 0: language ---- */}

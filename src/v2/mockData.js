@@ -8,7 +8,7 @@ export const caseworkerFirstName = 'Marie-Claire';
 export const caseworkerInitials = 'MC';
 
 // riskLevel: 'high' | 'medium' | 'low'
-// status:    'Active' | 'Urgent' | 'Pending' | 'In progress'
+// status:    'draft' | 'structured' | 'synced' | 'submitted' (record workflow)
 export const mockCases = [
   {
     // Falmata — the scripted demo-walkthrough protagonist (see TutorialOverlay).
@@ -16,7 +16,7 @@ export const mockCases = [
     ageRange: '16–17',
     sex: 'F',
     riskLevel: 'high',
-    status: 'Urgent',
+    status: 'structured',
     lastUpdated: 'this morning',
     location: 'Koura Village, Diffa',
     notes:
@@ -71,7 +71,7 @@ export const mockCases = [
     ageRange: '16–17',
     sex: 'F',
     riskLevel: 'high',
-    status: 'Urgent',
+    status: 'draft',
     lastUpdated: '12 min ago',
     location: 'Toumour Pastoral Camp, Diffa',
     notes:
@@ -124,7 +124,7 @@ export const mockCases = [
     ageRange: '25–30',
     sex: 'M',
     riskLevel: 'medium',
-    status: 'In progress',
+    status: 'synced',
     lastUpdated: '1 h ago',
     location: 'Garin Wanzam, Maradi',
     notes:
@@ -172,7 +172,7 @@ export const mockCases = [
     ageRange: '18–24',
     sex: 'F',
     riskLevel: 'low',
-    status: 'Active',
+    status: 'submitted',
     lastUpdated: '3 h ago',
     location: 'Bosso North Quarter, Diffa',
     notes:
@@ -212,7 +212,7 @@ export const mockCases = [
     ageRange: '30–40',
     sex: 'M',
     riskLevel: 'medium',
-    status: 'Pending',
+    status: 'draft',
     lastUpdated: 'Yesterday',
     location: 'Baroua, Diffa',
     notes:
@@ -250,7 +250,7 @@ export const mockCases = [
     ageRange: '12–15',
     sex: 'F',
     riskLevel: 'high',
-    status: 'Urgent',
+    status: 'submitted',
     lastUpdated: '2 days ago',
     notes:
       'Unaccompanied minor. No known guardian contact. Referred by border police after being found in a vehicle with four unrelated adults. Unable to account for travel arrangement. Visibly distressed; limited verbal response. Escalated to child-protection focal point. Awaiting emergency placement confirmation. Do not close without safeguarding sign-off from supervisor.',
@@ -287,160 +287,13 @@ export const mockCases = [
   }
 ];
 
-// Archive of previously generated documents, shown on the Records tab. Stands
-// alone from any open case — each entry keeps its own case reference and the
-// text as it was generated.
-export const mockDocuments = [
-  {
-    id: 'doc-0043-vca',
-    docType: 'VCA Report',
-    caseId: '#0043',
-    generatedAt: 'Today · 09:14',
-    content: `VULNERABILITY AND CAPACITY ASSESSMENT (VCA)
-Case reference: #0043
-Assessment date: today
-Prepared by: TRACE (AI-generated — caseworker review required)
-
-1. SITE AND POPULATION
-Location assessed: Koura Village. Repeat flood-affected settlement, second event in 18 months.
-Households without WASH access: 340.
-
-2. VULNERABILITY FACTORS
-- No early warning system in place.
-- No evacuation route identified or communicated to residents.
-- No shelter pre-positioning in the region.
-- Village DRR committee not yet convened.
-
-3. CAPACITIES
-Community leadership is present and responsive. Prior flood response established informal
-household-to-household alert practice that can be formalised.
-
-4. RECOMMENDED ACTIONS
-a. Convene the village DRR committee within 7 days.
-b. Map and mark one primary and one secondary evacuation route.
-c. Escalate WASH coverage gap to the sector lead.
-
-End of report.`
-  },
-  {
-    id: 'doc-0042-sitrep',
-    docType: 'Situation Report',
-    caseId: '#0042',
-    generatedAt: 'Today · 08:02',
-    content: `SITUATION REPORT
-Case reference: #0042
-Reporting period: last 24 hours
-Prepared by: TRACE (AI-generated — caseworker review required)
-
-OVERVIEW
-Active displacement affecting 847 individuals at Toumour pastoral camp. Population arrived
-over a 72-hour window and remains unregistered in part.
-
-KEY CONCERNS
-- Malnutrition risk: no MUAC screening completed to date.
-- No WASH infrastructure on site.
-- Security incident reported in the surrounding area; movement outside the camp discouraged.
-- Three follow-up tasks overdue, including family tracing.
-
-ACTIONS TAKEN
-Child-protection focal point notified. Emergency shelter placement requested.
-
-NEXT STEPS
-Complete MUAC screening for all under-fives within 48 hours. Confirm WASH partner deployment.
-Escalate the security incident to the area coordinator.
-
-End of report.`
-  },
-  {
-    id: 'doc-0039-referral',
-    docType: 'Referral Letter',
-    caseId: '#0039',
-    generatedAt: 'Yesterday · 16:45',
-    content: `REFERRAL LETTER
-Case reference: #0039
-Date: yesterday
-Prepared by: TRACE (AI-generated — caseworker review required)
-
-To: Protection Partner Agency, Garin Wanzam
-Re: Referral for protection assessment and legal aid
-
-Dear colleagues,
-
-We are referring case #0039 for protection assessment and legal-aid support. The case concerns
-an adult male reporting labour exploitation at an agricultural site, including three months of
-withheld wages and an imposed transport debt of CFA 85,000.
-
-Protection concerns have been flagged by a community leader. The GBV referral pathway has not
-yet been activated and no female caseworker is available on site, which limits our capacity to
-complete a full assessment locally.
-
-Services requested: legal aid for wage recovery, protection assessment, and safe transitional
-accommodation away from the worksite.
-
-Caseworker sign-off: ______________________`
-  },
-  {
-    id: 'doc-0037-risk',
-    docType: 'Risk Assessment Report',
-    caseId: '#0037',
-    generatedAt: '2 days ago · 11:30',
-    content: `RISK ASSESSMENT REPORT
-Case reference: #0037
-Date: 2 days ago
-Prepared by: TRACE (AI-generated — caseworker review required)
-
-1. CASE OVERVIEW
-Survivor in post-identification recovery following prior labour exploitation. Temporary safe
-housing secured through the partner network.
-
-2. INDICATORS IDENTIFIED
-- Prior document withholding (resolved — documents recovered).
-- Prior unpaid labour (resolved).
-
-3. RISK LEVEL: LOW
-Justification: the survivor is no longer in the exploitative situation, housing is stable, and
-engagement with psychosocial support is consistent. No new safety concerns reported.
-
-4. RESIDUAL CONCERNS
-Overcrowded host community site. No documentation for 12 households at the same site.
-
-5. RECOMMENDED ACTIONS
-Continue monthly psychosocial check-ins. Confirm national ID replacement. Proceed with the
-vocational training pathway.
-
-End of report.`
-  },
-  {
-    id: 'doc-0031-summary',
-    docType: 'Case Summary',
-    caseId: '#0031',
-    generatedAt: 'Last week · 14:20',
-    content: `CASE SUMMARY
-Case reference: #0031
-Date: last week
-Prepared by: TRACE (AI-generated — caseworker review required)
-
-Case #0031 concerns an adult male, 30–40, who presented at the reception point accompanied by a
-community health worker. Intake was commenced but is not complete — an Arabic interpreter is
-required for the full session.
-
-The preliminary account indicates labour exploitation at an agricultural worksite: wages
-withheld, excessive hours, and restricted movement within the compound. Documents were presented
-but their authenticity is under review. Risk is assessed as medium pending full disclosure.
-
-Current status: intake documentation pending, no follow-up session yet scheduled. Recommended
-next steps are to book the interpreter and reschedule the full intake within 48 hours, and to
-verify the presented documents with the national identification office.
-
-End of summary.`
-  }
-];
-
-// Dashboard summary pills derived from the mock caseload.
+// Dashboard summary pills derived from the mock caseload. Records that have
+// left the caseworker's hands are active; anything still being worked is
+// pending (see the same buckets in DashboardScreen).
 export const caseStats = {
-  active: mockCases.filter((c) => c.status === 'Active' || c.status === 'In progress').length,
+  active: mockCases.filter((c) => c.status === 'synced' || c.status === 'submitted').length,
   urgent: mockCases.filter((c) => c.riskLevel === 'high').length,
-  pending: mockCases.filter((c) => c.status === 'Pending').length
+  pending: mockCases.filter((c) => c.status === 'draft' || c.status === 'structured').length
 };
 
 // CTDC-style indicators shown in the risk badge on the Active Intake screen
