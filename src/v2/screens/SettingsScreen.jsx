@@ -3,18 +3,10 @@
 // localStorage; the theme toggle goes through ThemeContext so the app actually
 // repaints rather than just recording a preference.
 import { useEffect, useState } from 'react';
-import i18n from '../lib/i18n.js';
+import i18n, { LANGUAGES } from '../lib/i18n.js';
 import { useTheme } from '../lib/ThemeContext.jsx';
 
 const GITHUB_URL = 'https://github.com/ElkeDikoume/trace-humanitarian';
-
-// The four field languages, matching the onboarding picker.
-const LANGUAGES = [
-  { code: 'en', flag: '🇬🇧', name: 'English' },
-  { code: 'fr', flag: '🇫🇷', name: 'Français' },
-  { code: 'ha', flag: '🌍', name: 'Hausa' },
-  { code: 'ar', flag: '🇹🇩', name: 'Arabic' }
-];
 
 function Section({ title, children }) {
   return (
@@ -92,7 +84,7 @@ export default function SettingsScreen({ onBack }) {
                 <span className="mr-2" aria-hidden="true">
                   {l.flag}
                 </span>
-                {l.name}
+                {l.label}
               </span>
               {selected && <span className="text-blue-600">✓</span>}
             </button>

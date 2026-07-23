@@ -65,7 +65,7 @@ export default function HeaderControls() {
           className="flex items-center gap-1 rounded-lg border border-tracev2-border bg-tracev2-card px-2 py-1.5 text-tracev2-muted transition-colors duration-150 hover:text-tracev2-text"
         >
           <GlobeIcon />
-          <span className="text-[11px] font-semibold">{current.label}</span>
+          <span className="text-[11px] font-semibold">{current.abbr}</span>
         </button>
 
         {open && (
@@ -80,8 +80,13 @@ export default function HeaderControls() {
                     l.code === current.code ? 'text-tracev2-accent' : 'text-tracev2-text'
                   }`}
                 >
-                  <span>{l.name}</span>
-                  <span className="text-[11px] text-tracev2-subtle">{l.label}</span>
+                  <span>
+                    <span className="mr-2" aria-hidden="true">
+                      {l.flag}
+                    </span>
+                    {l.label}
+                  </span>
+                  <span className="text-[11px] text-tracev2-subtle">{l.abbr}</span>
                 </button>
               ))}
             </div>
