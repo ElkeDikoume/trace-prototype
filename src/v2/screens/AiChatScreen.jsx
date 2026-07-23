@@ -1,7 +1,7 @@
 // "TRACE AI" — the AI tab's command center, plus the chat it opens into.
 //
 // Two entry points:
-//   • AI tab (no `caseContext`) — opens the command center: today's brief, four
+//   • AI tab (no `caseContext`) — a full screen in the router: today's brief, four
 //     quick actions, and recent document activity. Tapping a quick action opens
 //     the chat with that question already asked; "← Back" returns here.
 //   • Inside a case (`caseContext` given) — skips the command center and opens
@@ -283,15 +283,17 @@ function ChatView({ scoped, contextId, system, contextBlock, chips, demoScript, 
             </p>
           </div>
         </div>
-        <button
-          onClick={onClose}
-          aria-label="Close"
-          className="text-tracev2-subtle transition-colors duration-150 hover:text-tracev2-text"
-        >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-            <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          </svg>
-        </button>
+        {onClose && (
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            className="text-tracev2-subtle transition-colors duration-150 hover:text-tracev2-text"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          </button>
+        )}
       </div>
 
       {/* Thread */}
@@ -383,15 +385,17 @@ function CommandCenter({ cases, onAsk, onClose }) {
           <h2 className="text-lg font-bold text-tracev2-text">TRACE AI</h2>
           <p className="text-xs text-tracev2-subtle">Field intelligence and document generation</p>
         </div>
-        <button
-          onClick={onClose}
-          aria-label="Close"
-          className="mt-0.5 text-tracev2-subtle transition-colors duration-150 hover:text-tracev2-text"
-        >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-            <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          </svg>
-        </button>
+        {onClose && (
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            className="mt-0.5 text-tracev2-subtle transition-colors duration-150 hover:text-tracev2-text"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          </button>
+        )}
       </div>
 
       <div className="scrollbar-thin flex-1 overflow-y-auto px-4 pb-4">
@@ -460,7 +464,7 @@ function CommandCenter({ cases, onAsk, onClose }) {
 }
 
 // ---------------------------------------------------------------------------
-export default function AiChatScreen({ caseContext, onClose, demoMessages, cases = [] }) {
+export default function AiChatScreen({ caseContext, onClose, demoMessages, cases = [], overlay = false }) {
   // Case-scoped only when a case was handed in (from inside a case view).
   const scoped = Boolean(caseContext?.caseRecord);
 
@@ -486,7 +490,9 @@ export default function AiChatScreen({ caseContext, onClose, demoMessages, cases
   const chips = scoped ? chipsForRisk(caseContext?.caseRecord?.riskLevel) : GENERIC_CHIPS;
 
   return (
-    <div className="absolute inset-0 z-[70] flex flex-col bg-tracev2-bg">
+    // As the AI tab this is a plain screen, so the bottom nav stays reachable;
+    // opened from inside a case it floats over the case view instead.
+    <div className={overlay ? 'absolute inset-0 z-[70] flex flex-col bg-tracev2-bg' : 'flex flex-1 flex-col bg-tracev2-bg'}>
       {chat ? (
         <ChatView
           key={chat.question || 'chat'}

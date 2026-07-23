@@ -111,8 +111,8 @@ function HelpScreen({ onBack }) {
 }
 
 // Screens once authed:
-// 'dashboard' | 'intakeStart' | 'activeIntake' | 'caseView' | 'records' | 'submission'
-// | 'settings' | 'help'
+// 'dashboard' | 'intakeStart' | 'activeIntake' | 'caseView' | 'ai' | 'records'
+// | 'submission' | 'settings' | 'help'
 function Shell() {
   const { theme } = useTheme();
   const { i18n } = useTranslation();
@@ -317,10 +317,12 @@ function Shell() {
   function handleNav(tab) {
     if (tab === 'cases') setScreen('dashboard');
     else if (tab === 'intake') setScreen('intakeStart');
+    // The AI tab is the generic entry point — a screen, not an overlay, so the
+    // bottom nav stays reachable. No case is pre-loaded.
     else if (tab === 'ai') {
-      // The AI tab is the generic entry point — no case pre-loaded.
       setAiScoped(false);
-      setAiOpen(true);
+      setAiOpen(false);
+      setScreen('ai');
     }
     // "Records" is a standalone document archive — no case needs to be open.
     else if (tab === 'docs') setScreen('records');
@@ -350,13 +352,14 @@ function Shell() {
     riskIndicators: contextCase?.ctdcIndicators?.length ? contextCase.ctdcIndicators : mockRiskIndicators
   };
 
-  const activeTab = aiOpen
-    ? 'ai'
-    : screen === 'intakeStart' || screen === 'activeIntake'
-      ? 'intake'
-      : screen === 'records'
-        ? 'docs'
-        : 'cases';
+  const activeTab =
+    aiOpen || screen === 'ai'
+      ? 'ai'
+      : screen === 'intakeStart' || screen === 'activeIntake'
+        ? 'intake'
+        : screen === 'records'
+          ? 'docs'
+          : 'cases';
 
   if (!profile) {
     return (
@@ -414,6 +417,7 @@ function Shell() {
           onRecordingChange={setRecording}
         />
       )}
+      {screen === 'ai' && <AiChatScreen cases={cases} />}
       {screen === 'records' && <RecordsScreen />}
       {screen === 'settings' && <SettingsScreen onBack={() => setScreen('dashboard')} />}
       {screen === 'help' && <HelpScreen onBack={() => setScreen('dashboard')} />}
@@ -439,8 +443,9 @@ function Shell() {
           while recording so nothing competes with the mic control. */}
       {!recording && <BottomNav active={activeTab} onNavigate={handleNav} onOpenHelp={() => setScreen('help')} />}
 
+      {/* Case-scoped consultation floats over the case view it was opened from */}
       {aiOpen && (
-        <AiChatScreen caseContext={aiScoped ? aiContext : null} cases={cases} onClose={() => setAiOpen(false)} />
+        <AiChatScreen overlay caseContext={aiScoped ? aiContext : null} cases={cases} onClose={() => setAiOpen(false)} />
       )}
 
       <WellnessCheckModal
