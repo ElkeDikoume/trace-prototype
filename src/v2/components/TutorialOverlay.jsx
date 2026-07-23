@@ -72,8 +72,27 @@ export default function TutorialOverlay({ onClose, onFinish }) {
           {/* ---- Step 0: language ---- */}
           {step === 0 && (
             <>
-              <h2 className="text-lg font-bold text-gray-900">Choose your language</h2>
-              <p className="mt-1 text-sm text-gray-500">TRACE is designed for the Lake Chad Basin.</p>
+              <button
+                onClick={finish}
+                className="mb-3 flex items-center gap-1 text-xs text-tracev2-subtle transition-colors hover:text-tracev2-muted"
+                aria-label="Back"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="15 18 9 12 15 6" />
+                </svg>
+                Back
+              </button>
+              <h2 className="text-center text-lg font-bold text-gray-900">Choose your language</h2>
+              <p className="mt-1 text-center text-sm text-gray-500">TRACE is designed for the Lake Chad Basin.</p>
 
               <div className="mt-4 grid grid-cols-2 gap-2">
                 {LANGUAGES.map((l) => (
@@ -106,7 +125,7 @@ export default function TutorialOverlay({ onClose, onFinish }) {
               </p>
 
               {/* Hero: the logo alone, tagline below the card */}
-              <div className="mt-4 flex items-center justify-center rounded-xl border border-gray-200 bg-gray-50 py-7">
+              <div className="mt-4 flex items-center justify-center rounded-xl border border-gray-200 bg-gray-50 py-8">
                 <img src={traceLogo} alt="TRACE" className="h-24 w-24 rounded-2xl bg-white object-contain p-3 shadow" />
               </div>
               <p className="mt-3 text-center text-sm font-bold leading-relaxed text-gray-800">

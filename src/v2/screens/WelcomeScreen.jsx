@@ -58,12 +58,12 @@ export default function WelcomeScreen({ onMicrosoft, onDemo, onDemoWithTour, sig
     <div className="flex flex-1 flex-col items-center justify-center bg-tracev2-bg px-8 text-center">
       {/* Logo with breathing halo */}
       <div className="relative flex items-center justify-center">
-        <span className="tracev2-halo absolute h-28 w-28 rounded-full bg-tracev2-accent blur-2xl" aria-hidden="true" />
+        <span className="tracev2-halo absolute h-52 w-52 rounded-full bg-tracev2-accent blur-2xl" aria-hidden="true" />
         <button
           type="button"
           onClick={handleLogoTap}
           aria-label="TRACE"
-          className="tracev2-fade-in relative flex h-20 w-20 items-center justify-center rounded-2xl bg-white p-3 shadow-xl shadow-tracev2-accent/20"
+          className="tracev2-fade-in relative flex h-36 w-36 items-center justify-center rounded-3xl bg-white p-3 shadow-xl shadow-tracev2-accent/20"
         >
           <img
             src={traceLogo}
