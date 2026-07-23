@@ -204,12 +204,16 @@ export default function DashboardScreen({
             </svg>
           </button>
           <HeaderControls />
-          <div
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-tracev2-accent/20 text-xs font-semibold text-tracev2-accent ring-1 ring-tracev2-accent/30"
+          {/* The avatar is the second way into Settings — tapping your own
+              initials for account/preferences is the mobile convention. */}
+          <button
+            onClick={onOpenSettings}
+            aria-label="Settings"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-tracev2-accent/20 text-xs font-semibold text-tracev2-accent ring-1 ring-tracev2-accent/30 transition-colors duration-150 hover:bg-tracev2-accent/30"
             title={profile?.full_name}
           >
             {profile?.initials || 'U'}
-          </div>
+          </button>
         </div>
       </div>
 
