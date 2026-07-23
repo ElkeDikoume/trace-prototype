@@ -53,7 +53,7 @@ export default function BottomNav({ active, onNavigate, onOpenHelp }) {
       <button
         onClick={onOpenHelp}
         aria-label="Help"
-        className="absolute right-3 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-500 transition-colors hover:bg-slate-200 hover:text-slate-700"
+        className="absolute right-2 top-1.5 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-500 transition-colors hover:bg-slate-200 hover:text-slate-700"
       >
         ?
       </button>

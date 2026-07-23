@@ -50,11 +50,27 @@ export const RECORD_STATUS = {
 
 export const RECORD_STATUS_ORDER = ['draft', 'structured', 'synced', 'submitted'];
 
-// Cases synced from Supabase still carry the older status vocabulary
-// ('Active', 'pending_referral', …) — show those in a neutral badge rather
-// than dropping the badge entirely.
+// Cases synced from Supabase carry the older status vocabulary. Translate it
+// into the lifecycle badges above rather than surfacing two vocabularies side
+// by side; anything unrecognised falls back to a neutral badge.
+const LEGACY_STATUS = {
+  Urgent: { label: 'High risk', chip: 'bg-red-50 text-red-700 border-red-200', dot: 'bg-red-500', pulse: true },
+  Active: { label: 'In progress', chip: 'bg-blue-50 text-blue-700 border-blue-200', dot: 'bg-blue-500', pulse: true },
+  active: { label: 'In progress', chip: 'bg-blue-50 text-blue-700 border-blue-200', dot: 'bg-blue-500', pulse: true },
+  'In progress': { label: 'In progress', chip: 'bg-blue-50 text-blue-700 border-blue-200', dot: 'bg-blue-500', pulse: true },
+  Pending: RECORD_STATUS.draft,
+  // Held for supervisor approval — keep that distinct from a plain draft.
+  pending_referral: {
+    label: 'Pending referral',
+    chip: 'bg-amber-50 text-amber-700 border-amber-200',
+    dot: 'bg-amber-500',
+    pulse: true
+  }
+};
+
 export const recordStatus = (s) =>
-  RECORD_STATUS[s] || {
+  RECORD_STATUS[s] ||
+  LEGACY_STATUS[s] || {
     label: statusLabel(s) || 'Unknown',
     chip: 'bg-slate-100 text-slate-600 border-slate-300',
     dot: 'bg-slate-400',

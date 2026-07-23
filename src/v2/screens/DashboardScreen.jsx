@@ -228,9 +228,9 @@ export default function DashboardScreen({
         <InfoButton label="These figures reflect cases recorded on this device. In full deployment, they pull from the cluster coordination system in real time." />
       </div>
       <div className="mt-1 flex gap-2">
-        <StatPill value={stats.active} label="Active" tone="green" />
-        <StatPill value={stats.urgent} label="Urgent" tone="red" />
-        <StatPill value={stats.pending} label="Pending" tone="neutral" />
+        <StatPill value={stats.active} label="In progress" tone="green" />
+        <StatPill value={stats.urgent} label="High risk" tone="red" />
+        <StatPill value={stats.pending} label="Draft" tone="neutral" />
       </div>
 
       {/* Risk distribution */}
