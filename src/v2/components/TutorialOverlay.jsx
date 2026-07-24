@@ -3,20 +3,10 @@
 // each step explains one capability, so the walkthrough never depends on screen
 // state or the API. Step 0 also sets the caseworker's UI language.
 import { useState } from 'react';
-import i18n from '../lib/i18n.js';
+import i18n, { LANGUAGES } from '../lib/i18n.js';
 import traceLogo from '../../assets/trace-logo.png';
 
 const TOTAL_STEPS = 6; // 0–5
-
-// Step 0 language choices. Hausa has no UI translation bundle yet — picking it
-// records the preference and falls back to English strings. Arabic has one, and
-// switches the whole shell to RTL.
-const LANGUAGES = [
-  { code: 'en', flag: '🇬🇧', name: 'English' },
-  { code: 'fr', flag: '🇫🇷', name: 'Français' },
-  { code: 'ha', flag: '🌍', name: 'Hausa' },
-  { code: 'ar', flag: '🇹🇩', name: 'Arabic' }
-];
 
 function Icon({ emoji, tone }) {
   return (
@@ -108,7 +98,7 @@ export default function TutorialOverlay({ onClose, onFinish }) {
                       {l.flag}
                     </span>
                     <span className={`text-sm font-medium ${lang === l.code ? 'text-blue-700' : 'text-gray-700'}`}>
-                      {l.name}
+                      {l.label}
                     </span>
                   </button>
                 ))}
@@ -146,10 +136,24 @@ export default function TutorialOverlay({ onClose, onFinish }) {
               <h2 className="mt-3 text-lg font-bold text-gray-900">Capture in any language</h2>
               <p className="mt-1 text-sm text-gray-500">No forms. No typing. Just speak.</p>
               <p className="mt-3 text-sm leading-relaxed text-gray-700">
-                Tap the + Intake button and speak your field observations in Hausa, Arabic, French, or English.
-                TRACE transcribes, translates, and structures your notes into a VCA automatically — ready for cluster
-                reporting.
+                Tap the + Intake button and speak your field observations in Arabic, Hausa, French, or any local
+                language. TRACE transcribes, translates, and structures your notes into a VCA automatically — ready for
+                cluster reporting.
               </p>
+
+              {/* A local field language (Hausa) — not one of the UI languages —
+                  transcribed and translated into structured English. */}
+              <div className="mt-4 space-y-1.5 rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm">
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-400">
+                  Field note · Hausa → English
+                </p>
+                <p className="text-gray-800">{'Babu isasshen abinci. Yara suna fama da rashin abinci mai gina jiki.'}</p>
+                <p className="text-gray-300" aria-hidden="true">
+                  ↓
+                </p>
+                <p className="text-gray-700">{'Not enough food. Children are suffering from malnutrition.'}</p>
+              </div>
+
               <div className="mt-4 flex flex-wrap gap-2">
                 <Pill>3 minutes → full VCA report</Pill>
                 <Pill>Auto-detects language</Pill>
