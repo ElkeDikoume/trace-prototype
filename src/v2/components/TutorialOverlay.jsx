@@ -75,7 +75,7 @@ export default function TutorialOverlay({ onClose, onFinish }) {
               <button
                 onClick={finish}
                 className="mb-3 flex items-center gap-1 text-xs text-tracev2-subtle transition-colors hover:text-tracev2-muted"
-                aria-label="Back"
+                aria-label="Skip"
               >
                 <svg
                   width="14"
@@ -89,7 +89,7 @@ export default function TutorialOverlay({ onClose, onFinish }) {
                 >
                   <polyline points="15 18 9 12 15 6" />
                 </svg>
-                Back
+                Skip
               </button>
               <h2 className="text-center text-lg font-bold text-gray-900">Choose your language</h2>
               <p className="mt-1 text-center text-sm text-gray-500">TRACE is designed for the Lake Chad Basin.</p>
