@@ -1,7 +1,7 @@
 // "TRACE AI" — the AI tab's command center, plus the chat it opens into.
 //
 // Two entry points:
-//   • AI tab (no `caseContext`) — a full screen in the router: today's brief, four
+//  #• AI tab (no `caseContext`) — a full screen in the router: today's brief, four
 //     quick actions, and recent document activity. Tapping a quick action opens
 //     the chat with that question already asked; "← Back" returns here.
 //   • Inside a case (`caseContext` given) — skips the command center and opens
@@ -318,7 +318,7 @@ function ChatView({ scoped, contextId, system, contextBlock, chips, demoScript, 
                     ? 'rounded-br-md bg-tracev2-accent text-white'
                     : m.error
                       ? 'rounded-bl-md border border-tracev2-risk-high/40 bg-tracev2-risk-high/10 text-tracev2-risk-high'
-                      : 'rounded-bl-md border border-tracev2-border bg-tracev2-card text-tracev2-text'
+                      : 'rounded-bl-md border border-tracev2-accent/20 bg-tracev2-accent/10 text-tracev2-text'
                 }`}
               >
                 {clean(m.content)}
