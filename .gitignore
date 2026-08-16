@@ -25,9 +25,12 @@ yarn-error.log*
 # Claude Code local session config (machine-specific, not shared)
 .claude/settings.local.json
 
-# Internal hackathon notes — contains private judge strategy notes,
-# not for the public repo
+# Internal hackathon notes and development guides — not for the public repo
 TRACE_Progress_Handoff_v2.md
+TRACE_Claude_Code_Guide.md
+TRACE_Claude_Code_Guide.docx
+TRACE_Claude_Code_Guide_v2.docx
+GitHub_Explainer.md
 
 # Pitch deck — large binary, kept out of the repo
 TRACE Gamma.pptx
