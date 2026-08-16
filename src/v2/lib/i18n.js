@@ -1,4 +1,4 @@
-// i18next setup for the v2 shell UI. The six official UN languages; Arabic
+// i18next setup for the v2 shell UI. Five interface languages; Arabic
 // drives RTL.
 // The chosen language is persisted under 'trace_lang'. Importing this module
 // initialises the shared i18next instance (side effect) exactly once.
@@ -9,22 +9,24 @@ import en from '../locales/en.json';
 import fr from '../locales/fr.json';
 import es from '../locales/es.json';
 import ar from '../locales/ar.json';
-import ru from '../locales/ru.json';
-import zh from '../locales/zh.json';
+import pt from '../locales/pt.json';
+// ru.json and zh.json remain in ../locales but are not imported or offered:
+// the site advertises five interface languages, and the picker must not
+// promise more than that. Restoring one is an import plus a LANGUAGES entry.
 
 export const LANG_KEY = 'trace_lang';
 
 // Order, labels and flags for the header dropdown and the Settings list — the
-// app's single source of truth for selectable UI languages. The six official
-// UN languages; Arabic drives RTL. Local field languages (e.g. Hausa) are
-// handled at intake via translation, not offered as interface options.
+// app's single source of truth for selectable UI languages. Five languages,
+// matching the set advertised publicly; Arabic drives RTL. Local field
+// languages (e.g. Hausa) are handled at intake via translation, not offered
+// as interface options.
 export const LANGUAGES = [
   { code: 'en', label: 'English', flag: '🇬🇧', abbr: 'EN' },
   { code: 'fr', label: 'Français', flag: '🇫🇷', abbr: 'FR' },
   { code: 'es', label: 'Español', flag: '🇪🇸', abbr: 'ES' },
   { code: 'ar', label: 'العربية', flag: '🇸🇦', abbr: 'AR' },
-  { code: 'ru', label: 'Русский', flag: '🇷🇺', abbr: 'RU' },
-  { code: 'zh', label: '中文', flag: '🇨🇳', abbr: 'ZH' }
+  { code: 'pt', label: 'Português', flag: '🇵🇹', abbr: 'PT' }
 ];
 
 export const RTL_LANGS = ['ar'];
@@ -40,8 +42,7 @@ if (!i18n.isInitialized) {
       fr: { translation: fr },
       es: { translation: es },
       ar: { translation: ar },
-      ru: { translation: ru },
-      zh: { translation: zh }
+      pt: { translation: pt }
     },
     lng: initialLang,
     fallbackLng: 'en',
