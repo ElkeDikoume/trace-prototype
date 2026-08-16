@@ -39,6 +39,26 @@ import {
 } from './lib/auth.js';
 import { mockCases, mockStructuredFields, mockRiskIndicators, nextCaseId } from './mockData.js';
 
+// Pre-scripted exchange injected into the AI chat panel when the guided tour
+// reaches step 3 ("Ask TRACE anything"). Rendered instantly — no typewriter —
+// so the conversation looks already-complete behind the TutorialOverlay card.
+const TOUR_STEP3_MESSAGES = [
+  {
+    role: 'user',
+    content: 'What should happen in the next 48 hours for AK-001?'
+  },
+  {
+    role: 'assistant',
+    content: `Based on the HIGH RISK flag and confirmed indicators for AK-001, the following actions are required within 48 hours:
+
+1. File a referral to IOM Protection Unit — template is ready (tap to generate)
+2. Coordinate safe accommodation — do not return subject to reported location
+3. Alert Cluster coordinator: document confiscation pattern matches 2 other active cases in Diffa Region this week
+
+Grounded in IOM Anti-Trafficking Guidelines §4.2 and CTDC Tier 1 indicators. Caseworker review required before any action is taken.`
+  }
+];
+
 export default function TraceV2App() {
   return (
     <ThemeProvider>
@@ -138,6 +158,9 @@ function Shell() {
   const [demoDocOpen, setDemoDocOpen] = useState(null); // { caseId, docType, content }
   const [submittedCase, setSubmittedCase] = useState(null); // case shown on the submission screen
   const [recording, setRecording] = useState(false); // mic open on the intake screen — hides the bottom nav
+  // true while the guided tour's step-3 AI exchange is being shown — skips the
+  // typewriter animation and renders the scripted messages fully formed.
+  const [aiDemoInstant, setAiDemoInstant] = useState(false);
   const resetRan = useRef(false);
 
   // ?reset — clears local state, then reloads straight into the guided tour.
@@ -237,6 +260,7 @@ function Shell() {
   function finishTour() {
     setShowTutorial(false);
     setAiOpen(false);
+    setAiDemoInstant(false);
     setDemoDocOpen(null);
     if (typeof window !== 'undefined') window.__traceDemoMessages = null;
     setScreen('dashboard');
@@ -253,6 +277,72 @@ function Shell() {
     setAiScoped(true);
     setAiOpen(true);
   }
+
+  // Fired by TutorialOverlay whenever the judge taps Next/Back. Drives the live
+  // app to the screen that matches the tour narrative so the real interface is
+  // visible and responsive behind the bottom-sheet card:
+  //
+  //   step 1 → case list (dashboard)    "47 open cases, one flagged HIGH RISK"
+  //   step 2 → flagged case detail      "from voice note to risk flag"
+  //   step 3 → AI chat panel            "ask TRACE anything" + scripted Q&A
+  //   step 4 → Records tab              "every output, every signal"
+  //
+  // Going backwards re-triggers the same navigation so the correct screen is
+  // always behind the card regardless of direction of travel.
+  const handleTourStepChange = useCallback((step) => {
+    switch (step) {
+      case 1: {
+        // Show the case list so the judge sees the HIGH RISK badge on the card.
+        setAiOpen(false);
+        setAiDemoInstant(false);
+        window.__traceDemoMessages = null;
+        setScreen('dashboard');
+        break;
+      }
+      case 2: {
+        // Navigate to the flagged case detail. Prefer canonical demo case AK-001;
+        // fall back to the first HIGH RISK case in the merged list, then cases[0].
+        // A window flag signals CaseViewScreen to auto-expand its risk-flag panel.
+        setAiOpen(false);
+        setAiDemoInstant(false);
+        window.__traceDemoMessages = null;
+        setCases((prev) => {
+          const target =
+            prev.find((c) => c.id === 'AK-001') ||
+            prev.find((c) => (c.riskLevel || '').toLowerCase() === 'high') ||
+            prev[0] ||
+            mockCases[0];
+          if (target) {
+            setSelectedCaseId(target.id);
+            window.__traceExpandRiskPanel = true;
+            setScreen('caseView');
+          }
+          return prev; // no mutation — setCases used only for its closure access
+        });
+        break;
+      }
+      case 3: {
+        // Pre-load the scripted Q&A into the global slot that AiChatScreen reads
+        // on mount, then open the overlay chat. demoInstant skips the typewriter
+        // so the full exchange is visible the moment the panel appears.
+        window.__traceDemoMessages = TOUR_STEP3_MESSAGES;
+        setAiScoped(false);
+        setAiDemoInstant(true);
+        setAiOpen(true);
+        break;
+      }
+      case 4: {
+        // Close chat and switch to the Records tab ("every output, every signal").
+        setAiOpen(false);
+        setAiDemoInstant(false);
+        window.__traceDemoMessages = null;
+        setScreen('records');
+        break;
+      }
+      default:
+        break;
+    }
+  }, []); // stable — only calls React state setters (always stable) and module-level constants
 
   // Tapping a case card opens the 3-tab case view.
   function openCaseView(caseId) {
@@ -443,9 +533,18 @@ function Shell() {
           while recording so nothing competes with the mic control. */}
       {!recording && <BottomNav active={activeTab} onNavigate={handleNav} onOpenHelp={() => setScreen('help')} />}
 
-      {/* Case-scoped consultation floats over the case view it was opened from */}
+      {/* Case-scoped consultation floats over the case view it was opened from.
+          demoInstant is true only while the guided tour's step-3 exchange is
+          active — it tells the chat panel to skip the typewriter animation and
+          show the scripted Q&A fully formed. */}
       {aiOpen && (
-        <AiChatScreen overlay caseContext={aiScoped ? aiContext : null} cases={cases} onClose={() => setAiOpen(false)} />
+        <AiChatScreen
+          overlay
+          caseContext={aiScoped ? aiContext : null}
+          cases={cases}
+          demoInstant={aiDemoInstant}
+          onClose={() => { setAiOpen(false); setAiDemoInstant(false); }}
+        />
       )}
 
       <WellnessCheckModal
@@ -455,9 +554,10 @@ function Shell() {
       />
 
       {/* Guided demo walkthrough — rendered at shell level so it persists across
-          the screens it navigates through. */}
+          the screens it navigates through. onStepChange lets the overlay drive
+          the live app (e.g. opening the AI panel at step 3). */}
       {showTutorial && (
-        <TutorialOverlay onClose={finishTour} />
+        <TutorialOverlay onClose={finishTour} onStepChange={handleTourStepChange} />
       )}
     </PhoneFrame>
   );
