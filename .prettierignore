@@ -1,0 +1,6 @@
+dist/
+dist-ssr/
+dev-dist/
+node_modules/
+package-lock.json
+public/demo.html
