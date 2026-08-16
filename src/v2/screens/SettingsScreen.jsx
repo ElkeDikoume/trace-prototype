@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import i18n, { LANGUAGES } from '../lib/i18n.js';
 import { useTheme } from '../lib/ThemeContext.jsx';
 
-const GITHUB_URL = 'https://github.com/ElkeDikoume/trace-humanitarian';
+const GITHUB_URL = 'https://github.com/ElkeDikoume/trace-prototype';
 
 function Section({ title, children }) {
   return (
