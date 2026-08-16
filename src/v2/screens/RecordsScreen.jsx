@@ -49,6 +49,27 @@ const LANGUAGES = [
 // Pre-populated archive, most recent first. Exported so other surfaces (the AI
 // tab's Recent activity list) can preview the same documents.
 export const MOCK_DOCUMENTS = [
+  // AK-001 referral letter — seeded as "Draft ready" so the Records tab shows
+  // a concrete output immediately after the guided tour's step-3 AI exchange
+  // (where TRACE recommended filing a referral to the IOM Protection Unit).
+  {
+    id: 'doc-ak001-referral',
+    type: 'referral',
+    caseRef: 'AK-001',
+    location: "IOM Protection Unit, N'Djamena",
+    date: '21 Aug 2026',
+    note: 'IOM Protection Unit',
+    status: 'draft',
+    preview: `Referral draft generated 21 Aug 2026 — case AK-001 · IOM Protection Unit, N'Djamena.
+
+HIGH RISK — document confiscation, debt bondage, and movement restriction confirmed (CTDC Tier 1 indicators).
+
+Urgent shelter placement required. Do not return subject to reported location.
+
+Pattern note: document confiscation indicator matches 2 other active cases in Diffa Region logged this week — Cluster coordinator has been alerted.
+
+Grounded in IOM Anti-Trafficking Guidelines §4.2. Pending caseworker review and supervisor sign-off before submission.`
+  },
   {
     id: 'doc-0043-vca',
     type: 'vca',
@@ -449,7 +470,14 @@ export default function RecordsScreen() {
                 </span>
 
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-bold text-tracev2-text">{kind.label}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="truncate text-sm font-bold text-tracev2-text">{kind.label}</p>
+                    {d.status === 'draft' && (
+                      <span className="flex-shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
+                        Draft ready
+                      </span>
+                    )}
+                  </div>
                   <p className="truncate text-xs text-tracev2-muted">
                     <span className="tabular-nums">{d.caseRef}</span> · {d.location}
                   </p>
