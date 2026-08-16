@@ -100,7 +100,7 @@ const SparkIcon = () => (
 // ---------------------------------------------------------------------------
 // Chat view — the streaming conversation.
 // ---------------------------------------------------------------------------
-function ChatView({ scoped, contextId, system, contextBlock, chips, demoScript, initialQuestion, onBack, onClose }) {
+function ChatView({ scoped, contextId, system, contextBlock, chips, demoScript, instantPlayback, initialQuestion, onBack, onClose }) {
   const [messages, setMessages] = useState([]); // { role, content, streaming }
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
@@ -117,12 +117,23 @@ function ChatView({ scoped, contextId, system, contextBlock, chips, demoScript, 
 
   useEffect(() => () => abortRef.current?.abort(), []);
 
-  // Scripted demo playback: show the user message immediately and typewriter the
-  // assistant reply at 18ms/char. Skips the live greeting/API entirely.
+  // Scripted demo playback: show the user message immediately, then either:
+  //   • instantPlayback=true → render all messages fully formed with no animation
+  //     (used when TutorialOverlay opens the chat at step 3 — the conversation
+  //      should look already-complete behind the overlay card)
+  //   • instantPlayback=false → typewriter the assistant reply at 18ms/char
+  // Both paths skip the live greeting/API entirely.
   useEffect(() => {
     if (!demoScript?.length) return undefined;
     greetedRef.current = true; // block the live greeting below
-    const script = demoScript.map((m) => ({ role: m.role, content: m.content }));
+    const script = demoScript.map((m) => ({ role: m.role, content: m.content, streaming: false }));
+
+    if (instantPlayback) {
+      // Instant mode: all messages appear fully formed, as if already sent.
+      setMessages(script);
+      return undefined;
+    }
+
     const lastIsAssistant = script[script.length - 1]?.role === 'assistant';
     if (!lastIsAssistant) {
       setMessages(script);
@@ -464,7 +475,11 @@ function CommandCenter({ cases, onAsk, onClose }) {
 }
 
 // ---------------------------------------------------------------------------
-export default function AiChatScreen({ caseContext, onClose, demoMessages, cases = [], overlay = false }) {
+// demoInstant: when true (set by TraceV2App when the guided tour opens the
+// chat at step 3) the scripted exchange is rendered fully-formed with no
+// typewriter animation, so it looks like an already-complete conversation
+// behind the TutorialOverlay card.
+export default function AiChatScreen({ caseContext, onClose, demoMessages, demoInstant = false, cases = [], overlay = false }) {
   // Case-scoped only when a case was handed in (from inside a case view).
   const scoped = Boolean(caseContext?.caseRecord);
 
@@ -502,6 +517,7 @@ export default function AiChatScreen({ caseContext, onClose, demoMessages, cases
           contextBlock={contextBlock}
           chips={chips}
           demoScript={demoScript}
+          instantPlayback={demoInstant}
           initialQuestion={chat.question}
           onBack={scoped || demoScript ? null : () => setChat(null)}
           onClose={onClose}
