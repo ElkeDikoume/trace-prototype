@@ -15,7 +15,7 @@ const TOTAL_STEPS = 5; // 0–4
 const CTA_LABELS = [
   'Continue →',
   'Open the flagged case →',
-  'See how TRACE answered her question →',
+  'See Fatima consult TRACE →',
   'Generate the referral letter →',
   'Start using TRACE →',
 ];
@@ -38,6 +38,7 @@ function ProgressDots({ step }) {
 
 export default function TutorialOverlay({ onClose, onFinish, onStepChange }) {
   const [step, setStep] = useState(0);
+  const [minimized, setMinimized] = useState(false);
   const [lang, setLang] = useState(() => {
     const stored = localStorage.getItem('trace_lang');
     return LANGUAGES.some((l) => l.code === stored) ? stored : 'en';
@@ -129,6 +130,24 @@ export default function TutorialOverlay({ onClose, onFinish, onStepChange }) {
     );
   }
 
+  // ---- Minimized state: floating pill at bottom center ----
+  if (minimized) {
+    return (
+      <div dir="ltr" className="fixed bottom-4 inset-x-0 z-50 flex justify-center pointer-events-none">
+        <button
+          onClick={() => setMinimized(false)}
+          className="pointer-events-auto flex items-center gap-2 rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-colors duration-150 hover:bg-blue-700"
+          aria-label="Expand tour"
+        >
+          <span>TRACE Guide &middot; Step {step}/4</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <polyline points="18 15 12 9 6 15" />
+          </svg>
+        </button>
+      </div>
+    );
+  }
+
   // ---- Steps 1–4: bottom-sheet — app stays visible behind ----
   // pointer-events-none on the outer wrapper lets taps pass through to the app
   // chrome (bottom nav, status bar). The inner card re-enables pointer events
@@ -139,9 +158,19 @@ export default function TutorialOverlay({ onClose, onFinish, onStepChange }) {
         className="pointer-events-auto bg-white rounded-t-2xl shadow-2xl border-t border-gray-100 px-5 pt-4 pb-6 mx-auto max-w-sm flex flex-col"
         style={{ maxHeight: '55vh' }}
       >
-        {/* Drag handle — visual affordance only */}
-        <div className="mb-3 flex flex-shrink-0 justify-center">
+        {/* Drag handle + minimize button */}
+        <div className="mb-3 flex flex-shrink-0 items-center justify-between">
+          <div className="w-7" />
           <span className="h-1 w-10 rounded-full bg-gray-200" aria-hidden="true" />
+          <button
+            onClick={() => setMinimized(true)}
+            className="rounded-full p-1 text-gray-300 transition-colors duration-150 hover:bg-gray-100 hover:text-gray-500"
+            aria-label="Minimize tour"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </button>
         </div>
 
         {/* Scrollable step content */}
@@ -166,7 +195,7 @@ export default function TutorialOverlay({ onClose, onFinish, onStepChange }) {
           {step === 2 && (
             <>
               <h2 className="text-lg font-bold text-gray-900">
-                From voice note to risk flag — automatically
+                From voice note to risk flag &mdash; automatically
               </h2>
 
               {/* Two-column before/after panel */}
@@ -220,28 +249,28 @@ export default function TutorialOverlay({ onClose, onFinish, onStepChange }) {
           {step === 3 && (
             <>
               <h2 className="text-lg font-bold text-gray-900">
-                Ask TRACE anything about any case
+                Fatima asked whether Amina qualified for emergency referral
               </h2>
               <p className="mt-3 text-sm leading-relaxed text-gray-700">
-                Fatima asked one question. TRACE answered with protocol-grounded guidance and a draft action plan.
+                TRACE cited NRS Protocol 4.2, flagged the debt indicator as disqualifying a standard pathway, and drafted next steps &mdash; in the language Fatima chose.
               </p>
               <p className="mt-4 text-xs text-gray-400">
-                Scroll up to read the full response &#x2191;
+                See the full exchange in the chat above &#x2191;
               </p>
             </>
           )}
 
-          {/* ---- Step 4: every output / every signal ---- */}
+          {/* ---- Step 4: pattern alert + every output ---- */}
           {step === 4 && (
             <>
               <h2 className="text-lg font-bold text-gray-900">
-                Every output. Every signal.
+                One intake. Documents ready. A pattern no single caseworker could see alone.
               </h2>
               <p className="mt-3 text-sm leading-relaxed text-gray-700">
-                The referral letter drafted itself. The pattern alert fired because two other caseworkers in Diffa documented the same indicator this week.
+                A pattern alert fired: two other caseworkers in Diffa documented the same debt indicator this week &mdash; across cases they&apos;d never connected.
               </p>
               <p className="mt-3 text-sm leading-relaxed text-gray-600">
-                One intake. IOM-standard referral letter, situation report, follow-up plan — all ready to download.
+                IOM-standard referral letter, situation report, and follow-up plan &mdash; all generated from Fatima&apos;s intake. Ready to download.
               </p>
             </>
           )}
