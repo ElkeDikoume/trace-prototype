@@ -52,7 +52,7 @@ TRACE scores risk against structured indicator sets — including trafficking (C
 
 **Low-resource language support.** Not just interface translation. TRACE handles voice input in languages that mainstream AI providers cannot transcribe.
 
-**Humanitarian data standards.** IOM/UNHCR-standard intake form types (including HTCDS), on-device storage by default. Voice audio is deleted from device memory immediately after transcription — only the text transcript is stored and synced.
+**Humanitarian data standards.** IOM/UNHCR-standard intake form types (including HTCDS), on-device storage by default.
 
 ---
 
