@@ -1,6 +1,6 @@
 # TRACE — AI Field Intelligence for Humanitarian Caseworkers
 
-**IOM/UNHCR-compliant case files in under 90 seconds. Offline. In 30+ languages. Deployable in any crisis zone.**
+**IOM/UNHCR-compliant case files. Offline. Deployable in any crisis zone.**
 
 [Live site](https://www.tracecase.app) · [Demo](https://trace-v2-git-v2-demo-trace-prototype.vercel.app/?v2&tour)
 
@@ -8,7 +8,7 @@
 
 ## What TRACE is
 
-TRACE is an AI decision-support system for humanitarian field workers. A caseworker speaks — in Hausa, Somali, Arabic, French, or any of 30+ languages — and TRACE listens, understands, assesses risk, explains its reasoning, and recommends action. The caseworker decides. TRACE handles the cognitive and documentation load.
+TRACE is an AI decision-support system for humanitarian field workers. A caseworker speaks — in Hausa, Somali, Arabic, or French — and TRACE listens, understands, assesses risk, explains its reasoning, and recommends action. The caseworker decides. TRACE handles the cognitive and documentation load.
 
 This is not a form-filling tool. KoBoToolbox and ODK are good at collecting data. TRACE thinks with it.
 
@@ -32,7 +32,7 @@ A TRACE session follows four steps:
 The caseworker conducts an interview and speaks their notes into TRACE — in any language. Freeform narration, not structured questions.
 
 **2. Transcription + translation**
-Voice is transcribed using Meta SeamlessM4T, which handles low-resource languages (Hausa, Fulfulde, Zarma, Amharic, Somali) that most AI models cannot process. Audio is converted to text and translated to the caseworker's working language in a single step.
+Audio is converted to text and translated to the caseworker's working language in a single step.
 
 **3. AI structuring**
 The Claude API (Anthropic) processes the transcript and populates IOM-standard intake fields: demographics, presenting situation, risk indicators, movement history. TRACE leaves fields blank when it cannot reliably infer the value, rather than guessing. The caseworker reviews the output before anything is saved.
@@ -50,7 +50,7 @@ TRACE scores risk against structured indicator sets — including trafficking (C
 
 **Low-resource language support.** Not just interface translation. TRACE handles voice input in languages that mainstream AI providers cannot transcribe.
 
-**Humanitarian data standards.** IOM/UNHCR-standard intake form types (including HTCDS), IASC data protection alignment, on-device storage by default, remote wipe for seized devices. Voice audio is deleted from device memory immediately after transcription — only the text transcript is stored and synced.
+**Humanitarian data standards.** IOM/UNHCR-standard intake form types (including HTCDS), on-device storage by default. Voice audio is deleted from device memory immediately after transcription — only the text transcript is stored and synced.
 
 ---
 
@@ -61,7 +61,6 @@ TRACE scores risk against structured indicator sets — including trafficking (C
 | Frontend | React + Vite + Tailwind CSS |
 | Backend / Auth / DB | Supabase (PostgreSQL + Supabase Auth) |
 | AI — structuring + reasoning | Anthropic Claude API |
-| AI — voice + translation | Meta SeamlessM4T |
 | Deployment | Vercel |
 | Offline sync | Progressive Web App architecture |
 
