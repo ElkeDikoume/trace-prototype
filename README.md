@@ -4,7 +4,9 @@
 
 **IOM/UNHCR-compliant case files. Offline. Deployable in any crisis zone.**
 
-[Live site](https://www.tracecase.app) · [Demo](https://trace-v2-git-v2-demo-trace-prototype.vercel.app/?v2&tour)
+**Submitted demo (this repository):** https://trace-prototype-ten.vercel.app/
+
+[Project site](https://www.tracecase.app) · [v2 redesign](https://github.com/ElkeDikoume/trace-humanitarian)
 
 ---
 
@@ -80,7 +82,7 @@ The system is designed to run on mid-range Android devices, requires no IT infra
 
 TRACE is in active beta. The guided demo shows the full caseworker flow: language selection, voice input in Hausa or Somali, real-time structuring, risk scoring with explicit receipts, referral recommendations, and document generation.
 
-**Try the demo:** https://trace-v2-git-v2-demo-trace-prototype.vercel.app/?v2&tour
+**Try the demo:** https://trace-prototype-ten.vercel.app/
 
 ---
 
