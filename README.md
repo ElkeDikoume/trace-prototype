@@ -1,5 +1,7 @@
 # TRACE — AI Field Intelligence for Humanitarian Caseworkers
 
+> **Note on status.** This is the original TRACE prototype, built for Call for Code AI: United Against Trafficking (Austin AI Hub x UN Human Rights), where it placed 3rd. It is maintained as a working reference implementation. Active development has moved to [trace-humanitarian](https://github.com/ElkeDikoume/trace-humanitarian).
+
 **IOM/UNHCR-compliant case files. Offline. Deployable in any crisis zone.**
 
 [Live site](https://www.tracecase.app) · [Demo](https://trace-v2-git-v2-demo-trace-prototype.vercel.app/?v2&tour)
