@@ -129,7 +129,7 @@ const STEP_DEFS = [
     id: 'language-selector',
     attachTo: { element: '[data-tutorial="language-selector"]', on: 'bottom' },
     title: 'Choose your language',
-    text: 'TRACE supports 5 interface languages: French, English, Arabic, Spanish, and Portuguese. Click the language selector now to see the full list. In production, this switches the entire interface. Real-time local language translation (Hausa, Fulfulde, Zarma) is available when connected.'
+    text: 'TRACE supports 5 interface languages: French, English, Arabic, Spanish, and Portuguese. Click the language selector now to see the full list. In production, this switches the entire interface. Local-language translation is a roadmap item; the languages shown here are illustrative.'
   },
   {
     id: 'offline-indicator',
@@ -246,7 +246,7 @@ const STEP_DEFS = [
     id: 'interpretation',
     attachTo: { element: '[data-tutorial="online-interpretation"]', on: 'top' },
     title: 'Hausa → English translation',
-    text: "TRACE translated Hausa field notes into English in seconds. Hausa has 50+ million speakers across the Sahel, yet very few widely adopted humanitarian tools serve them. In production, Meta SeamlessM4T handles Hausa, Fulfulde, and Zarma. Additional language packs can be added without changing the core system."
+    text: "TRACE translated Hausa field notes into English in seconds. Hausa has 50+ million speakers across the Sahel, yet very few widely adopted humanitarian tools serve them. Local-language translation is a roadmap item; the languages shown here are illustrative. Additional language packs can be added without changing the core system."
   },
   {
     id: 'risk-flag',
