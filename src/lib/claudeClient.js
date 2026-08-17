@@ -1,14 +1,52 @@
 import { formatEvidenceEn } from '../data/riskIndicators.js';
 
+// Every model call goes through here, so this is the one place that needs a
+// deadline. Without it a hung request never settles and any awaiting caller —
+// including the guided tour's `await window.__traceStructureNow()` — stalls
+// forever. One attempt, no retry: retrying a revoked or empty-balance key
+// spends what is left of it for nothing. See lib/degradedMode.js.
+const REQUEST_TIMEOUT_MS = 8000;
+
 async function callClaude({ system, messages, max_tokens }) {
-  const res = await fetch('/api/claude', {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ system, messages, max_tokens })
-  });
-  const data = await res.json();
+  // Cheap precheck: no point spending the deadline on a request the browser
+  // already knows cannot leave the device.
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+    throw new Error('Offline');
+  }
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+  let res;
+  try {
+    res = await fetch('/api/claude', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ system, messages, max_tokens }),
+      signal: controller.signal
+    });
+  } catch (err) {
+    // Timeout, DNS failure, connection reset — one answer to the caller.
+    throw new Error(err?.name === 'AbortError' ? 'Request timed out' : 'Network request failed');
+  } finally {
+    clearTimeout(timer);
+  }
+
+  // A revoked key, an exhausted balance, a 429 or a 5xx can each come back as
+  // HTML or an empty body rather than JSON, so parsing is part of the failure
+  // surface and not an afterthought.
+  let data;
+  try {
+    data = await res.json();
+  } catch {
+    throw new Error(`Malformed response from /api/claude (HTTP ${res.status})`);
+  }
+
   if (!res.ok) {
-    throw new Error(data?.error || 'Claude API request failed');
+    throw new Error(data?.error || `Claude API request failed (HTTP ${res.status})`);
+  }
+  if (typeof data?.text !== 'string' || !data.text.trim()) {
+    throw new Error('Empty response from Claude API');
   }
   return data.text;
 }

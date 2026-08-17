@@ -4,6 +4,7 @@ import { analyzeRisk } from './data/riskIndicators.js';
 import { suggestServices } from './data/services.js';
 import { listCases, saveCase, newCaseId, deleteCase } from './lib/storage.js';
 import { askCaseChatbot, structureNotesIntoForm } from './lib/claudeClient.js';
+import { isForcedOffline, setDegraded, degradeOn } from './lib/degradedMode.js';
 import { fetchCtdcIndicators } from './services/ctdcService.js';
 import { fetchDtmContext } from './services/iomDtmService.js';
 import { fetchAcledEvents } from './services/acledService.js';
@@ -331,11 +332,21 @@ export default function App() {
       if (!activeCase) return;
       const notes = activeCase.data?.caseworkerNotes || '';
       if (!notes.trim()) return;
+      // Forced offline: resolve straight away so the tour step advances
+      // instead of awaiting a call we are deliberately not making.
+      if (isForcedOffline()) {
+        setDegraded(true);
+        return;
+      }
       try {
         const fields = await structureNotesIntoForm({ freeText: notes, language: 'en-US', form: activeForm });
         handleStructured(fields);
+        setDegraded(false);
       } catch (err) {
-        console.error('[TRACE tour] Structuring failed:', err);
+        // The notes are already in caseworkerNotes on this path, so analyzeRisk
+        // has scored them and the risk panel is populated. Raise the banner and
+        // let the tour continue against the deterministic result.
+        degradeOn(err);
       }
     };
     return () => {

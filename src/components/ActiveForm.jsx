@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import VoiceTextIntake from './VoiceTextIntake.jsx';
 import RiskFlag from './RiskFlag.jsx';
+import DegradedBanner from './DegradedBanner.jsx';
 import ServiceSuggestions from './ServiceSuggestions.jsx';
 import CtdcPanel from './CtdcPanel.jsx';
 import DtmPanel from './DtmPanel.jsx';
@@ -117,6 +118,8 @@ export default function ActiveForm({
       {!form.riskEligible && (
         <VoiceTextIntake key={caseId} form={form} onStructured={onStructured} onlineMode={onlineMode} initialText={caseId === 'AK-001' ? DEMO_INTAKE_NOTES : ''} />
       )}
+
+      <DegradedBanner />
 
       {form.riskEligible && <RiskFlag riskResult={riskResult} onAskWhy={onAskWhy} caseId={caseId} />}
 

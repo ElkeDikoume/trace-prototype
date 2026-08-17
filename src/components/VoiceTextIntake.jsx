@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { LANGUAGES, isSpeechRecognitionSupported, createRecognizer } from '../lib/speech.js';
 import { structureNotesIntoForm, interpretAndStructureNotes, interpretToEnglish } from '../lib/claudeClient.js';
+import { isForcedOffline, setDegraded, degradeOn } from '../lib/degradedMode.js';
 import { DEMO_INTAKE_NOTES } from '../data/demoCase.js';
 import { useI18n } from '../lib/i18n.jsx';
 
@@ -104,6 +105,16 @@ export default function VoiceTextIntake({ form, onStructured, onlineMode, initia
     setSpeaking(true);
   }
 
+  // The deterministic layer only sees what is in the case record, and this
+  // textarea is local state until something writes it back. So the degraded
+  // path commits the raw note to caseworkerNotes — a free-text key that
+  // analyzeRisk() reads — which is what makes the six on-device indicators
+  // score the words the caseworker actually typed, with their evidence.
+  function fallBackToOnDevice(err) {
+    if (err) degradeOn(err); else setDegraded(true);
+    onStructured({ caseworkerNotes: text });
+  }
+
   async function handleStructure() {
     if (!text.trim()) {
       setError(t('Add some notes (spoken or typed) before structuring.'));
@@ -111,6 +122,12 @@ export default function VoiceTextIntake({ form, onStructured, onlineMode, initia
     }
     setError('');
     setTranslation('');
+
+    // ?offline=1 — take the degraded path on purpose, without spending a call.
+    if (isForcedOffline()) {
+      fallBackToOnDevice(null);
+      return;
+    }
 
     if (isLocalLanguage) {
       setInterpreting(true);
@@ -121,8 +138,9 @@ export default function VoiceTextIntake({ form, onStructured, onlineMode, initia
         ]);
         setTranslation(result.translation || '');
         onStructured(result.fields || {});
+        setDegraded(false);
       } catch (err) {
-        setError(err.message || t('Failed to interpret and structure notes.'));
+        fallBackToOnDevice(err);
       } finally {
         setInterpreting(false);
       }
@@ -133,8 +151,9 @@ export default function VoiceTextIntake({ form, onStructured, onlineMode, initia
     try {
       const fields = await structureNotesIntoForm({ freeText: text, language, form });
       onStructured(fields);
+      setDegraded(false);
     } catch (err) {
-      setError(err.message || t('Failed to structure notes with AI.'));
+      fallBackToOnDevice(err);
     } finally {
       setBusy(false);
     }
@@ -142,13 +161,22 @@ export default function VoiceTextIntake({ form, onStructured, onlineMode, initia
 
   async function handleTranslate() {
     if (!text.trim()) return;
+    // Forced offline: resolve immediately rather than leaving the tour's
+    // `await window.__traceInterpretNow()` hanging on a call we will not make.
+    if (isForcedOffline()) {
+      setDegraded(true);
+      return;
+    }
     setTranslateBusy(true);
     setTranslateOutput('');
     try {
       const result = await interpretToEnglish({ freeText: text, languageLabel: 'Hausa' });
       setTranslateOutput(result);
+      setDegraded(false);
     } catch (err) {
-      setError(err.message || t('Failed to translate.'));
+      // Translation is the one step with no on-device equivalent, so it stays
+      // silent and flips the banner instead of raising a blocking error.
+      degradeOn(err);
     } finally {
       setTranslateBusy(false);
     }
