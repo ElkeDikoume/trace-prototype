@@ -56,29 +56,90 @@ const FREE_TEXT_KEYS = [
   'reviewNotes', 'goalsProgress', 'clientWellbeing', 'journeyRoute', 'notes'
 ];
 
-function textFrom(caseData, keys) {
+// Raw, case-preserving join. Used to pull the caseworker's own sentence back
+// out once a match has been located in the lowercased copy.
+function rawTextFrom(caseData, keys) {
   return keys
     .map((k) => caseData[k])
     .filter(Boolean)
-    .join(' \n ')
-    .toLowerCase();
+    .join(' \n ');
+}
+
+function textFrom(caseData, keys) {
+  return rawTextFrom(caseData, keys).toLowerCase();
+}
+
+// Turns a camelCase field key into something a caseworker can read.
+// "documentsConfiscated" -> "Documents confiscated".
+function humanizeFieldKey(key) {
+  const spaced = String(key || '')
+    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+    .replace(/[_-]+/g, ' ')
+    .trim();
+  return spaced.charAt(0).toUpperCase() + spaced.slice(1).toLowerCase();
+}
+
+const MAX_QUOTE_CHARS = 220;
+
+// Given the position of a keyword hit, return the sentence around it from the
+// ORIGINAL text.
+//
+// Why this exists: the matcher runs over a lowercased haystack using keyword
+// stems ("confiscat", "owe"), so the naive thing to display is the stem itself.
+// That is what this build used to do, and it produced evidence lines reading
+// `Keyword match: "confiscat"` on a note that actually said "he took their
+// identity papers on the first night". A stem is not evidence, and "confiscat"
+// is not even a word. The caseworker's own sentence is the evidence. This finds
+// it so the flag can cite the source instead of the pattern.
+function sentenceAround(rawText, index, keywordLength) {
+  if (!rawText || index < 0) return null;
+
+  const isBoundary = (ch) => ch === '.' || ch === '!' || ch === '?' || ch === '\n';
+
+  let start = index;
+  while (start > 0 && !isBoundary(rawText[start - 1])) start--;
+
+  let end = index + keywordLength;
+  while (end < rawText.length && !isBoundary(rawText[end])) end++;
+  if (end < rawText.length) end++; // keep the terminating punctuation
+
+  let quote = rawText.slice(start, end).trim();
+  if (!quote) return null;
+
+  // A long run with no punctuation would swamp the flag list. Window it around
+  // the match rather than truncating from the left edge and losing the hit.
+  if (quote.length > MAX_QUOTE_CHARS) {
+    const rel = index - start;
+    const from = Math.max(0, rel - Math.floor(MAX_QUOTE_CHARS / 2));
+    const to = Math.min(quote.length, from + MAX_QUOTE_CHARS);
+    quote = `${from > 0 ? '…' : ''}${quote.slice(from, to).trim()}${to < quote.length ? '…' : ''}`;
+  }
+
+  return quote;
 }
 
 // Plain-English rendering of an evidence item, used for the Claude grounding
 // context (internal, not shown to the caseworker), the UI renders and
 // translates evidence itself via RiskFlag.jsx.
 export function formatEvidenceEn(e) {
-  return e.type === 'field' ? `Field "${e.field}" = "${e.value}"` : `Keyword match: "${e.keyword}"`;
+  if (e.type === 'field') return `${humanizeFieldKey(e.field)}: ${e.value}`;
+  return e.quote ? `Caseworker's note: "${e.quote}"` : `Term matched: "${e.keyword}"`;
 }
 
 export function analyzeRisk(caseData) {
   const allFreeText = textFrom(caseData, FREE_TEXT_KEYS);
+  const allFreeTextRaw = rawTextFrom(caseData, FREE_TEXT_KEYS);
 
   const matches = RISK_INDICATORS.map((indicator) => {
     const evidence = [];
     const seen = new Set();
     function pushUnique(item) {
-      const key = JSON.stringify(item);
+      // Dedupe on what the caseworker will actually see, so two stems that
+      // resolve to the same sentence ("owe" and "owed") produce one line, not
+      // the same quote twice.
+      const key = item.type === 'field'
+        ? `field:${item.field}`
+        : `quote:${item.quote || item.keyword}`;
       if (!seen.has(key)) {
         seen.add(key);
         evidence.push(item);
@@ -94,10 +155,15 @@ export function analyzeRisk(caseData) {
     }
 
     const fieldText = textFrom(caseData, indicator.fieldKeys);
+    const fieldTextRaw = rawTextFrom(caseData, indicator.fieldKeys);
     const searchSpace = `${fieldText} ${allFreeText}`;
+    // Same concatenation, original casing, so an index into searchSpace lands
+    // on the same character in searchSpaceRaw.
+    const searchSpaceRaw = `${fieldTextRaw} ${allFreeTextRaw}`;
     indicator.keywords.forEach((kw) => {
-      if (searchSpace.includes(kw)) {
-        pushUnique({ type: 'keyword', keyword: kw });
+      const at = searchSpace.indexOf(kw);
+      if (at !== -1) {
+        pushUnique({ type: 'keyword', keyword: kw, quote: sentenceAround(searchSpaceRaw, at, kw.length) });
       }
     });
 

@@ -9,10 +9,28 @@ const LEVEL_STYLES = {
   high: { bg: 'bg-trace-risk-high/15', border: 'border-trace-risk-high', text: 'text-trace-risk-high', label: 'HIGH' }
 };
 
-function formatEvidence(e, t) {
-  return e.type === 'field'
-    ? `${t('Field')} "${e.field}" = "${t(e.value)}"`
-    : `${t('Keyword match')}: "${e.keyword}"`;
+function humanizeFieldKey(key) {
+  const spaced = String(key || '')
+    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+    .replace(/[_-]+/g, ' ')
+    .trim();
+  return spaced.charAt(0).toUpperCase() + spaced.slice(1).toLowerCase();
+}
+
+// Evidence renders as the caseworker's own words wherever the matcher could
+// recover them. The stem it matched on ("confiscat") is an implementation
+// detail and is never the thing shown: a stem is not evidence, and displaying
+// one makes explainable risk scoring read as a keyword search in a costume.
+// Only when no source sentence can be recovered do we fall back to naming the
+// term, and even then we do not present it as a quotation.
+function evidenceParts(e, t) {
+  if (e.type === 'field') {
+    return { text: `${t(humanizeFieldKey(e.field))}: ${t(e.value)}`, quoted: false };
+  }
+  if (e.quote) {
+    return { text: e.quote, quoted: true };
+  }
+  return { text: `${t('Term matched')}: ${e.keyword}`, quoted: false };
 }
 
 // Cross-case overlap, computed locally from whatever cases happen to be
@@ -87,7 +105,16 @@ export default function RiskFlag({ riskResult, onAskWhy, caseId }) {
                 {riskResult.matched.map((m) => (
                   <li key={m.id} className="text-xs text-slate-200">
                     <span className="font-medium">{t(m.label)}</span>
-                    <span className="text-slate-400">, {m.evidence.map((e) => formatEvidence(e, t)).join('; ')}</span>
+                    <ul className="mt-0.5 ml-3 space-y-0.5">
+                      {m.evidence.map((e, i) => {
+                        const { text, quoted } = evidenceParts(e, t);
+                        return (
+                          <li key={i} className="text-slate-400">
+                            {quoted ? <span className="italic text-slate-300">“{text}”</span> : text}
+                          </li>
+                        );
+                      })}
+                    </ul>
                   </li>
                 ))}
               </ul>

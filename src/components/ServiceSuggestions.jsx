@@ -16,6 +16,13 @@ export default function ServiceSuggestions({ services }) {
       </div>
       {open && (
         <div className="space-y-2">
+          {/* Without this line the directory reads as a bug to anyone who knows
+              the region: a South Darfur case returns a Niamey office and an
+              N'Djamena office. Cross-border referral is the intent, so say so
+              rather than letting the reader assume the directory is decorative. */}
+          <p className="text-xs text-slate-500 -mt-1 mb-1">
+            {t('Regional and cross-border referral pathways across the Sahel, the Lake Chad Basin and the Darfur displacement corridors. Confirm the receiving office is operating before referring.')}
+          </p>
           {services.map((s) => (
             <div key={s.id} className="bg-trace-800 border border-trace-700 rounded-lg p-3">
               <div className="flex items-start justify-between gap-2">

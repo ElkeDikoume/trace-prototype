@@ -34,6 +34,11 @@ const WELCOME_SEEN_KEY = 'trace_welcome_seen';
 const EXAMPLES_SEEDED_KEY = 'trace_examples_seeded';
 const DEMO_CASE_ID = 'demo-case';
 
+// How long to let the caseworker read a newly-raised HIGH risk flag before the
+// Support & Care prompt appears. Long enough to take in the indicators and
+// their citations, short enough that it still reads as a response to this case.
+const HIGH_RISK_PROMPT_DELAY_MS = 20000;
+
 function caseLocation(data) {
   return data?.currentLocation || data?.location || data?.exploitationLocation || data?.incidentLocation || '';
 }
@@ -183,18 +188,29 @@ export default function App() {
   // Support & Care auto-prompt: fires when a case newly becomes HIGH risk this session.
   // Suppressed once when the guided tour kicks off the demo case, since the
   // tour walks the caseworker to Support & Care deliberately at its own step.
+  //
+  // It is also DELAYED rather than immediate. Structuring a note is the moment
+  // the risk flags and their citations appear, and a modal that lands on that
+  // exact frame covers the thing the caseworker just asked for. Waiting gives
+  // them time to read the flags first, which is both better for them and the
+  // difference between a wellbeing feature and an interruption. The timer is
+  // cancelled if they navigate away or the level drops before it fires.
   useEffect(() => {
     if (!activeCase || !riskResult) return;
     const prev = seenLevelsRef.current[activeCase.id];
+    let timer;
     if (prev !== undefined && prev !== 'high' && riskResult.level === 'high') {
       if (suppressNextHighRiskPromptRef.current) {
         suppressNextHighRiskPromptRef.current = false;
       } else {
-        setShowSupportCare(true);
-        setSupportCareHighRiskPrompt(true);
+        timer = setTimeout(() => {
+          setShowSupportCare(true);
+          setSupportCareHighRiskPrompt(true);
+        }, HIGH_RISK_PROMPT_DELAY_MS);
       }
     }
     seenLevelsRef.current[activeCase.id] = riskResult.level;
+    return () => clearTimeout(timer);
   }, [activeCase?.id, riskResult?.level]);
 
   function persist(next) {
