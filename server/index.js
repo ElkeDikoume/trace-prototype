@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { callClaude } from '../api/_lib/anthropic.js';
+import { guardRequest } from '../api/_lib/guard.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const KEY_FILE = path.resolve(__dirname, '..', 'API_KEY.txt');
@@ -34,12 +35,16 @@ app.post('/api/claude', async (req, res) => {
   if (!apiKey) {
     return res.status(500).json({ error: 'Server has no Anthropic API key configured. Check API_KEY.txt.' });
   }
-  const { system, messages, max_tokens } = req.body || {};
+  const { system, messages } = req.body || {};
   if (!Array.isArray(messages) || messages.length === 0) {
     return res.status(400).json({ error: 'Request must include a non-empty messages array.' });
   }
+  const gate = guardRequest(req);
+  if (!gate.ok) {
+    return res.status(gate.status).json({ error: gate.error });
+  }
   try {
-    const result = await callClaude({ apiKey, system, messages, max_tokens });
+    const result = await callClaude({ apiKey, system, messages, max_tokens: gate.maxTokens });
     res.json(result);
   } catch (err) {
     console.error('[TRACE server] Anthropic API error:', err.data || err.message);

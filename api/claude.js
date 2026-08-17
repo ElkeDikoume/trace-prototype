@@ -5,6 +5,7 @@
 // reaches the browser bundle.
 
 import { callClaude } from './_lib/anthropic.js';
+import { guardRequest } from './_lib/guard.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -18,14 +19,20 @@ export default async function handler(req, res) {
     return;
   }
 
-  const { system, messages, max_tokens } = req.body || {};
+  const { system, messages } = req.body || {};
   if (!Array.isArray(messages) || messages.length === 0) {
     res.status(400).json({ error: 'Request must include a non-empty messages array.' });
     return;
   }
 
+  const gate = guardRequest(req);
+  if (!gate.ok) {
+    res.status(gate.status).json({ error: gate.error });
+    return;
+  }
+
   try {
-    const result = await callClaude({ apiKey, system, messages, max_tokens });
+    const result = await callClaude({ apiKey, system, messages, max_tokens: gate.maxTokens });
     res.status(200).json(result);
   } catch (err) {
     console.error('[TRACE api/claude] Anthropic API error:', err.data || err.message);

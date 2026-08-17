@@ -1,28 +1,88 @@
 # TRACE — AI Field Intelligence for Humanitarian Caseworkers
 
-> **Note on status.** This is the original TRACE prototype, built for Call for Code AI: United Against Trafficking (Austin AI Hub x UN Human Rights), where it placed 3rd. It is maintained as a working reference implementation. Active development has moved to [trace-humanitarian](https://github.com/ElkeDikoume/trace-humanitarian).
+> **Note on status.** This is the original TRACE prototype, built for Call for Code AI: United Against Trafficking (Austin AI Hub x UN Human Rights), where it placed 3rd. It is maintained as a working reference implementation and it is the build that makes live Claude API calls. Interface development has moved to [trace-humanitarian](https://github.com/ElkeDikoume/trace-humanitarian).
 
-**IOM/UNHCR-compliant case files. Offline. Deployable in any crisis zone.**
+**IOM HTCDS-aligned case files. Deterministic risk flagging that runs with no connection. Deployable on a mid-range Android phone.**
 
-**Submitted demo (this repository):** https://trace-prototype-ten.vercel.app/
+**Live demo (this repository):** https://trace-prototype-ten.vercel.app/
 
-[Project site](https://www.tracecase.app) · [v2 redesign](https://github.com/ElkeDikoume/trace-humanitarian)
+[Project site](https://www.tracecase.app) · [v2 interface rebuild](https://github.com/ElkeDikoume/trace-humanitarian)
+
+---
+
+## Setup
+
+Requires Node 18 or newer.
+
+```bash
+git clone https://github.com/ElkeDikoume/trace-prototype.git
+cd trace-prototype
+npm install
+```
+
+The AI features call Anthropic server-side, so the key never reaches the browser bundle. Local development reads it from a file; production reads it from an environment variable.
+
+**Local development.** Create `API_KEY.txt` in the repository root. It is gitignored. Either format works:
+
+```
+ANTHROPIC_API_KEY=sk-ant-...
+```
+
+or the bare key on its own line.
+
+**Production (Vercel).** Set `ANTHROPIC_API_KEY` in the project's Environment Variables. `api/claude.js` reads it at request time. Nothing else needs configuring.
+
+Start the dev server. This runs the Express API and the Vite client together:
+
+```bash
+npm run dev
+```
+
+The client serves on `http://localhost:5173` and proxies `/api` to the Express server on port `8787`. Confirm the key loaded with `curl http://localhost:8787/api/health`, which returns `{"ok":true,"keyLoaded":true}`.
+
+Production build:
+
+```bash
+npm run build
+npm run preview
+```
+
+Without a key the interface still runs. Intake, the deterministic risk scorer, case storage, and document generation all work. Only AI structuring and the assistant fail, and they surface the error rather than falling back to fabricated output.
+
+---
+
+## Usage
+
+The demo is a single-screen caseworker flow. There is no sign-in.
+
+| Step | What to do |
+|---|---|
+| 1. Pick a language | Language selector, top of the intake panel. Sets the speech recognition locale and the interface strings. |
+| 2. Choose a form | Form selector. IOM HTCDS-aligned intake types with different field schemas. |
+| 3. Enter notes | Type freeform notes, or press the microphone and dictate. Narration, not structured questions. This is the step to use when evaluating the project. |
+| 4. Structure | Sends the notes to Claude through `/api/claude`. Returns populated form fields. Fields it cannot infer are left blank rather than guessed. |
+| 5. Review the flags | Risk indicators appear with the field value or phrase that triggered each one. Every flag is traceable. |
+| 6. Generate a document | Referral letter or case summary, editable before export. `.docx` and `.pdf`. |
+
+Cases persist in the browser's `localStorage` under `trace_cases_v1` and survive a reload. Clearing site data clears them. There is no server-side database in this repository.
+
+A guided tour is available from the header overflow menu.
 
 ---
 
 ## What TRACE is
 
-TRACE is an AI decision-support system for humanitarian field workers. A caseworker speaks — in Hausa, Somali, Arabic, or French — and TRACE listens, understands, assesses risk, explains its reasoning, and recommends action. The caseworker decides. TRACE handles the cognitive and documentation load.
+TRACE is an AI decision-support system for humanitarian field workers. A caseworker narrates what happened in an interview, and TRACE structures it into a case record, flags risk indicators with citations, and drafts the referral paperwork. The caseworker reviews and decides. Survivors never interact with the system.
 
-This is not a form-filling tool. KoBoToolbox and ODK are good at collecting data. TRACE thinks with it.
+This is not a form-filling tool. KoBoToolbox and ODK are good at collecting data. TRACE works with it.
 
 ---
 
 ## The problem
 
-A humanitarian caseworker conducting a protection interview in N'Djamena or Kakuma faces a dual burden: be fully present with the person in front of them, and simultaneously produce structured documentation that meets IOM/UNHCR reporting standards. In practice, one of these suffers. Usually the documentation.
+A protection caseworker conducting an interview in N'Djamena or Kakuma faces a dual burden: be fully present with the person in front of them, and simultaneously produce structured documentation that meets IOM and UNHCR reporting standards. In practice one of these suffers, and it is usually the documentation.
 
-The result: caseworkers spend 2–3 hours per case on paperwork. Risk indicators go unrecorded. Referral patterns are invisible. Organizations cannot identify emerging threats in their caseload because the data doesn't exist in a form that can be analyzed.
+Risk indicators go unrecorded. Referral patterns stay invisible. Organizations cannot see emerging threats in their own caseload because the data does not exist in a form that can be analyzed.
 
 TRACE closes that gap.
 
@@ -30,31 +90,27 @@ TRACE closes that gap.
 
 ## How the AI works
 
-A TRACE session follows four steps:
+**1. Intake.** The caseworker types or dictates freeform notes. Dictation uses the browser Web Speech API.
 
-**1. Voice intake**
-The caseworker conducts an interview and speaks their notes into TRACE — in any language. Freeform narration, not structured questions.
+**2. Structuring.** The Claude API processes the transcript and populates the selected form's fields: demographics, presenting situation, risk indicators, movement history. Where a value cannot be reliably inferred, the field is left blank. Nothing is saved until the caseworker reviews it.
 
-**2. Transcription + translation**
-Audio is converted to text and translated to the caseworker's working language in a single step.
+**3. Risk flagging.** A deterministic scorer matches the record against six CTDC/IOM trafficking indicators: labor recruitment fraud, document confiscation, debt bondage, movement restriction, physical abuse, and sexual exploitation. Each flag surfaces the field value or keyword that triggered it. This runs entirely client-side with no API call, so it works with no connectivity.
 
-**3. AI structuring**
-The Claude API (Anthropic) processes the transcript and populates IOM-standard intake fields: demographics, presenting situation, risk indicators, movement history. TRACE leaves fields blank when it cannot reliably infer the value, rather than guessing. The caseworker reviews the output before anything is saved.
-
-**4. Risk assessment + documentation**
-TRACE scores risk against structured indicator sets — including trafficking (CTDC), GBV, and child protection frameworks — and surfaces the specific phrases from the transcript that triggered each flag. The caseworker can ask "why did you flag this?" and get a grounded answer. One click generates a referral letter or case summary, all editable before submission.
+**4. Documentation.** One action generates a referral letter or case summary, editable before export.
 
 ---
 
-## What makes TRACE different
+## What is real, and what is not
 
-**Offline-first.** Case data lives on the caseworker's device. Sync happens when the caseworker initiates it. The system works in areas with no reliable connectivity — the intake flow, risk scoring, and referral directory (cached IOM/UNHCR data) are all available offline.
+Stated plainly, because a tool intended for protection work should not overstate itself.
 
-**Explainable AI.** Every risk flag shows its source in the transcript. The caseworker always knows why TRACE flagged something, and always has the final call.
+**Real in this build.** Live Claude API calls through a server-side proxy. Deterministic six-indicator CTDC risk scoring with citations. Case persistence in browser `localStorage`. Document generation to `.docx` and `.pdf`. Browser-native speech recognition.
 
-**Low-resource language support.** Not just interface translation. TRACE handles voice input in languages that mainstream AI providers cannot transcribe.
+**Not implemented.** There is no GBV indicator set and no child-protection indicator set. The six indicators are trafficking indicators only. There is no server-side database, no multi-tenant model, no remote wipe, and no audit log. No timing or accuracy figures are published because nothing in the codebase is instrumented and any number would be invented.
 
-**Humanitarian data standards.** IOM/UNHCR-standard intake form types (including HTCDS), on-device storage by default.
+**Language support is narrower than the picker suggests.** Eight options are offered. Five (English, French, Arabic, Spanish, Portuguese) pass a standard locale to the Web Speech API, and recognition quality depends entirely on the user's browser and device. Three (Hausa, Fulfulde, Zarma) are marked as local languages and route through the online interpretation pipeline, where Claude stands in for a dedicated speech model. Browser speech recognition does not meaningfully serve Sahel languages. Meta's Omnilingual ASR (Apache 2.0) is the intended path and is not yet integrated.
+
+**Offline behavior is partial.** Intake, the risk scorer, the cached referral directory, and local case storage work with no connection. AI structuring and the assistant require the network. "Fully offline" would not be accurate.
 
 ---
 
@@ -62,27 +118,36 @@ TRACE scores risk against structured indicator sets — including trafficking (C
 
 | Layer | Technology |
 |---|---|
-| Frontend | React + Vite + Tailwind CSS |
-| Backend / Auth / DB | Supabase (PostgreSQL + Supabase Auth) |
-| AI — structuring + reasoning | Anthropic Claude API |
-| Deployment | Vercel |
-| Offline sync | Progressive Web App architecture |
+| Frontend | React 18, Vite, Tailwind CSS |
+| AI | Anthropic Claude API, called server-side via `api/claude.js` (Vercel) or `server/index.js` (local) |
+| Storage | Browser `localStorage`. No database in this repository. |
+| Voice | Browser Web Speech API |
+| Documents | `docx`, `pdf-lib`, `docxtemplater` |
+| Deployment | Vercel, installable PWA via `vite-plugin-pwa` |
+
+JavaScript with JSX throughout. No TypeScript build step.
+
+---
+
+## Repository layout
+
+```
+api/                Vercel serverless function — Claude proxy
+  _lib/anthropic.js Single source of truth for the Anthropic Messages call
+server/             Express equivalent for local development
+src/components/     Intake, risk flags, panels, document generation
+src/data/           Form schemas, CTDC risk indicators, translations
+src/lib/            Claude client, speech, storage, templates, tour
+src/services/       CTDC, IOM DTM, ACLED, pattern intelligence
+```
 
 ---
 
 ## Deployment context
 
-TRACE is designed for the field conditions of sub-Saharan Africa, the Sahel, and other areas of humanitarian operation. The reference scenario is the Lake Chad Basin — N'Djamena, Chad — where IOM and UNHCR field offices manage mixed migration and protection caseloads with severe connectivity constraints.
+TRACE is built for the field conditions of the Sahel and sub-Saharan Africa. The reference scenario is the Lake Chad Basin, where IOM and UNHCR field offices manage mixed migration and protection caseloads under severe connectivity constraints.
 
-The system is designed to run on mid-range Android devices, requires no IT infrastructure beyond a browser, and caseworkers can be onboarded remotely. Organizations can request access at tracecase.app; pilot scope and timelines are scoped to each field office's operational and data protection requirements.
-
----
-
-## Current status
-
-TRACE is in active beta. The guided demo shows the full caseworker flow: language selection, voice input in Hausa or Somali, real-time structuring, risk scoring with explicit receipts, referral recommendations, and document generation.
-
-**Try the demo:** https://trace-prototype-ten.vercel.app/
+It runs on mid-range Android devices, requires no infrastructure beyond a browser, and caseworkers can be onboarded remotely. Any pilot would be scoped to a field office's own operational and data protection requirements, including where survivor data is permitted to be stored.
 
 ---
 
@@ -90,15 +155,15 @@ TRACE is in active beta. The guided demo shows the full caseworker flow: languag
 
 Organizations interested in piloting TRACE can request access at [tracecase.app](https://www.tracecase.app).
 
-**Contact:** hello@tracecase.app  
+**Contact:** hello@tracecase.app
 **Security inquiries:** security@tracecase.app
 
 ---
 
 ## License
 
-This repository is source-available for evaluation purposes. Redistribution and commercial use require written permission. Contact hello@tracecase.app.
+Source-available for evaluation purposes. Redistribution and commercial use require written permission. Contact hello@tracecase.app.
 
 ---
 
-*Built by [Elke-Esmeralda Dikoume](https://www.linkedin.com/in/elke-dikoume). 3rd place, Call for Code AI: United Against Trafficking — Austin AI Hub x UN Human Rights.*
+*Built by [Elke-Esmeralda Dikoume](https://www.linkedin.com/in/elke-dikoume). Eight years across humanitarian and climate programs in emergency response, protection, and disaster risk management. 3rd place, Call for Code AI: United Against Trafficking, Austin AI Hub x UN Human Rights.*
